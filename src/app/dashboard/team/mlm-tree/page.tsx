@@ -18,45 +18,63 @@ type TreeNodeData = {
 
 const treeData: TreeNodeData = {
   id: '1',
-  name: '3',
+  name: 'You',
   children: [
     {
-      id: '2', name: '9',
+      id: 'level1', name: '3',
       children: [
-        { id: '3', name: '27' },
-        { id: '4', name: '81' },
-        { id: '5', name: '243' },
+        {
+          id: 'level2', name: '9',
+          children: [
+            { id: 'level3', name: '27', 
+              children: [
+                { id: 'level4', name: '81', 
+                  children: [
+                    { id: 'level5', name: '243', 
+                      children: [
+                        { id: 'level6', name: '729', 
+                          children: [
+                            { id: 'level7', name: '2187',
+                              children: [
+                                { id: 'level8', name: '6561',
+                                  children: [
+                                    { id: 'level9', name: '19683',
+                                      children: [
+                                        { id: 'level10', name: '59049' }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+          ],
+        },
       ],
     },
-    {
-      id: '6', name: '729',
-      children: [
-        { id: '7', name: '2187' },
-        { id: '8', name: '6561' },
-      ],
-    },
-    {
-        id: '9', name: '19683',
-        children: [
-            { id: '10', name: '59049' }
-        ]
-    }
   ],
 };
 
 
 const TreeNode = ({ node }: { node: TreeNodeData }) => {
   return (
-    <li className="flex flex-col items-center">
+    <li className="flex flex-col items-center relative">
+       {node.children && node.children.length > 0 && <div className="w-px h-8 bg-border -mt-8"></div>}
       <div className="flex flex-col items-center p-4 m-2 rounded-lg bg-card text-card-foreground shadow-lg min-w-[100px]">
         <User className="w-8 h-8 mb-2 text-primary" />
         <span className="font-bold">{node.name}</span>
       </div>
       {node.children && node.children.length > 0 && (
-        <ul className="flex justify-center gap-4 pt-4 relative 
-                       before:content-[''] before:absolute before:left-1/2 before:-top-4 before:w-px before:h-4 before:bg-border
-                       after:content-[''] after:absolute after:left-0 after:right-0 after:top-0 after:h-px after:bg-border
-                       after:w-[calc(100%_-_2rem)] after:mx-auto">
+        <ul className="flex justify-center gap-4 pt-8 relative 
+                       before:content-[''] before:absolute before:left-0 before:right-0 before:top-0 before:h-px before:bg-border
+                       after:content-[''] after:absolute after:left-1/2 after:-top-8 after:w-px after:h-8 after:bg-border">
           {node.children.map((child) => (
             <TreeNode key={child.id} node={child} />
           ))}
