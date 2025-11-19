@@ -45,11 +45,16 @@ export default function TeamPage() {
   ];
   
   const teamData = [
-    { level: 1, totalMember: 3, remarks: "Complete" },
-    { level: 2, totalMember: 9, remarks: "Complete" },
-    { level: 3, totalMember: 27, remarks: "Complete" },
-    { level: 4, totalMember: 81, remarks: "Complete" },
-    { level: 5, totalMember: 5, remarks: "Incomplete" },
+    { level: 1, totalMember: 3, myTeam: 3, remarks: "Complete" },
+    { level: 2, totalMember: 9, myTeam: 9, remarks: "Complete" },
+    { level: 3, totalMember: 27, myTeam: 27, remarks: "Complete" },
+    { level: 4, totalMember: 81, myTeam: 81, remarks: "Complete" },
+    { level: 5, totalMember: 243, myTeam: 5, remarks: "Incomplete" },
+    { level: 6, totalMember: 729, myTeam: "", remarks: "" },
+    { level: 7, totalMember: 2187, myTeam: "", remarks: "" },
+    { level: 8, totalMember: 6561, myTeam: "", remarks: "" },
+    { level: 9, totalMember: 19683, myTeam: "", remarks: "" },
+    { level: 10, totalMember: 59049, myTeam: "", remarks: "" },
   ];
 
   return (
@@ -104,21 +109,25 @@ export default function TeamPage() {
                 <Table>
                     <TableHeader>
                     <TableRow>
-                        <TableHead className="w-[100px]">Level</TableHead>
+                        <TableHead>Level</TableHead>
                         <TableHead>Total Member</TableHead>
+                        <TableHead>My Team</TableHead>
                         <TableHead>Remarks</TableHead>
                     </TableRow>
                     </TableHeader>
                     <TableBody>
                     {teamData.map((row) => (
                         <TableRow key={row.level}>
-                        <TableCell className="font-medium">{row.level}</TableCell>
-                        <TableCell>{row.totalMember}</TableCell>
-                        <TableCell>
-                            <Badge variant={row.remarks === 'Complete' ? 'default' : 'destructive'} className={row.remarks === 'Complete' ? 'bg-green-500/20 text-green-500 border-green-500/40' : 'bg-red-500/20 text-red-500 border-red-500/40'}>
-                            {row.remarks}
-                            </Badge>
-                        </TableCell>
+                          <TableCell className="font-medium">{row.level}</TableCell>
+                          <TableCell>{row.totalMember}</TableCell>
+                          <TableCell>{row.myTeam}</TableCell>
+                          <TableCell>
+                              {row.remarks && (
+                                <Badge variant={row.remarks === 'Complete' ? 'default' : 'destructive'} className={row.remarks === 'Complete' ? 'bg-green-500/20 text-green-500 border-green-500/40' : 'bg-red-500/20 text-red-500 border-red-500/40'}>
+                                  {row.remarks}
+                                </Badge>
+                              )}
+                          </TableCell>
                         </TableRow>
                     ))}
                     </TableBody>
