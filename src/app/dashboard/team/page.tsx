@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Users2, GitBranch, Award } from "lucide-react";
+import { ArrowLeft, Users2, Award } from "lucide-react";
 import { AapkaPayLogo } from "@/components/aapka-pay-logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import placeholderImages from "@/lib/placeholder-images.json";
@@ -35,12 +35,6 @@ export default function TeamPage() {
       description: "Check your current level and progress.",
       icon: <Award className="h-12 w-12 text-primary" />,
       onClick: () => setShowTeamDetails(true),
-    },
-    {
-      title: "MLM Tree",
-      description: "Visualize your network structure.",
-      icon: <GitBranch className="h-12 w-12 text-primary" />,
-      onClick: () => {},
     },
   ];
   
@@ -81,7 +75,7 @@ export default function TeamPage() {
           </Button>
           <h2 className="text-3xl font-bold tracking-tight font-headline">Team Management</h2>
         </div>
-        <div className="grid gap-6 md:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-2">
           {teamFeatures.map((feature) => (
             <Card key={feature.title} onClick={feature.onClick} className="flex flex-col cursor-pointer hover:shadow-lg transition-shadow">
               <CardHeader className="flex-row items-center gap-4 space-y-0">
