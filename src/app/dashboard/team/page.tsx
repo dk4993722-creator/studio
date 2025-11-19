@@ -98,7 +98,7 @@ export default function TeamPage() {
             <div className="mt-4">
             <Card>
                 <CardHeader>
-                <CardTitle>Team Level Details</CardTitle>
+                <CardTitle>Team Details</CardTitle>
                 </CardHeader>
                 <CardContent>
                 <Table>
