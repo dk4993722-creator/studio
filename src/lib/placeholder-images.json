@@ -5,6 +5,12 @@
       "description": "User profile avatar",
       "imageUrl": "https://images.unsplash.com/photo-1540569014015-19a7be504e3a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjM0NzE1OTl8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "person portrait"
+    },
+    {
+      "id": "small-manufacturing-business-1",
+      "description": "A small manufacturing business",
+      "imageUrl": "https://images.unsplash.com/photo-1640967378651-65317f82c637?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8bWFudWZhY3R1cmluZyUyMGJ1c2luZXNzfGVufDB8fHx8MTc2MzU4MzM2Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "manufacturing business"
     }
   ]
 }

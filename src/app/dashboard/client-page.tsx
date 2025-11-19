@@ -174,16 +174,16 @@ export function DashboardClientPage() {
       <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <h2 className="text-3xl font-bold tracking-tight font-headline">Welcome back, User!</h2>
-          <Card className="w-full md:w-auto shadow-md">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Wallet Balance</CardTitle>
-              <span className="text-sm text-muted-foreground">INR</span>
-            </CardHeader>
-            <CardContent>
-              <div className="text-4xl font-bold">₹{balance.toLocaleString('en-IN')}</div>
-              <p className="text-xs text-muted-foreground">+2.1% from last 24 hours</p>
-            </CardContent>
-          </Card>
+            <div className="w-full md:w-auto shadow-md rounded-lg overflow-hidden">
+                <Image 
+                    src={placeholderImages.placeholderImages[1].imageUrl}
+                    alt={placeholderImages.placeholderImages[1].description}
+                    data-ai-hint={placeholderImages.placeholderImages[1].imageHint}
+                    width={400}
+                    height={200}
+                    className="object-cover"
+                />
+            </div>
         </div>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 md:gap-8">
           <Card onClick={() => router.push('/dashboard/team')} className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
