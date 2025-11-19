@@ -11,6 +11,9 @@ import {
   Copy,
   LogOut,
   CheckCircle,
+  Network,
+  Award,
+  Users2,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -86,31 +89,39 @@ export function DashboardClientPage() {
     });
     closeDialog();
   };
+  
+  const notImplementedDialog = (
+    <>
+      <DialogHeader>
+        <DialogTitle>Feature Not Implemented</DialogTitle>
+        <DialogDescription>This feature is not yet available in this demo.</DialogDescription>
+      </DialogHeader>
+      <DialogFooter>
+        <DialogClose asChild>
+          <Button type="button" variant="secondary">Close</Button>
+        </DialogClose>
+      </DialogFooter>
+    </>
+  );
 
   const features = [
     {
-      title: "Team",
-      description: "Contact our team",
-      icon: <Users className="h-8 w-8 text-primary" />,
-      dialog: (
-        <>
-          <DialogHeader>
-            <DialogTitle className="font-headline">Our Team</DialogTitle>
-            <DialogDescription>
-              Meet the people behind Aapka Pay. We're here to help!
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-4 text-sm text-muted-foreground">
-            <p>Our dedicated team works around the clock to ensure your transactions are safe and seamless.</p>
-            <p className="mt-2">For support, please use the Complain section or call our helpline.</p>
-          </div>
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button type="button" variant="secondary">Close</Button>
-            </DialogClose>
-          </DialogFooter>
-        </>
-      ),
+      title: "My Team",
+      description: "View your team members",
+      icon: <Users2 className="h-8 w-8 text-primary" />,
+      dialog: notImplementedDialog,
+    },
+    {
+      title: "Level",
+      description: "Check your current level",
+      icon: <Award className="h-8 w-8 text-primary" />,
+      dialog: notImplementedDialog,
+    },
+    {
+      title: "MLM Tree",
+      description: "Visualize your network",
+      icon: <Network className="h-8 w-8 text-primary" />,
+      dialog: notImplementedDialog,
     },
     {
       title: "Wallet",
@@ -218,7 +229,7 @@ export function DashboardClientPage() {
             </CardContent>
           </Card>
         </div>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 md:gap-8">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 md:gap-8">
           {features.map((feature) => (
             <Dialog key={feature.title}>
               <DialogTrigger asChild>
