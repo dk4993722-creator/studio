@@ -31,7 +31,7 @@ export default function TeamPage() {
       onClick: () => setShowTeamDetails(true),
     },
     {
-      title: "Level",
+      title: "Level/Rewords",
       description: "Check your current level and progress.",
       icon: <Award className="h-12 w-12 text-primary" />,
       onClick: () => setShowTeamDetails(true),
