@@ -13,7 +13,7 @@ import {
   User,
   BadgeCheck,
   Mail,
-  ClipboardUser,
+  Clipboard,
   FilePenLine,
   Phone,
   LogOut,
@@ -67,7 +67,7 @@ export default function ProfilePage() {
     },
     {
       title: "ID Card",
-      icon: <ClipboardUser className="h-10 w-10 text-primary" />,
+      icon: <Clipboard className="h-10 w-10 text-primary" />,
       dialog: <FeatureDialog title="ID Card" description="This feature is under development." />,
     },
     {
