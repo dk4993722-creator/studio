@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Users2, Award, Network } from "lucide-react";
+import { ArrowLeft, Users2, Award, Sitemap } from "lucide-react";
 import { AapkaPayLogo } from "@/components/aapka-pay-logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import placeholderImages from "@/lib/placeholder-images.json";
@@ -39,8 +39,8 @@ export default function TeamPage() {
     {
       title: "MLM Tree",
       description: "Visualize your network structure.",
-      icon: <Network className="h-12 w-12 text-primary" />,
-      onClick: () => setShowTeamDetails(true), // For now, this will also show the team details table
+      icon: <Sitemap className="h-12 w-12 text-primary" />,
+      onClick: () => router.push("/dashboard/team/mlm-tree"),
     },
   ];
   
