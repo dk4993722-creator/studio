@@ -106,32 +106,6 @@ export function DashboardClientPage() {
 
   const features = [
     {
-      title: "Wallet",
-      description: "Add funds to your wallet",
-      icon: <WalletCards className="h-8 w-8 text-primary" />,
-      dialog: (
-        <DialogClose asChild>
-          {(close) => (
-            <>
-              <DialogHeader>
-                <DialogTitle className="font-headline">Add to Wallet</DialogTitle>
-                <DialogDescription>Enter the amount you wish to add.</DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="amount" className="text-right">Amount (₹)</Label>
-                  <Input id="amount" type="number" value={addAmount} onChange={(e) => setAddAmount(e.target.value)} placeholder="e.g., 500" className="col-span-3" />
-                </div>
-              </div>
-              <DialogFooter>
-                <Button onClick={() => handleAddMoney(close as () => void)} className="bg-accent hover:bg-accent/90 text-accent-foreground">Add to Wallet</Button>
-              </DialogFooter>
-            </>
-          )}
-        </DialogClose>
-      ),
-    },
-    {
       title: "Share App",
       description: "Share with friends",
       icon: <Share2 className="h-8 w-8 text-primary" />,
@@ -219,6 +193,16 @@ export function DashboardClientPage() {
             </CardHeader>
             <CardContent className="text-center text-sm text-muted-foreground pt-0 pb-6">
               View team members & level
+            </CardContent>
+          </Card>
+
+          <Card onClick={() => router.push('/dashboard/wallet')} className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
+            <CardHeader className="flex flex-col items-center justify-center text-center p-6 flex-grow">
+              <WalletCards className="h-8 w-8 text-primary" />
+              <CardTitle className="mt-4 font-headline">Wallet</CardTitle>
+            </CardHeader>
+            <CardContent className="text-center text-sm text-muted-foreground pt-0 pb-6">
+              Add funds to your wallet
             </CardContent>
           </Card>
 
