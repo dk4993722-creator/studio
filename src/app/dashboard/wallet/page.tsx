@@ -16,7 +16,6 @@ import {
   ArrowUpCircle,
   ArrowDownCircle,
   CreditCard,
-  Verified,
   Phone,
   LogOut,
 } from "lucide-react";
@@ -72,11 +71,6 @@ export default function WalletPage() {
       title: "Withdraw",
       icon: <CreditCard className="h-10 w-10 text-primary" />,
       dialog: <FeatureDialog title="Withdraw" description="This feature is under development." />,
-    },
-    {
-      title: "KYC",
-      icon: <Verified className="h-10 w-10 text-primary" />,
-      dialog: <FeatureDialog title="KYC" description="This feature is under development." />,
     },
   ];
 
