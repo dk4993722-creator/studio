@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,22 +21,26 @@ import { Badge } from "@/components/ui/badge";
 
 export default function TeamPage() {
   const router = useRouter();
+  const [showTeamDetails, setShowTeamDetails] = useState(false);
 
   const teamFeatures = [
     {
       title: "My Team",
       description: "View and manage your team members.",
       icon: <Users2 className="h-12 w-12 text-primary" />,
+      onClick: () => setShowTeamDetails(true),
     },
     {
       title: "Level",
       description: "Check your current level and progress.",
       icon: <Award className="h-12 w-12 text-primary" />,
+      onClick: () => setShowTeamDetails(true),
     },
     {
       title: "MLM Tree",
       description: "Visualize your network structure.",
       icon: <GitBranch className="h-12 w-12 text-primary" />,
+      onClick: () => {},
     },
   ];
   
@@ -78,7 +83,7 @@ export default function TeamPage() {
         </div>
         <div className="grid gap-6 md:grid-cols-3">
           {teamFeatures.map((feature) => (
-            <Card key={feature.title} className="flex flex-col">
+            <Card key={feature.title} onClick={feature.onClick} className="flex flex-col cursor-pointer hover:shadow-lg transition-shadow">
               <CardHeader className="flex-row items-center gap-4 space-y-0">
                 {feature.icon}
                 <CardTitle>{feature.title}</CardTitle>
@@ -89,37 +94,39 @@ export default function TeamPage() {
             </Card>
           ))}
         </div>
-         <div className="mt-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Team Level Details</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-[100px]">Level</TableHead>
-                    <TableHead>Total Member</TableHead>
-                    <TableHead>Remarks</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {teamData.map((row) => (
-                    <TableRow key={row.level}>
-                      <TableCell className="font-medium">{row.level}</TableCell>
-                      <TableCell>{row.totalMember}</TableCell>
-                      <TableCell>
-                        <Badge variant={row.remarks === 'Complete' ? 'default' : 'destructive'} className={row.remarks === 'Complete' ? 'bg-green-500/20 text-green-500 border-green-500/40' : 'bg-red-500/20 text-red-500 border-red-500/40'}>
-                          {row.remarks}
-                        </Badge>
-                      </TableCell>
+         {showTeamDetails && (
+            <div className="mt-4">
+            <Card>
+                <CardHeader>
+                <CardTitle>Team Level Details</CardTitle>
+                </CardHeader>
+                <CardContent>
+                <Table>
+                    <TableHeader>
+                    <TableRow>
+                        <TableHead className="w-[100px]">Level</TableHead>
+                        <TableHead>Total Member</TableHead>
+                        <TableHead>Remarks</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </div>
+                    </TableHeader>
+                    <TableBody>
+                    {teamData.map((row) => (
+                        <TableRow key={row.level}>
+                        <TableCell className="font-medium">{row.level}</TableCell>
+                        <TableCell>{row.totalMember}</TableCell>
+                        <TableCell>
+                            <Badge variant={row.remarks === 'Complete' ? 'default' : 'destructive'} className={row.remarks === 'Complete' ? 'bg-green-500/20 text-green-500 border-green-500/40' : 'bg-red-500/20 text-red-500 border-red-500/40'}>
+                            {row.remarks}
+                            </Badge>
+                        </TableCell>
+                        </TableRow>
+                    ))}
+                    </TableBody>
+                </Table>
+                </CardContent>
+            </Card>
+            </div>
+         )}
       </main>
     </div>
   );
