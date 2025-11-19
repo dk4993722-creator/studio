@@ -34,7 +34,7 @@ export default function TeamPage() {
       title: "Level/Rewords",
       description: "Check your current level and progress.",
       icon: <Award className="h-12 w-12 text-primary" />,
-      onClick: () => setShowTeamDetails(true),
+      onClick: () => router.push("/dashboard/rewards"),
     },
     {
       title: "MLM Tree",
