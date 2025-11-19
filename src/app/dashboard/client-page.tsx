@@ -107,14 +107,8 @@ export function DashboardClientPage() {
   const features = [
     {
       title: "My Team",
-      description: "View your team members",
+      description: "View team members & level",
       icon: <Users2 className="h-8 w-8 text-primary" />,
-      dialog: notImplementedDialog,
-    },
-    {
-      title: "Level",
-      description: "Check your current level",
-      icon: <Award className="h-8 w-8 text-primary" />,
       dialog: notImplementedDialog,
     },
     {
@@ -229,7 +223,7 @@ export function DashboardClientPage() {
             </CardContent>
           </Card>
         </div>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 md:gap-8">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 md:gap-8">
           {features.map((feature) => (
             <Dialog key={feature.title}>
               <DialogTrigger asChild>
@@ -237,6 +231,7 @@ export function DashboardClientPage() {
                   <CardHeader className="flex flex-col items-center justify-center text-center p-6 flex-grow">
                     {feature.icon}
                     <CardTitle className="mt-4 font-headline">{feature.title}</CardTitle>
+
                   </CardHeader>
                   <CardContent className="text-center text-sm text-muted-foreground pt-0 pb-6">
                     {feature.description}
