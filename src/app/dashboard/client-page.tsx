@@ -106,12 +106,6 @@ export function DashboardClientPage() {
 
   const features = [
     {
-      title: "My Team",
-      description: "View team members & level",
-      icon: <Users2 className="h-8 w-8 text-primary" />,
-      dialog: notImplementedDialog,
-    },
-    {
       title: "MLM Tree",
       description: "Visualize your network",
       icon: <Network className="h-8 w-8 text-primary" />,
@@ -224,6 +218,16 @@ export function DashboardClientPage() {
           </Card>
         </div>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 md:gap-8">
+          <Card onClick={() => router.push('/dashboard/team')} className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
+            <CardHeader className="flex flex-col items-center justify-center text-center p-6 flex-grow">
+              <Users2 className="h-8 w-8 text-primary" />
+              <CardTitle className="mt-4 font-headline">My Team</CardTitle>
+            </CardHeader>
+            <CardContent className="text-center text-sm text-muted-foreground pt-0 pb-6">
+              View team members & level
+            </CardContent>
+          </Card>
+
           {features.map((feature) => (
             <Dialog key={feature.title}>
               <DialogTrigger asChild>
@@ -231,7 +235,6 @@ export function DashboardClientPage() {
                   <CardHeader className="flex flex-col items-center justify-center text-center p-6 flex-grow">
                     {feature.icon}
                     <CardTitle className="mt-4 font-headline">{feature.title}</CardTitle>
-
                   </CardHeader>
                   <CardContent className="text-center text-sm text-muted-foreground pt-0 pb-6">
                     {feature.description}
