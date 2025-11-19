@@ -113,7 +113,7 @@ export function DashboardClientPage() {
       ),
     },
     {
-      title: "Add Money",
+      title: "Wallet",
       description: "Add funds to your wallet",
       icon: <WalletCards className="h-8 w-8 text-primary" />,
       dialog: (
@@ -121,7 +121,7 @@ export function DashboardClientPage() {
           {(close) => (
             <>
               <DialogHeader>
-                <DialogTitle className="font-headline">Add Money to Wallet</DialogTitle>
+                <DialogTitle className="font-headline">Add to Wallet</DialogTitle>
                 <DialogDescription>Enter the amount you wish to add.</DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
