@@ -31,6 +31,20 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 
 const FeatureDialog = ({ title, description }: { title: string, description: string }) => (
     <DialogContent>
@@ -45,6 +59,68 @@ const FeatureDialog = ({ title, description }: { title: string, description: str
       </DialogFooter>
     </DialogContent>
   );
+
+const editProfileSchema = z.object({
+    name: z.string().min(2, { message: "Name must be at least 2 characters." }),
+});
+
+const EditProfileDialog = () => {
+    const { toast } = useToast();
+    const [isOpen, setIsOpen] = useState(false);
+
+    const form = useForm<z.infer<typeof editProfileSchema>>({
+        resolver: zodResolver(editProfileSchema),
+        defaultValues: { name: "User" },
+    });
+
+    const onSubmit = (values: z.infer<typeof editProfileSchema>) => {
+        console.log("Profile updated with:", values.name);
+        toast({
+            title: "Success!",
+            description: "Your profile has been updated.",
+        });
+        setIsOpen(false);
+    };
+
+    return (
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            <DialogTrigger asChild>
+                <Card className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
+                    <FilePenLine className="h-10 w-10 text-primary" />
+                    <p className="mt-2 font-semibold text-sm">Edit Profile</p>
+                </Card>
+            </DialogTrigger>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Edit Profile</DialogTitle>
+                    <DialogDescription>
+                        Make changes to your profile here. Click save when you're done.
+                    </DialogDescription>
+                </DialogHeader>
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                        <FormField
+                            control={form.control}
+                            name="name"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Full Name</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="John Doe" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <DialogFooter>
+                            <Button type="submit">Save changes</Button>
+                        </DialogFooter>
+                    </form>
+                </Form>
+            </DialogContent>
+        </Dialog>
+    )
+}
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -69,11 +145,6 @@ export default function ProfilePage() {
       title: "ID Card",
       icon: <Clipboard className="h-10 w-10 text-primary" />,
       dialog: <FeatureDialog title="ID Card" description="This feature is under development." />,
-    },
-    {
-        title: "Edit Profile",
-        icon: <FilePenLine className="h-10 w-10 text-primary" />,
-        dialog: <FeatureDialog title="Edit Profile" description="This feature is under development." />,
     },
   ];
 
@@ -123,6 +194,7 @@ export default function ProfilePage() {
               {feature.dialog}
             </Dialog>
           ))}
+          <EditProfileDialog />
         </div>
       </main>
     </div>
