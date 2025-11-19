@@ -117,7 +117,7 @@ export default function WalletPage() {
             
             <Card onClick={() => router.push('/dashboard/wallet/received')} className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
                 <ArrowDownCircle className="h-10 w-10 text-primary" />
-                <p className="mt-2 font-semibold text-sm">Received Balance</p>
+                <p className="mt-2 font-semibold text-sm">Transaction History</p>
             </Card>
 
           {walletFeatures.map((feature) => (
