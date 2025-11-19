@@ -5,17 +5,16 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import {
   ArrowLeft,
   User,
-  Wallet,
-  ArrowUpCircle,
-  ArrowDownCircle,
-  CreditCard,
+  BadgeCheck,
+  Mail,
+  ClipboardUser,
+  FilePenLine,
   Phone,
   LogOut,
 } from "lucide-react";
@@ -34,38 +33,47 @@ import {
 } from "@/components/ui/dialog";
 
 const FeatureDialog = ({ title, description }: { title: string, description: string }) => (
-  <DialogContent>
-    <DialogHeader>
-      <DialogTitle>{title}</DialogTitle>
-      <DialogDescription>{description}</DialogDescription>
-    </DialogHeader>
-    <DialogFooter>
-        <DialogClose asChild>
-            <Button>Close</Button>
-        </DialogClose>
-    </DialogFooter>
-  </DialogContent>
-);
+    <DialogContent>
+      <DialogHeader>
+        <DialogTitle>{title}</DialogTitle>
+        <DialogDescription>{description}</DialogDescription>
+      </DialogHeader>
+      <DialogFooter>
+          <DialogClose asChild>
+              <Button>Close</Button>
+          </DialogClose>
+      </DialogFooter>
+    </DialogContent>
+  );
 
-export default function WalletPage() {
+export default function ProfilePage() {
   const router = useRouter();
-  const balance = 1250.75;
 
-  const walletFeatures = [
+  const profileFeatures = [
     {
-      title: "Send",
-      icon: <ArrowUpCircle className="h-10 w-10 text-primary" />,
-      dialog: <FeatureDialog title="Send Money" description="This feature is under development." />,
+      title: "Profile",
+      icon: <User className="h-10 w-10 text-primary" />,
+      dialog: <FeatureDialog title="Profile" description="This feature is under development." />,
     },
     {
-      title: "Received Balance",
-      icon: <ArrowDownCircle className="h-10 w-10 text-primary" />,
-      dialog: <FeatureDialog title="Received Balance" description="This feature is under development." />,
+      title: "KYC",
+      icon: <BadgeCheck className="h-10 w-10 text-primary" />,
+      dialog: <FeatureDialog title="KYC" description="This feature is under development." />,
     },
     {
-      title: "Withdraw",
-      icon: <CreditCard className="h-10 w-10 text-primary" />,
-      dialog: <FeatureDialog title="Withdraw" description="This feature is under development." />,
+      title: "Welcome Letter",
+      icon: <Mail className="h-10 w-10 text-primary" />,
+      dialog: <FeatureDialog title="Welcome Letter" description="This feature is under development." />,
+    },
+    {
+      title: "ID Card",
+      icon: <ClipboardUser className="h-10 w-10 text-primary" />,
+      dialog: <FeatureDialog title="ID Card" description="This feature is under development." />,
+    },
+    {
+        title: "Edit Profile",
+        icon: <FilePenLine className="h-10 w-10 text-primary" />,
+        dialog: <FeatureDialog title="Edit Profile" description="This feature is under development." />,
     },
   ];
 
@@ -100,27 +108,11 @@ export default function WalletPage() {
           <Button variant="outline" size="icon" onClick={() => router.back()}>
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <h2 className="text-3xl font-bold tracking-tight font-headline">My Wallet</h2>
+          <h2 className="text-3xl font-bold tracking-tight font-headline">My Profile</h2>
         </div>
-        
-        <Card className="w-full shadow-lg">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-lg font-medium">Wallet Balance</CardTitle>
-            <Wallet className="h-6 w-6 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-5xl font-bold text-primary">₹{balance.toLocaleString("en-IN")}</div>
-            <p className="text-sm text-muted-foreground">+2.1% from last 24 hours</p>
-          </CardContent>
-        </Card>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
-            <Card onClick={() => router.push('/dashboard/profile')} className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
-                <User className="h-10 w-10 text-primary" />
-                <p className="mt-2 font-semibold text-sm">Profile</p>
-            </Card>
-
-          {walletFeatures.map((feature) => (
+          {profileFeatures.map((feature) => (
             <Dialog key={feature.title}>
               <DialogTrigger asChild>
                 <Card className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
