@@ -53,11 +53,6 @@ export default function WalletPage() {
 
   const walletFeatures = [
     {
-      title: "Received Balance",
-      icon: <ArrowDownCircle className="h-10 w-10 text-primary" />,
-      dialog: <FeatureDialog title="Received Balance" description="This feature is under development." />,
-    },
-    {
       title: "Withdraw",
       icon: <CreditCard className="h-10 w-10 text-primary" />,
       dialog: <FeatureDialog title="Withdraw" description="This feature is under development." />,
@@ -118,6 +113,11 @@ export default function WalletPage() {
             <Card onClick={() => router.push('/dashboard/wallet/send')} className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
                 <ArrowUpCircle className="h-10 w-10 text-primary" />
                 <p className="mt-2 font-semibold text-sm">Send</p>
+            </Card>
+            
+            <Card onClick={() => router.push('/dashboard/wallet/received')} className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
+                <ArrowDownCircle className="h-10 w-10 text-primary" />
+                <p className="mt-2 font-semibold text-sm">Received Balance</p>
             </Card>
 
           {walletFeatures.map((feature) => (
