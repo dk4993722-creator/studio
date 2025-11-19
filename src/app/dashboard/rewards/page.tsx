@@ -30,6 +30,19 @@ const levelIncomeData = [
     { level: 10, totalMember: 59049, incentive: 11809800 },
 ];
 
+const levelRewardsData = [
+    { level: "1st", reward: "12 Peticot" },
+    { level: "2nd", reward: "Silai Machine" },
+    { level: "3rd", reward: "Android Mobile" },
+    { level: "4th", reward: "e.v. scooter" },
+    { level: "5th", reward: "10 Silai Machine" },
+    { level: "6th", reward: "Car (K 10)" },
+    { level: "7th", reward: "" },
+    { level: "8th", reward: "" },
+    { level: "9th", reward: "" },
+    { level: "10th", reward: "" },
+];
+
 export default function RewardsPage() {
   const router = useRouter();
 
@@ -84,6 +97,31 @@ export default function RewardsPage() {
             </Table>
           </CardContent>
         </Card>
+        <div className="mt-4">
+            <Card>
+                <CardHeader>
+                    <CardTitle className="font-headline">Level Rewords</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Level</TableHead>
+                                <TableHead>Rewords</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {levelRewardsData.map((row) => (
+                                <TableRow key={row.level}>
+                                    <TableCell>{row.level}</TableCell>
+                                    <TableCell>{row.reward}</TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </CardContent>
+            </Card>
+        </div>
       </main>
     </div>
   );
