@@ -106,12 +106,6 @@ export function DashboardClientPage() {
 
   const features = [
     {
-      title: "MLM Tree",
-      description: "Visualize your network",
-      icon: <Network className="h-8 w-8 text-primary" />,
-      dialog: notImplementedDialog,
-    },
-    {
       title: "Wallet",
       description: "Add funds to your wallet",
       icon: <WalletCards className="h-8 w-8 text-primary" />,
