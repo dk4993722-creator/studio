@@ -20,62 +20,57 @@ const treeData: TreeNodeData = {
   name: 'You',
   children: [
     {
-      id: 'level1', name: '3',
+      id: 'l1-1', name: 'User A',
       children: [
-        {
-          id: 'level2', name: '9',
-          children: [
-            { id: 'level3', name: '27', 
-              children: [
-                { id: 'level4', name: '81', 
-                  children: [
-                    { id: 'level5', name: '243', 
-                      children: [
-                        { id: 'level6', name: '729', 
-                          children: [
-                            { id: 'level7', name: '2187',
-                              children: [
-                                { id: 'level8', name: '6561',
-                                  children: [
-                                    { id: 'level9', name: '19683',
-                                      children: [
-                                        { id: 'level10', name: '59049' }
-                                      ]
-                                    }
-                                  ]
-                                }
-                              ]
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            },
-          ],
-        },
-      ],
+        { id: 'l2-1', name: 'User A1' },
+        { id: 'l2-2', name: 'User A2' },
+        { id: 'l2-3', name: 'User A3' },
+      ]
     },
+    {
+      id: 'l1-2', name: 'User B',
+      children: [
+        { id: 'l2-4', name: 'User B1' },
+        { id: 'l2-5', name: 'User B2' },
+      ]
+    },
+    {
+      id: 'l1-3', name: 'User C',
+      children: [
+        { id: 'l2-6', name: 'User C1' },
+        { id: 'l2-7', name: 'User C2' },
+        { id: 'l2-8', name: 'User C3' },
+        { id: 'l2-9', name: 'User C4' },
+      ]
+    }
   ],
 };
 
+
 const TreeNode = ({ node }: { node: TreeNodeData }) => {
+  const hasChildren = node.children && node.children.length > 0;
+
   return (
     <li className="flex flex-col items-center relative">
-       {node.children && node.children.length > 0 && <div className="w-px h-8 bg-border"></div>}
       <div className="flex flex-col items-center p-4 m-2 rounded-lg bg-card text-card-foreground shadow-lg min-w-[100px] border border-primary/20">
         <User className="w-8 h-8 mb-2 text-primary" />
         <span className="font-bold">{node.name}</span>
       </div>
-      {node.children && node.children.length > 0 && (
-        <ul className="flex justify-center pt-8 relative 
-                       before:content-[''] before:absolute before:left-0 before:right-0 before:top-0 before:h-px before:bg-border">
-          {node.children.map((child) => (
-            <TreeNode key={child.id} node={child} />
-          ))}
-        </ul>
+      {hasChildren && (
+        <>
+          <div className="absolute top-[100%] w-px h-8 bg-border"></div>
+          <ul className="flex justify-center pt-8 relative 
+                         before:content-[''] before:absolute before:top-0 before:h-px before:bg-border
+                         before:left-[calc(50%_-_(var(--child-count)_-_1)_*_50%_/_var(--child-count)_+_var(--child-count)_*_1rem/_var(--child-count))] 
+                         before:right-[calc(50%_-_(var(--child-count)_-_1)_*_50%_/_var(--child-count)_+_var(--child-count)_*_1rem/_var(--child-count))]
+                         "
+              style={{ '--child-count': node.children.length } as React.CSSProperties}
+          >
+            {node.children.map((child) => (
+              <TreeNode key={child.id} node={child} />
+            ))}
+          </ul>
+        </>
       )}
     </li>
   );
