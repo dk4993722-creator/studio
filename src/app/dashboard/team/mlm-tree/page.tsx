@@ -6,9 +6,8 @@ import { ArrowLeft } from "lucide-react";
 import { AapkaPayLogo } from "@/components/aapka-pay-logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import placeholderImages from "@/lib/placeholder-images.json";
-import { LogOut, Phone } from "lucide-react";
+import { LogOut, Phone, User } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { User } from "lucide-react";
 
 type TreeNodeData = {
   id: string;
@@ -62,19 +61,17 @@ const treeData: TreeNodeData = {
   ],
 };
 
-
 const TreeNode = ({ node }: { node: TreeNodeData }) => {
   return (
     <li className="flex flex-col items-center relative">
-       {node.children && node.children.length > 0 && <div className="w-px h-8 bg-border -mt-8"></div>}
-      <div className="flex flex-col items-center p-4 m-2 rounded-lg bg-card text-card-foreground shadow-lg min-w-[100px]">
+       {node.children && node.children.length > 0 && <div className="w-px h-8 bg-border"></div>}
+      <div className="flex flex-col items-center p-4 m-2 rounded-lg bg-card text-card-foreground shadow-lg min-w-[100px] border border-primary/20">
         <User className="w-8 h-8 mb-2 text-primary" />
         <span className="font-bold">{node.name}</span>
       </div>
       {node.children && node.children.length > 0 && (
-        <ul className="flex justify-center gap-4 pt-8 relative 
-                       before:content-[''] before:absolute before:left-0 before:right-0 before:top-0 before:h-px before:bg-border
-                       after:content-[''] after:absolute after:left-1/2 after:-top-8 after:w-px after:h-8 after:bg-border">
+        <ul className="flex justify-center pt-8 relative 
+                       before:content-[''] before:absolute before:left-0 before:right-0 before:top-0 before:h-px before:bg-border">
           {node.children.map((child) => (
             <TreeNode key={child.id} node={child} />
           ))}
@@ -120,7 +117,7 @@ export default function MlmTreePage() {
         <Card className="overflow-x-auto">
             <CardContent className="p-6">
                 <div className="flex justify-center">
-                    <ul className="flex">
+                    <ul className="flex flex-col items-center">
                         <TreeNode node={treeData} />
                     </ul>
                 </div>
