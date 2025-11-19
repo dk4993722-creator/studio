@@ -8,6 +8,15 @@ import { AapkaPayLogo } from "@/components/aapka-pay-logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import placeholderImages from "@/lib/placeholder-images.json";
 import { LogOut, Phone } from "lucide-react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
 
 export default function TeamPage() {
   const router = useRouter();
@@ -28,6 +37,14 @@ export default function TeamPage() {
       description: "Visualize your network structure.",
       icon: <GitBranch className="h-12 w-12 text-primary" />,
     },
+  ];
+  
+  const teamData = [
+    { level: 1, totalMember: 3, remarks: "Complete" },
+    { level: 2, totalMember: 9, remarks: "Complete" },
+    { level: 3, totalMember: 27, remarks: "Complete" },
+    { level: 4, totalMember: 81, remarks: "Complete" },
+    { level: 5, totalMember: 5, remarks: "Incomplete" },
   ];
 
   return (
@@ -75,14 +92,31 @@ export default function TeamPage() {
          <div className="mt-4">
           <Card>
             <CardHeader>
-              <CardTitle>Team Details</CardTitle>
+              <CardTitle>Team Level Details</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-center py-12">
-                <p className="text-sm text-muted-foreground">
-                  Feature not implemented. This is where team details would be displayed.
-                </p>
-              </div>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[100px]">Level</TableHead>
+                    <TableHead>Total Member</TableHead>
+                    <TableHead>Remarks</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {teamData.map((row) => (
+                    <TableRow key={row.level}>
+                      <TableCell className="font-medium">{row.level}</TableCell>
+                      <TableCell>{row.totalMember}</TableCell>
+                      <TableCell>
+                        <Badge variant={row.remarks === 'Complete' ? 'default' : 'destructive'} className={row.remarks === 'Complete' ? 'bg-green-500/20 text-green-500 border-green-500/40' : 'bg-red-500/20 text-red-500 border-red-500/40'}>
+                          {row.remarks}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             </CardContent>
           </Card>
         </div>
