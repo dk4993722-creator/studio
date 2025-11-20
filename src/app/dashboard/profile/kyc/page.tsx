@@ -29,6 +29,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useState, useRef } from "react";
 
 const kycSchema = z.object({
+  aadharNumber: z.string().length(12, "Aadhar number must be 12 digits."),
   aadhar: z.any().refine((files) => files?.length == 1, "Aadhar card is required."),
   pan: z.any().refine((files) => files?.length == 1, "PAN card is required."),
   accountHolderName: z.string().min(1, "Account holder name is required."),
@@ -85,6 +86,7 @@ export default function KycPage() {
   const form = useForm<z.infer<typeof kycSchema>>({
     resolver: zodResolver(kycSchema),
     defaultValues: {
+      aadharNumber: "",
       accountHolderName: "",
       bankName: "",
       accountNumber: "",
@@ -145,6 +147,19 @@ export default function KycPage() {
           <CardContent>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <FormField
+                  control={form.control}
+                  name="aadharNumber"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Aadhar Number</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter your 12-digit Aadhar number" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <FormField
                     control={form.control}
                     name="aadhar"
