@@ -32,6 +32,7 @@ const kycSchema = z.object({
   aadharNumber: z.string().length(12, "Aadhar number must be 12 digits."),
   aadharFront: z.any().refine((files) => files?.length == 1, "Aadhar card (Front) is required."),
   aadharBack: z.any().refine((files) => files?.length == 1, "Aadhar card (Back) is required."),
+  panNumber: z.string().length(10, "PAN number must be 10 characters."),
   pan: z.any().refine((files) => files?.length == 1, "PAN card is required."),
   accountHolderName: z.string().min(1, "Account holder name is required."),
   bankName: z.string().min(1, "Bank name is required."),
@@ -88,6 +89,7 @@ export default function KycPage() {
     resolver: zodResolver(kycSchema),
     defaultValues: {
       aadharNumber: "",
+      panNumber: "",
       accountHolderName: "",
       bankName: "",
       accountNumber: "",
@@ -173,6 +175,21 @@ export default function KycPage() {
                       render={({ field }) => <FileUpload field={field} label="Upload Aadhar Card (Back)" />}
                   />
                 </div>
+
+                <FormField
+                  control={form.control}
+                  name="panNumber"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>PAN Card Number</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter your 10-character PAN" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
                 <FormField
                     control={form.control}
                     name="pan"
