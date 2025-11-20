@@ -14,6 +14,10 @@ import {
   Network,
   Award,
   Users2,
+  Wind,
+  Droplets,
+  Sparkles,
+  SprayCan,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -149,6 +153,25 @@ export function DashboardClientPage() {
     },
   ];
 
+  const projects = [
+    {
+        title: "Jhadu Project",
+        icon: <Sparkles className="h-8 w-8 text-primary" />
+    },
+    {
+        title: "Agarbatti Project",
+        icon: <Wind className="h-8 w-8 text-primary" />
+    },
+    {
+        title: "Petticoat Project",
+        icon: <SprayCan className="h-8 w-8 text-primary" />
+    },
+    {
+        title: "Sanitary Pads",
+        icon: <Droplets className="h-8 w-8 text-primary" />
+    }
+  ]
+
   return (
     <div className="flex min-h-screen w-full flex-col">
       <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background/80 backdrop-blur-sm px-4 md:px-8">
@@ -224,28 +247,27 @@ export function DashboardClientPage() {
           ))}
         </div>
         <div className="mt-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Recent Transactions</CardTitle>
-              <CardDescription>A list of your recent wallet activity.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-12">
-                <p className="text-sm text-muted-foreground">No recent transactions.</p>
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button className="mt-4 bg-accent hover:bg-accent/90 text-accent-foreground">Make a Payment</Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Feature not available</DialogTitle>
-                        <DialogDescription>This is a demo application. This feature has not been implemented.</DialogDescription>
-                    </DialogHeader>
-                  </DialogContent>
+            <h3 className="text-2xl font-bold tracking-tight font-headline mb-4">Projects</h3>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 md:gap-8">
+                {projects.map((project) => (
+                <Dialog key={project.title}>
+                    <DialogTrigger asChild>
+                        <Card className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
+                            <CardHeader className="flex flex-col items-center justify-center text-center p-6 flex-grow">
+                                {project.icon}
+                                <CardTitle className="mt-4 font-headline text-xl">{project.title}</CardTitle>
+                            </CardHeader>
+                        </Card>
+                    </DialogTrigger>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Feature not available</DialogTitle>
+                            <DialogDescription>This is a demo application. This feature has not been implemented.</DialogDescription>
+                        </DialogHeader>
+                    </DialogContent>
                 </Dialog>
-              </div>
-            </CardContent>
-          </Card>
+                ))}
+            </div>
         </div>
       </main>
     </div>
