@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/card";
 import {
   ArrowLeft,
-  User,
   Wallet,
   ArrowUpCircle,
   ArrowDownCircle,
@@ -105,11 +104,6 @@ export default function WalletPage() {
         </Card>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
-            <Card onClick={() => router.push('/dashboard/profile')} className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
-                <User className="h-10 w-10 text-primary" />
-                <p className="mt-2 font-semibold text-sm">Profile</p>
-            </Card>
-
             <Card onClick={() => router.push('/dashboard/wallet/send')} className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
                 <ArrowUpCircle className="h-10 w-10 text-primary" />
                 <p className="mt-2 font-semibold text-sm">Send</p>
