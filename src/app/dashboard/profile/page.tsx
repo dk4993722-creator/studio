@@ -127,11 +127,6 @@ export default function ProfilePage() {
 
   const profileFeatures = [
     {
-      title: "KYC",
-      icon: <BadgeCheck className="h-10 w-10 text-primary" />,
-      dialog: <FeatureDialog title="KYC" description="This feature is under development." />,
-    },
-    {
       title: "Welcome Letter",
       icon: <Mail className="h-10 w-10 text-primary" />,
       dialog: <FeatureDialog title="Welcome Letter" description="This feature is under development." />,
@@ -184,6 +179,10 @@ export default function ProfilePage() {
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
           <EditProfileDialog />
+          <Card onClick={() => router.push('/dashboard/profile/kyc')} className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
+            <BadgeCheck className="h-10 w-10 text-primary" />
+            <p className="mt-2 font-semibold text-sm">KYC</p>
+          </Card>
           {profileFeatures.map((feature) => (
             <Dialog key={feature.title}>
               <DialogTrigger asChild>
