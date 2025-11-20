@@ -31,6 +31,7 @@ import { useState, useRef } from "react";
 const kycSchema = z.object({
   aadhar: z.any().refine((files) => files?.length == 1, "Aadhar card is required."),
   pan: z.any().refine((files) => files?.length == 1, "PAN card is required."),
+  accountHolderName: z.string().min(1, "Account holder name is required."),
   bankName: z.string().min(1, "Bank name is required."),
   accountNumber: z.string().min(1, "Account number is required."),
   ifscCode: z.string().min(1, "IFSC code is required."),
@@ -84,6 +85,7 @@ export default function KycPage() {
   const form = useForm<z.infer<typeof kycSchema>>({
     resolver: zodResolver(kycSchema),
     defaultValues: {
+      accountHolderName: "",
       bankName: "",
       accountNumber: "",
       ifscCode: "",
@@ -156,6 +158,19 @@ export default function KycPage() {
                 
                 <h3 className="text-lg font-medium pt-4 border-t">Bank Details</h3>
 
+                <FormField
+                  control={form.control}
+                  name="accountHolderName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Account Holder Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="e.g., John Doe" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <FormField
                   control={form.control}
                   name="bankName"
