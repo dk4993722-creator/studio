@@ -86,8 +86,8 @@ const EditProfileDialog = () => {
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
                 <Card className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
-                    <FilePenLine className="h-10 w-10 text-primary" />
-                    <p className="mt-2 font-semibold text-sm">Edit Profile</p>
+                    <User className="h-10 w-10 text-primary" />
+                    <p className="mt-2 font-semibold text-sm">Profile</p>
                 </Card>
             </DialogTrigger>
             <DialogContent>
@@ -127,11 +127,6 @@ export default function ProfilePage() {
 
   const profileFeatures = [
     {
-      title: "Profile",
-      icon: <User className="h-10 w-10 text-primary" />,
-      dialog: <FeatureDialog title="Profile" description="This feature is under development." />,
-    },
-    {
       title: "KYC",
       icon: <BadgeCheck className="h-10 w-10 text-primary" />,
       dialog: <FeatureDialog title="KYC" description="This feature is under development." />,
@@ -146,6 +141,11 @@ export default function ProfilePage() {
       icon: <Clipboard className="h-10 w-10 text-primary" />,
       dialog: <FeatureDialog title="ID Card" description="This feature is under development." />,
     },
+    {
+        title: "Edit Profile",
+        icon: <FilePenLine className="h-10 w-10 text-primary" />,
+        dialog: <FeatureDialog title="Edit Profile" description="This feature is under development." />,
+    }
   ];
 
   return (
@@ -183,6 +183,7 @@ export default function ProfilePage() {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
+          <EditProfileDialog />
           {profileFeatures.map((feature) => (
             <Dialog key={feature.title}>
               <DialogTrigger asChild>
@@ -194,7 +195,6 @@ export default function ProfilePage() {
               {feature.dialog}
             </Dialog>
           ))}
-          <EditProfileDialog />
         </div>
       </main>
     </div>
