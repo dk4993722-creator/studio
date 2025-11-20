@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import {
   Users,
@@ -19,7 +19,7 @@ import {
   Sparkles,
   SprayCan,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { AapkaPayLogo } from "@/components/aapka-pay-logo";
 import {
@@ -52,6 +52,15 @@ export function DashboardClientPage() {
   const [addAmount, setAddAmount] = useState("");
   const { toast } = useToast();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const [name, setName] = useState('User');
+
+  useEffect(() => {
+    const userName = searchParams.get('name');
+    if (userName) {
+      setName(decodeURIComponent(userName));
+    }
+  }, [searchParams]);
 
   const handleAddMoney = (closeDialog: () => void) => {
     const amount = parseFloat(addAmount);
@@ -187,7 +196,7 @@ export function DashboardClientPage() {
           </div>
           <Avatar>
             <AvatarImage src={placeholderImages.placeholderImages[0].imageUrl} alt="User avatar" data-ai-hint={placeholderImages.placeholderImages[0].imageHint} />
-            <AvatarFallback>U</AvatarFallback>
+            <AvatarFallback>{name.charAt(0).toUpperCase()}</AvatarFallback>
           </Avatar>
           <Button variant="ghost" size="icon" onClick={() => router.push('/')} aria-label="Log Out">
             <LogOut className="h-5 w-5 text-muted-foreground" />
@@ -195,7 +204,7 @@ export function DashboardClientPage() {
         </div>
       </header>
       <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
-        <h2 className="text-3xl font-bold tracking-tight font-headline">Welcome back, User!</h2>
+        <h2 className="text-3xl font-bold tracking-tight font-headline">Welcome back, {name}!</h2>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 md:gap-8">
           <Card onClick={() => router.push('/dashboard/team')} className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
             <CardHeader className="flex flex-col items-center justify-center text-center p-6 flex-grow">

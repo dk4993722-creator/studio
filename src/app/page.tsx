@@ -58,7 +58,7 @@ export default function AuthPage() {
 
   const onSignup = (values: z.infer<typeof signupSchema>) => {
     console.log("Signup attempt with:", values.email);
-    router.push("/dashboard");
+    router.push(`/dashboard?name=${encodeURIComponent(values.name)}`);
   };
 
   return (

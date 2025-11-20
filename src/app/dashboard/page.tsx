@@ -1,5 +1,14 @@
+import { Suspense } from "react";
 import { DashboardClientPage } from "./client-page";
 
-export default function DashboardPage() {
+function Dashboard() {
     return <DashboardClientPage />;
+}
+
+export default function DashboardPage() {
+    return (
+        <Suspense>
+            <Dashboard />
+        </Suspense>
+    );
 }
