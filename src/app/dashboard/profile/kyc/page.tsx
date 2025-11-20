@@ -30,7 +30,8 @@ import { useState, useRef } from "react";
 
 const kycSchema = z.object({
   aadharNumber: z.string().length(12, "Aadhar number must be 12 digits."),
-  aadhar: z.any().refine((files) => files?.length == 1, "Aadhar card is required."),
+  aadharFront: z.any().refine((files) => files?.length == 1, "Aadhar card (Front) is required."),
+  aadharBack: z.any().refine((files) => files?.length == 1, "Aadhar card (Back) is required."),
   pan: z.any().refine((files) => files?.length == 1, "PAN card is required."),
   accountHolderName: z.string().min(1, "Account holder name is required."),
   bankName: z.string().min(1, "Bank name is required."),
@@ -160,11 +161,18 @@ export default function KycPage() {
                     </FormItem>
                   )}
                 />
-                <FormField
-                    control={form.control}
-                    name="aadhar"
-                    render={({ field }) => <FileUpload field={field} label="Upload Aadhar Card" />}
-                />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <FormField
+                      control={form.control}
+                      name="aadharFront"
+                      render={({ field }) => <FileUpload field={field} label="Upload Aadhar Card (Front)" />}
+                  />
+                  <FormField
+                      control={form.control}
+                      name="aadharBack"
+                      render={({ field }) => <FileUpload field={field} label="Upload Aadhar Card (Back)" />}
+                  />
+                </div>
                 <FormField
                     control={form.control}
                     name="pan"
