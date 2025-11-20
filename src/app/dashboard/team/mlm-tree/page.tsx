@@ -52,18 +52,18 @@ const TreeNode = ({ node }: { node: TreeNodeData }) => {
 
   return (
     <li className="flex flex-col items-center relative">
-      <div className="flex flex-col items-center p-2 m-1 rounded-lg bg-card text-card-foreground shadow-md min-w-[100px] border border-primary/20">
-        <User className="w-6 h-6 mb-1 text-primary" />
-        <span className="font-semibold text-sm">{node.name}</span>
-        <span className="text-xs text-muted-foreground">ID: {node.id}</span>
+      <div className="flex flex-col items-center p-1 m-0.5 rounded-md bg-card text-card-foreground shadow-sm min-w-[80px] border border-primary/20">
+        <User className="w-4 h-4 mb-0.5 text-primary" />
+        <span className="font-semibold text-xs">{node.name}</span>
+        <span className="text-[10px] text-muted-foreground">ID: {node.id}</span>
       </div>
       {hasChildren && (
         <>
-          <div className="absolute top-[100%] w-px h-6 bg-border"></div>
-          <ul className="flex justify-center pt-6 relative 
+          <div className="absolute top-[100%] w-px h-4 bg-border"></div>
+          <ul className="flex justify-center pt-4 relative 
                          before:content-[''] before:absolute before:top-0 before:h-px before:bg-border
-                         before:left-[calc(50%_-_(var(--child-count)_-_1)_*_50%_/_var(--child-count)_+_var(--child-count)_*_0.5rem/_var(--child-count))] 
-                         before:right-[calc(50%_-_(var(--child-count)_-_1)_*_50%_/_var(--child-count)_+_var(--child-count)_*_0.5rem/_var(--child-count))]
+                         before:left-[calc(50%_-_(var(--child-count)_-_1)_*_50%_/_var(--child-count)_+_var(--child-count)_*_0.25rem/_var(--child-count))] 
+                         before:right-[calc(50%_-_(var(--child-count)_-_1)_*_50%_/_var(--child-count)_+_var(--child-count)_*_0.25rem/_var(--child-count))]
                          "
               style={{ '--child-count': node.children.length } as React.CSSProperties}
           >
