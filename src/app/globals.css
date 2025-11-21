@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    --background: 210 40% 98%;
+    --background: 255 90% 92%;
     --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
@@ -68,10 +68,5 @@
   }
   body {
     @apply bg-background text-foreground;
-    background-image: radial-gradient(circle at top left, hsl(195, 100%, 85%), transparent 40%),
-                      radial-gradient(circle at top right, hsl(341, 100%, 90%), transparent 40%),
-                      radial-gradient(circle at bottom left, hsl(60, 100%, 85%), transparent 40%),
-                      radial-gradient(circle at bottom right, hsl(60, 100%, 90%), transparent 40%);
-    background-color: hsl(var(--background));
   }
 }
