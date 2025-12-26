@@ -25,6 +25,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Eye, EyeOff } from "lucide-react";
+import placeholderImages from "@/lib/placeholder-images.json";
+import Image from "next/image";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),
@@ -61,11 +63,23 @@ export default function AuthPage() {
     router.push(`/dashboard?name=${encodeURIComponent(values.name)}`);
   };
 
+  const galaxyImage = placeholderImages.placeholderImages.find(p => p.id === 'galaxy-background-1');
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-4">
+    <main className="relative flex min-h-screen flex-col items-center justify-center p-4">
+      {galaxyImage && (
+         <Image
+          src={galaxyImage.imageUrl}
+          alt={galaxyImage.description}
+          fill
+          style={{ objectFit: 'cover' }}
+          className="-z-10"
+          data-ai-hint={galaxyImage.imageHint}
+        />
+      )}
       <div className="flex items-center gap-4 mb-8">
         <AapkaPayLogo className="h-16 w-16" />
-        <h1 className="text-4xl font-headline font-bold text-primary">
+        <h1 className="text-4xl font-headline font-bold text-white">
           Aapka Pay
         </h1>
       </div>
