@@ -36,35 +36,24 @@ export default function WelcomeLetterPage() {
     });
   };
 
-  const galaxyImage = placeholderImages.placeholderImages.find(p => p.id === 'galaxy-background-5');
   const userAvatar = placeholderImages.placeholderImages.find(p => p.id === 'user-avatar-1');
   const heroImage = placeholderImages.placeholderImages.find(p => p.id === 'electric-scooter-hero-1');
 
   return (
-    <div className="flex min-h-screen w-full flex-col relative">
-      {galaxyImage && (
-        <Image
-          src={galaxyImage.imageUrl}
-          alt={galaxyImage.description}
-          fill
-          style={{ objectFit: 'cover' }}
-          className="-z-10"
-          data-ai-hint={galaxyImage.imageHint}
-        />
-      )}
-      <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-border/40 bg-background/80 backdrop-blur-sm px-4 md:px-8">
+    <div className="flex min-h-screen w-full flex-col relative bg-background">
+      <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-8">
         <div className="flex items-center gap-2">
           <Button variant="outline" size="icon" className="md:hidden" onClick={() => router.back()}>
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <YunexLogo className="h-10 w-10" />
-          <h1 className="text-xl font-bold text-primary font-headline">YUNEX</h1>
+          <h1 className="text-xl font-bold text-foreground font-headline">YUNEX</h1>
         </div>
         <div className="ml-auto flex items-center gap-4">
           <div className="hidden md:flex items-center gap-2 text-sm font-medium">
             <Phone className="h-4 w-4 text-muted-foreground" />
             <span className="text-muted-foreground">Helpline:</span>
-            <span className="text-white">+91 1800 123 4567</span>
+            <span>+91 1800 123 4567</span>
           </div>
           <Avatar>
             <AvatarImage
@@ -96,7 +85,7 @@ export default function WelcomeLetterPage() {
                 <Button variant="outline" size="icon" className="hidden md:flex" onClick={() => router.back()}>
                     <ArrowLeft className="h-4 w-4" />
                 </Button>
-                <h2 className="text-3xl font-bold tracking-tight font-headline text-white">Welcome Letter</h2>
+                <h2 className="text-3xl font-bold tracking-tight font-headline">Welcome Letter</h2>
             </div>
             <Button onClick={handleDownload}>
                 <Download className="mr-2 h-4 w-4" />
@@ -105,9 +94,9 @@ export default function WelcomeLetterPage() {
         </div>
 
         <div className="flex justify-center items-start">
-            <Card className="w-full max-w-4xl bg-card/60 backdrop-blur-sm border-white/10 text-card-foreground p-4 sm:p-8">
+            <Card className="w-full max-w-4xl text-card-foreground p-4 sm:p-8">
                 <CardContent className="p-2 sm:p-4">
-                    <div className="border-4 border-primary p-4 sm:p-8 text-white">
+                    <div className="border-4 border-primary p-4 sm:p-8 text-foreground">
                         <header className="flex justify-between items-start mb-8">
                             <div className="flex items-center gap-4">
                                 <YunexLogo className="h-16 w-16" />

@@ -63,35 +63,23 @@ export default function AuthPage() {
     router.push(`/dashboard?name=${encodeURIComponent(values.name)}`);
   };
 
-  const galaxyImage = placeholderImages.placeholderImages.find(p => p.id === 'galaxy-background-5');
-
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-4">
-      <div className="absolute inset-0 -z-10">
-      {galaxyImage && (
-         <Image
-          src={galaxyImage.imageUrl}
-          alt={galaxyImage.description}
-          fill
-          style={{ objectFit: 'cover' }}
-          data-ai-hint={galaxyImage.imageHint}
-        />
-      )}
-      </div>
+      <div className="absolute inset-0 -z-10 bg-background" />
       <div className="flex items-center gap-4 mb-8">
         <YunexLogo className="h-16 w-16" />
-        <h1 className="text-4xl font-headline font-bold text-white">
+        <h1 className="text-4xl font-headline font-bold text-foreground">
           YUNEX
         </h1>
       </div>
       <Tabs defaultValue="login" className="w-full max-w-md">
-        <TabsList className="grid w-full grid-cols-2 bg-card/60 backdrop-blur-sm border border-white/10">
+        <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="login">Login</TabsTrigger>
           <TabsTrigger value="signup">Sign Up</TabsTrigger>
         </TabsList>
 
         <TabsContent value="login">
-          <Card className="bg-card/60 backdrop-blur-sm border-white/10">
+          <Card>
             <CardHeader>
               <CardTitle className="font-headline">Login</CardTitle>
               <CardDescription>
@@ -108,7 +96,7 @@ export default function AuthPage() {
                       <FormItem>
                         <FormLabel>Email</FormLabel>
                         <FormControl>
-                          <Input placeholder="you@example.com" {...field} className="bg-transparent border-white/30" />
+                          <Input placeholder="you@example.com" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -122,7 +110,7 @@ export default function AuthPage() {
                         <FormLabel>Password</FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Input type={showPassword ? "text" : "password"} placeholder="••••••••" {...field} className="bg-transparent border-white/30" />
+                            <Input type={showPassword ? "text" : "password"} placeholder="••••••••" {...field} />
                             <Button
                               type="button"
                               variant="ghost"
@@ -138,7 +126,7 @@ export default function AuthPage() {
                       </FormItem>
                     )}
                   />
-                  <Button type="submit" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">Login</Button>
+                  <Button type="submit" className="w-full">Login</Button>
                 </form>
               </Form>
             </CardContent>
@@ -146,7 +134,7 @@ export default function AuthPage() {
         </TabsContent>
 
         <TabsContent value="signup">
-          <Card className="bg-card/60 backdrop-blur-sm border-white/10">
+          <Card>
             <CardHeader>
               <CardTitle className="font-headline">Sign Up</CardTitle>
               <CardDescription>
@@ -163,7 +151,7 @@ export default function AuthPage() {
                       <FormItem>
                         <FormLabel>Full Name</FormLabel>
                         <FormControl>
-                          <Input placeholder="John Doe" {...field} className="bg-transparent border-white/30" />
+                          <Input placeholder="John Doe" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -176,7 +164,7 @@ export default function AuthPage() {
                       <FormItem>
                         <FormLabel>Email</FormLabel>
                         <FormControl>
-                          <Input placeholder="you@example.com" {...field} className="bg-transparent border-white/30" />
+                          <Input placeholder="you@example.com" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -190,7 +178,7 @@ export default function AuthPage() {
                         <FormLabel>Password</FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Input type={showPassword ? "text" : "password"} placeholder="••••••••" {...field} className="bg-transparent border-white/30" />
+                            <Input type={showPassword ? "text" : "password"} placeholder="••••••••" {...field} />
                             <Button
                               type="button"
                               variant="ghost"
@@ -206,7 +194,7 @@ export default function AuthPage() {
                       </FormItem>
                     )}
                   />
-                  <Button type="submit" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">Create Account</Button>
+                  <Button type="submit" className="w-full">Create Account</Button>
                 </form>
               </Form>
             </CardContent>

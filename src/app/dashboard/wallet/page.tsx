@@ -42,7 +42,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 const FeatureDialog = ({ title, description }: { title: string, description: string }) => (
-  <DialogContent className="bg-card/80 backdrop-blur-sm border-white/10">
+  <DialogContent>
     <DialogHeader>
       <DialogTitle>{title}</DialogTitle>
       <DialogDescription>{description}</DialogDescription>
@@ -67,32 +67,21 @@ export default function WalletPage() {
     },
   ];
 
-  const galaxyImage = placeholderImages.placeholderImages.find(p => p.id === 'galaxy-background-5');
   const heroImage = placeholderImages.placeholderImages.find(p => p.id === 'electric-scooter-hero-1');
 
 
   return (
-    <div className="flex min-h-screen w-full flex-col relative">
-      {galaxyImage && (
-        <Image
-          src={galaxyImage.imageUrl}
-          alt={galaxyImage.description}
-          fill
-          style={{ objectFit: 'cover' }}
-          className="-z-10"
-          data-ai-hint={galaxyImage.imageHint}
-        />
-      )}
-      <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-border/40 bg-background/80 backdrop-blur-sm px-4 md:px-8">
+    <div className="flex min-h-screen w-full flex-col relative bg-background">
+      <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-8">
         <div className="flex items-center gap-2">
           <YunexLogo className="h-10 w-10" />
-          <h1 className="text-xl font-bold text-primary font-headline">YUNEX</h1>
+          <h1 className="text-xl font-bold text-foreground font-headline">YUNEX</h1>
         </div>
         <div className="ml-auto flex items-center gap-4">
           <div className="hidden md:flex items-center gap-2 text-sm font-medium">
             <Phone className="h-4 w-4 text-muted-foreground" />
             <span className="text-muted-foreground">Helpline:</span>
-            <span className="text-white">+91 1800 123 4567</span>
+            <span>+91 1800 123 4567</span>
           </div>
           <Avatar>
             <AvatarImage
@@ -123,32 +112,32 @@ export default function WalletPage() {
           <Button variant="outline" size="icon" onClick={() => router.back()}>
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <h2 className="text-3xl font-bold tracking-tight font-headline text-white">My Wallet</h2>
+          <h2 className="text-3xl font-bold tracking-tight font-headline">My Wallet</h2>
         </div>
         
-        <Card className="w-full shadow-lg bg-card/60 backdrop-blur-sm border-white/10">
+        <Card className="w-full shadow-lg bg-primary text-primary-foreground">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-lg font-medium">Wallet Balance</CardTitle>
-            <Wallet className="h-6 w-6 text-muted-foreground" />
+            <Wallet className="h-6 w-6 text-primary-foreground/80" />
           </CardHeader>
           <CardContent>
-            <div className="text-5xl font-bold text-white">₹{balance.toLocaleString("en-IN")}</div>
-            <p className="text-sm text-muted-foreground">+2.1% from last 24 hours</p>
+            <div className="text-5xl font-bold">₹{balance.toLocaleString("en-IN")}</div>
+            <p className="text-sm text-primary-foreground/80">+2.1% from last 24 hours</p>
           </CardContent>
         </Card>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
-            <Card onClick={() => router.push('/dashboard/wallet/add')} className="cursor-pointer bg-card/60 backdrop-blur-sm border-white/10 hover:bg-card/80 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
+            <Card onClick={() => router.push('/dashboard/wallet/add')} className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
                 <PlusCircle className="h-10 w-10 text-primary" />
                 <p className="mt-2 font-semibold text-sm">Add Money</p>
             </Card>
 
-            <Card onClick={() => router.push('/dashboard/wallet/send')} className="cursor-pointer bg-card/60 backdrop-blur-sm border-white/10 hover:bg-card/80 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
+            <Card onClick={() => router.push('/dashboard/wallet/send')} className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
                 <ArrowUpCircle className="h-10 w-10 text-primary" />
                 <p className="mt-2 font-semibold text-sm">Send</p>
             </Card>
             
-            <Card onClick={() => router.push('/dashboard/wallet/received')} className="cursor-pointer bg-card/60 backdrop-blur-sm border-white/10 hover:bg-card/80 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
+            <Card onClick={() => router.push('/dashboard/wallet/received')} className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
                 <ArrowDownCircle className="h-10 w-10 text-primary" />
                 <p className="mt-2 font-semibold text-sm">Transaction History</p>
             </Card>
@@ -156,7 +145,7 @@ export default function WalletPage() {
           {walletFeatures.map((feature) => (
             <Dialog key={feature.title}>
               <DialogTrigger asChild>
-                <Card className="cursor-pointer bg-card/60 backdrop-blur-sm border-white/10 hover:bg-card/80 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
+                <Card className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
                   {feature.icon}
                   <p className="mt-2 font-semibold text-sm">{feature.title}</p>
                 </Card>
@@ -164,7 +153,7 @@ export default function WalletPage() {
               {feature.dialog}
             </Dialog>
           ))}
-          <Card onClick={() => router.push('/dashboard/profile')} className="cursor-pointer bg-card/60 backdrop-blur-sm border-white/10 hover:bg-card/80 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
+          <Card onClick={() => router.push('/dashboard/profile')} className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
               <User className="h-10 w-10 text-primary" />
               <p className="mt-2 font-semibold text-sm">Profile</p>
           </Card>
