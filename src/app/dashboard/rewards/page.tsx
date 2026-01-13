@@ -19,16 +19,16 @@ import {
 } from "@/components/ui/table";
 
 const levelIncomeData = [
-    { level: 1, totalMember: 3, incentive: 600 },
-    { level: 2, totalMember: 9, incentive: 1800 },
-    { level: 3, totalMember: 27, incentive: 5400 },
-    { level: 4, totalMember: 81, incentive: 16200 },
-    { level: 5, totalMember: 243, incentive: 48600 },
-    { level: 6, totalMember: 729, incentive: 145800 },
-    { level: 7, totalMember: 2187, incentive: 437400 },
-    { level: 8, totalMember: 6561, incentive: 1312200 },
-    { level: 9, totalMember: 19683, incentive: 3936600 },
-    { level: 10, totalMember: 59049, incentive: 11809800 },
+    { level: 1, totalMember: 3 },
+    { level: 2, totalMember: 9 },
+    { level: 3, totalMember: 27 },
+    { level: 4, totalMember: 81 },
+    { level: 5, totalMember: 243 },
+    { level: 6, totalMember: 729 },
+    { level: 7, totalMember: 2187 },
+    { level: 8, totalMember: 6561 },
+    { level: 9, totalMember: 19683 },
+    { level: 10, totalMember: 59049 },
 ];
 
 const levelRewardsData = [
@@ -83,7 +83,6 @@ export default function RewardsPage() {
                 <TableRow>
                   <TableHead>Total Member</TableHead>
                   <TableHead>Level</TableHead>
-                  <TableHead className="text-right">Incentive</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -91,7 +90,6 @@ export default function RewardsPage() {
                   <TableRow key={row.level}>
                     <TableCell>{row.totalMember}</TableCell>
                     <TableCell>{row.level}</TableCell>
-                    <TableCell className="text-right">₹{row.incentive.toLocaleString('en-IN')}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
