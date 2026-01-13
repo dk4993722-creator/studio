@@ -113,7 +113,7 @@ export default function WalletPage() {
             <Wallet className="h-6 w-6 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-5xl font-bold text-primary">₹{balance.toLocaleString("en-IN")}</div>
+            <div className="text-5xl font-bold text-white">₹{balance.toLocaleString("en-IN")}</div>
             <p className="text-sm text-muted-foreground">+2.1% from last 24 hours</p>
           </CardContent>
         </Card>
