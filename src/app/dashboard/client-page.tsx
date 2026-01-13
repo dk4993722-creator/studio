@@ -16,10 +16,8 @@ import {
   Users2,
   Wind,
   Droplets,
-  Sparkles,
-  SprayCan,
   Shirt,
-  Armchair,
+  CircuitBoard,
   Sparkle,
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -167,16 +165,16 @@ export function DashboardClientPage() {
 
   const projects = [
     {
-        title: "Jhadu Project",
-        icon: <Sparkle className="h-8 w-8 text-primary" />
+        title: "Garments Project",
+        icon: <Shirt className="h-8 w-8 text-primary" />
     },
     {
-        title: "Furniture Project",
-        icon: <Armchair className="h-8 w-8 text-primary" />
+        title: "Agarbatti Project",
+        icon: <Wind className="h-8 w-8 text-primary" />
     },
     {
-        title: "Petticoat Project",
-        icon: <SprayCan className="h-8 w-8 text-primary" />
+        title: "Electronic Project",
+        icon: <CircuitBoard className="h-8 w-8 text-primary" />
     },
     {
         title: "Sanitary Pads",
