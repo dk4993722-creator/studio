@@ -18,31 +18,19 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-const levelIncomeData = [
-    { level: 1, totalMember: 3 },
-    { level: 2, totalMember: 9 },
-    { level: 3, totalMember: 27 },
-    { level: 4, totalMember: 81 },
-    { level: 5, totalMember: 243 },
-    { level: 6, totalMember: 729 },
-    { level: 7, totalMember: 2187 },
-    { level: 8, totalMember: 6561 },
-    { level: 9, totalMember: 19683 },
-    { level: 10, totalMember: 59049 },
+const levelData = [
+    { level: 1, totalMember: 3, reward: "12 Peticot" },
+    { level: 2, totalMember: 9, reward: "Silai Machine" },
+    { level: 3, totalMember: 27, reward: "Android Mobile" },
+    { level: 4, totalMember: 81, reward: "e.v. scooter" },
+    { level: 5, totalMember: 243, reward: "10 Silai Machine" },
+    { level: 6, totalMember: 729, reward: "Car (K 10)" },
+    { level: 7, totalMember: 2187, reward: "" },
+    { level: 8, totalMember: 6561, reward: "" },
+    { level: 9, totalMember: 19683, reward: "" },
+    { level: 10, totalMember: 59049, reward: "" },
 ];
 
-const levelRewardsData = [
-    { level: "1st", reward: "12 Peticot" },
-    { level: "2nd", reward: "Silai Machine" },
-    { level: "3rd", reward: "Android Mobile" },
-    { level: "4th", reward: "e.v. scooter" },
-    { level: "5th", reward: "10 Silai Machine" },
-    { level: "6th", reward: "Car (K 10)" },
-    { level: "7th", reward: "" },
-    { level: "8th", reward: "" },
-    { level: "9th", reward: "" },
-    { level: "10th", reward: "" },
-];
 
 export default function RewardsPage() {
   const router = useRouter();
@@ -81,46 +69,23 @@ export default function RewardsPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Total Member</TableHead>
                   <TableHead>Level</TableHead>
+                  <TableHead>Total Member</TableHead>
+                  <TableHead>Rewords</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {levelIncomeData.map((row) => (
+                {levelData.map((row) => (
                   <TableRow key={row.level}>
-                    <TableCell>{row.totalMember}</TableCell>
                     <TableCell>{row.level}</TableCell>
+                    <TableCell>{row.totalMember}</TableCell>
+                    <TableCell>{row.reward}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
           </CardContent>
         </Card>
-        <div className="mt-4">
-            <Card>
-                <CardHeader>
-                    <CardTitle className="font-headline">Level Rewords</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Level</TableHead>
-                                <TableHead>Rewords</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {levelRewardsData.map((row) => (
-                                <TableRow key={row.level}>
-                                    <TableCell>{row.level}</TableCell>
-                                    <TableCell>{row.reward}</TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </CardContent>
-            </Card>
-        </div>
       </main>
     </div>
   );
