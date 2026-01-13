@@ -53,15 +53,15 @@ const TreeNode = ({ node }: { node: TreeNodeData }) => {
 
   return (
     <li className="flex flex-col items-center relative">
-      <div className="flex flex-col items-center p-1 m-0.5 rounded-md bg-card text-card-foreground shadow-sm min-w-[80px] border border-primary/20">
-        <User className="w-4 h-4 mb-0.5 text-primary" />
-        <span className="font-semibold text-xs">{node.name}</span>
-        <span className="text-[10px] text-muted-foreground">ID: {node.id}</span>
+      <div className="flex flex-col items-center p-0.5 m-0.5 rounded bg-card text-card-foreground shadow-sm min-w-[70px] border border-primary/20">
+        <User className="w-3 h-3 mb-0.5 text-primary" />
+        <span className="font-semibold text-[11px] leading-tight">{node.name}</span>
+        <span className="text-[9px] text-muted-foreground">ID: {node.id}</span>
       </div>
       {hasChildren && (
         <>
-          <div className="absolute top-[100%] w-px h-4 bg-border"></div>
-          <ul className="flex justify-center pt-4 relative 
+          <div className="absolute top-[100%] w-px h-3 bg-border"></div>
+          <ul className="flex justify-center pt-3 relative 
                          before:content-[''] before:absolute before:top-0 before:h-px before:bg-border
                          before:left-[calc(50%_-_(var(--child-count)_-_1)_*_50%_/_var(--child-count)_+_var(--child-count)_*_0.25rem/_var(--child-count))] 
                          before:right-[calc(50%_-_(var(--child-count)_-_1)_*_50%_/_var(--child-count)_+_var(--child-count)_*_0.25rem/_var(--child-count))]
