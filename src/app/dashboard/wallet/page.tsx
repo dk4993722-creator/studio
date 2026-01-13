@@ -72,16 +72,16 @@ export default function WalletPage() {
 
   return (
     <div className="flex min-h-screen w-full flex-col relative bg-background">
-      <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-8">
+      <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b px-4 md:px-8 bg-[#326cd1]">
         <div className="flex items-center gap-2">
           <YunexLogo className="h-10 w-10" />
-          <h1 className="text-xl font-bold text-foreground font-headline">YUNEX</h1>
+          <h1 className="text-xl font-bold text-primary-foreground font-headline">YUNEX</h1>
         </div>
         <div className="ml-auto flex items-center gap-4">
           <div className="hidden md:flex items-center gap-2 text-sm font-medium">
             <Phone className="h-4 w-4 text-muted-foreground" />
             <span className="text-muted-foreground">Helpline:</span>
-            <span>+91 1800 123 4567</span>
+            <span className="text-primary-foreground">+91 1800 123 4567</span>
           </div>
           <Avatar>
             <AvatarImage
