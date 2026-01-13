@@ -32,10 +32,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import placeholderImages from "@/lib/placeholder-images.json";
 import { useToast } from "@/hooks/use-toast";
 import Image from "next/image";
+import { FileUpload } from "@/components/ui/file-upload";
 
 const addMoneySchema = z.object({
   amount: z.coerce.number().positive({ message: "Amount must be positive." }),
   utrNumber: z.string().min(1, { message: "UTR/Bank Reference is required." }),
+  screenshot: z.any().refine((files) => files?.length == 1, "Screenshot is required."),
 });
 
 export default function AddMoneyPage() {
@@ -162,6 +164,11 @@ export default function AddMoneyPage() {
                                     <FormMessage />
                                 </FormItem>
                             )}
+                        />
+                         <FormField
+                            control={form.control}
+                            name="screenshot"
+                            render={({ field }) => <FileUpload field={field} label="Upload Screenshot" />}
                         />
                         <Button type="submit" className="w-full">Submit Request</Button>
                     </form>
