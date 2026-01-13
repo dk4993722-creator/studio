@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useRouter } from "next/navigation";
@@ -18,6 +19,8 @@ import {
   Phone,
   LogOut,
   User,
+  PlusCircle,
+  CheckCircle,
 } from "lucide-react";
 import { YunexLogo } from "@/components/yunex-logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -33,6 +36,10 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import Image from "next/image";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 const FeatureDialog = ({ title, description }: { title: string, description: string }) => (
   <DialogContent className="bg-card/80 backdrop-blur-sm border-white/10">
@@ -50,7 +57,33 @@ const FeatureDialog = ({ title, description }: { title: string, description: str
 
 export default function WalletPage() {
   const router = useRouter();
-  const balance = 1250.75;
+  const [balance, setBalance] = useState(1250.75);
+  const [addAmount, setAddAmount] = useState("");
+  const { toast } = useToast();
+
+  const handleAddMoney = (closeDialog: () => void) => {
+    const amount = parseFloat(addAmount);
+    if (!isNaN(amount) && amount > 0) {
+      setBalance((prev) => prev + amount);
+      toast({
+        title: (
+          <div className="flex items-center gap-2">
+            <CheckCircle className="h-5 w-5 text-green-500" />
+            <span className="font-bold">Success!</span>
+          </div>
+        ),
+        description: `₹${amount.toFixed(2)} has been added to your wallet.`,
+      });
+      setAddAmount("");
+      closeDialog();
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Invalid Amount",
+        description: "Please enter a valid positive number.",
+      });
+    }
+  };
 
   const walletFeatures = [
     {
@@ -131,6 +164,45 @@ export default function WalletPage() {
         </Card>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+            <Dialog>
+              <DialogTrigger asChild>
+                <Card className="cursor-pointer bg-card/60 backdrop-blur-sm border-white/10 hover:bg-card/80 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
+                  <PlusCircle className="h-10 w-10 text-primary" />
+                  <p className="mt-2 font-semibold text-sm">Add Money</p>
+                </Card>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px] bg-card/80 backdrop-blur-sm border-white/10">
+                <DialogClose asChild>
+                  {(close) => (
+                  <>
+                    <DialogHeader>
+                      <DialogTitle className="font-headline">Add Money to Wallet</DialogTitle>
+                      <DialogDescription>Enter the amount you want to add.</DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                      <div className="grid items-center gap-4">
+                        <Label htmlFor="amount" className="text-left">
+                          Amount (₹)
+                        </Label>
+                        <Input
+                          id="amount"
+                          type="number"
+                          value={addAmount}
+                          onChange={(e) => setAddAmount(e.target.value)}
+                          placeholder="0.00"
+                          className="col-span-3"
+                        />
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button onClick={() => handleAddMoney(close as () => void)} className="bg-accent hover:bg-accent/90 text-accent-foreground">Add Money</Button>
+                    </DialogFooter>
+                  </>
+                  )}
+                </DialogClose>
+              </DialogContent>
+            </Dialog>
+
             <Card onClick={() => router.push('/dashboard/wallet/send')} className="cursor-pointer bg-card/60 backdrop-blur-sm border-white/10 hover:bg-card/80 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
                 <ArrowUpCircle className="h-10 w-10 text-primary" />
                 <p className="mt-2 font-semibold text-sm">Send</p>
