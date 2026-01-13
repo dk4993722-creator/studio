@@ -68,7 +68,7 @@ export default function ProfilePage() {
     {
       title: "Welcome Letter",
       icon: <Mail className="h-10 w-10 text-primary" />,
-      dialog: <FeatureDialog title="Welcome Letter" description="This feature is under development." />,
+      onClick: () => router.push('/dashboard/profile/welcome-letter'),
     },
     {
       title: "ID Card",
