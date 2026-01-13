@@ -181,9 +181,21 @@ export function DashboardClientPage() {
   ];
 
   const heroImage = placeholderImages.placeholderImages.find(p => p.id === 'electric-scooter-hero-1');
+  const galaxyImage = placeholderImages.placeholderImages.find(p => p.id === 'galaxy-background-3');
+
 
   return (
-    <div className="flex min-h-screen w-full flex-col">
+    <div className="flex min-h-screen w-full flex-col relative">
+      {galaxyImage && (
+        <Image
+          src={galaxyImage.imageUrl}
+          alt={galaxyImage.description}
+          fill
+          style={{ objectFit: 'cover' }}
+          className="-z-10"
+          data-ai-hint={galaxyImage.imageHint}
+        />
+      )}
       <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-border/40 bg-background/80 backdrop-blur-sm px-4 md:px-8">
         <div className="flex items-center gap-2">
           <YunexLogo className="h-10 w-10" />
@@ -193,7 +205,7 @@ export function DashboardClientPage() {
           <div className="hidden md:flex items-center gap-2 text-sm font-medium">
             <Phone className="h-4 w-4 text-muted-foreground" />
             <span className="text-muted-foreground">Helpline:</span>
-            <span>+91 1800 123 4567</span>
+            <span className="text-white">+91 1800 123 4567</span>
           </div>
           <Avatar>
             <AvatarImage src={placeholderImages.placeholderImages[0].imageUrl} alt="User avatar" data-ai-hint={placeholderImages.placeholderImages[0].imageHint} />
@@ -216,9 +228,9 @@ export function DashboardClientPage() {
             />
           </div>
         )}
-        <h2 className="text-3xl font-bold tracking-tight font-headline">Welcome back, {name}!</h2>
+        <h2 className="text-3xl font-bold tracking-tight font-headline text-white">Welcome back, {name}!</h2>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 md:gap-8">
-          <Card onClick={() => router.push('/dashboard/team')} className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
+          <Card onClick={() => router.push('/dashboard/team')} className="cursor-pointer bg-card/80 hover:bg-card/95 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
             <CardHeader className="flex flex-col items-center justify-center text-center p-6 flex-grow">
               <Users2 className="h-8 w-8 text-primary" />
               <CardTitle className="mt-4 font-headline">My Team</CardTitle>
@@ -228,7 +240,7 @@ export function DashboardClientPage() {
             </CardContent>
           </Card>
 
-          <Card onClick={() => router.push('/dashboard/wallet')} className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
+          <Card onClick={() => router.push('/dashboard/wallet')} className="cursor-pointer bg-card/80 hover:bg-card/95 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
             <CardHeader className="flex flex-col items-center justify-center text-center p-6 flex-grow">
               <WalletCards className="h-8 w-8 text-primary" />
               <CardTitle className="mt-4 font-headline">Wallet</CardTitle>
@@ -241,7 +253,7 @@ export function DashboardClientPage() {
           {features.map((feature) => (
             <Dialog key={feature.title}>
               <DialogTrigger asChild>
-                <Card className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
+                <Card className="cursor-pointer bg-card/80 hover:bg-card/95 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
                   <CardHeader className="flex flex-col items-center justify-center text-center p-6 flex-grow">
                     {feature.icon}
                     <CardTitle className="mt-4 font-headline">{feature.title}</CardTitle>
@@ -257,12 +269,12 @@ export function DashboardClientPage() {
           ))}
         </div>
         <div className="mt-4">
-            <h3 className="text-2xl font-bold tracking-tight font-headline mb-4">Projects</h3>
+            <h3 className="text-2xl font-bold tracking-tight font-headline mb-4 text-white">Projects</h3>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 md:gap-8">
                 {projects.map((project) => (
                 <Dialog key={project.title}>
                     <DialogTrigger asChild>
-                        <Card className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
+                        <Card className="cursor-pointer bg-card/80 hover:bg-card/95 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
                             <CardHeader className="flex flex-col items-center justify-center text-center p-6 flex-grow">
                                 {project.icon}
                                 <CardTitle className="mt-4 font-headline text-xl">{project.title}</CardTitle>

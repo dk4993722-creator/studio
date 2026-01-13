@@ -18,6 +18,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import Image from "next/image";
 
 export default function TeamPage() {
   const router = useRouter();
@@ -57,8 +58,21 @@ export default function TeamPage() {
     { level: 10, totalMember: 59049, myTeam: "", remarks: "" },
   ];
 
+  const galaxyImage = placeholderImages.placeholderImages.find(p => p.id === 'galaxy-background-3');
+
+
   return (
-    <div className="flex min-h-screen w-full flex-col">
+    <div className="flex min-h-screen w-full flex-col relative">
+       {galaxyImage && (
+        <Image
+          src={galaxyImage.imageUrl}
+          alt={galaxyImage.description}
+          fill
+          style={{ objectFit: 'cover' }}
+          className="-z-10"
+          data-ai-hint={galaxyImage.imageHint}
+        />
+      )}
        <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-border/40 bg-background/80 backdrop-blur-sm px-4 md:px-8">
         <div className="flex items-center gap-2">
           <YunexLogo className="h-10 w-10" />
@@ -68,7 +82,7 @@ export default function TeamPage() {
           <div className="hidden md:flex items-center gap-2 text-sm font-medium">
             <Phone className="h-4 w-4 text-muted-foreground" />
             <span className="text-muted-foreground">Helpline:</span>
-            <span>+91 1800 123 4567</span>
+            <span className="text-white">+91 1800 123 4567</span>
           </div>
           <Avatar>
             <AvatarImage src={placeholderImages.placeholderImages[0].imageUrl} alt="User avatar" data-ai-hint={placeholderImages.placeholderImages[0].imageHint} />
@@ -84,11 +98,11 @@ export default function TeamPage() {
           <Button variant="outline" size="icon" onClick={() => router.back()}>
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <h2 className="text-3xl font-bold tracking-tight font-headline">Team Management</h2>
+          <h2 className="text-3xl font-bold tracking-tight font-headline text-white">Team Management</h2>
         </div>
         <div className="grid gap-6 md:grid-cols-3">
           {teamFeatures.map((feature) => (
-            <Card key={feature.title} onClick={feature.onClick} className="flex flex-col cursor-pointer hover:shadow-lg transition-shadow">
+            <Card key={feature.title} onClick={feature.onClick} className="flex flex-col cursor-pointer bg-card/80 hover:bg-card/95 hover:shadow-lg transition-shadow">
               <CardHeader className="flex-row items-center gap-4 space-y-0">
                 {feature.icon}
                 <CardTitle>{feature.title}</CardTitle>
@@ -101,7 +115,7 @@ export default function TeamPage() {
         </div>
          {showTeamDetails && (
             <div className="mt-4">
-            <Card>
+            <Card className="bg-card/80">
                 <CardHeader>
                 <CardTitle>Team Details</CardTitle>
                 </CardHeader>
@@ -109,10 +123,10 @@ export default function TeamPage() {
                 <Table>
                     <TableHeader>
                     <TableRow>
-                        <TableHead>Level</TableHead>
-                        <TableHead>Total Member</TableHead>
-                        <TableHead>My Team</TableHead>
-                        <TableHead>Remarks</TableHead>
+                        <TableHead className="text-card-foreground">Level</TableHead>
+                        <TableHead className="text-card-foreground">Total Member</TableHead>
+                        <TableHead className="text-card-foreground">My Team</TableHead>
+                        <TableHead className="text-card-foreground">Remarks</TableHead>
                     </TableRow>
                     </TableHeader>
                     <TableBody>

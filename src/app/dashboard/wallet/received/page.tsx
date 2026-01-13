@@ -26,6 +26,7 @@ import {
 import { YunexLogo } from "@/components/yunex-logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import placeholderImages from "@/lib/placeholder-images.json";
+import Image from "next/image";
 
 const receivedData = [
     { from: 'John Doe', amount: 100.00, date: '2024-07-28' },
@@ -35,9 +36,21 @@ const receivedData = [
 
 export default function ReceivedBalancePage() {
   const router = useRouter();
+  const galaxyImage = placeholderImages.placeholderImages.find(p => p.id === 'galaxy-background-3');
+
 
   return (
-    <div className="flex min-h-screen w-full flex-col">
+    <div className="flex min-h-screen w-full flex-col relative">
+      {galaxyImage && (
+        <Image
+          src={galaxyImage.imageUrl}
+          alt={galaxyImage.description}
+          fill
+          style={{ objectFit: 'cover' }}
+          className="-z-10"
+          data-ai-hint={galaxyImage.imageHint}
+        />
+      )}
       <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-border/40 bg-background/80 backdrop-blur-sm px-4 md:px-8">
         <div className="flex items-center gap-2">
           <YunexLogo className="h-10 w-10" />
@@ -47,7 +60,7 @@ export default function ReceivedBalancePage() {
           <div className="hidden md:flex items-center gap-2 text-sm font-medium">
             <Phone className="h-4 w-4 text-muted-foreground" />
             <span className="text-muted-foreground">Helpline:</span>
-            <span>+91 1800 123 4567</span>
+            <span className="text-white">+91 1800 123 4567</span>
           </div>
           <Avatar>
             <AvatarImage
@@ -67,10 +80,10 @@ export default function ReceivedBalancePage() {
           <Button variant="outline" size="icon" onClick={() => router.back()}>
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <h2 className="text-3xl font-bold tracking-tight font-headline">Transaction History</h2>
+          <h2 className="text-3xl font-bold tracking-tight font-headline text-white">Transaction History</h2>
         </div>
 
-        <Card>
+        <Card className="bg-card/80">
             <CardHeader>
                 <CardTitle>Transaction History</CardTitle>
                 <CardDescription>A list of funds you have received.</CardDescription>
@@ -79,9 +92,9 @@ export default function ReceivedBalancePage() {
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead>From</TableHead>
-                            <TableHead>Date</TableHead>
-                            <TableHead className="text-right">Amount</TableHead>
+                            <TableHead className="text-card-foreground">From</TableHead>
+                            <TableHead className="text-card-foreground">Date</TableHead>
+                            <TableHead className="text-right text-card-foreground">Amount</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>

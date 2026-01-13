@@ -31,6 +31,7 @@ import { YunexLogo } from "@/components/yunex-logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import placeholderImages from "@/lib/placeholder-images.json";
 import { useToast } from "@/hooks/use-toast";
+import Image from "next/image";
 
 const sendMoneySchema = z.object({
   recipient: z.string().min(1, { message: "Recipient is required." }),
@@ -55,8 +56,21 @@ export default function SendMoneyPage() {
     router.push("/dashboard/wallet");
   };
 
+  const galaxyImage = placeholderImages.placeholderImages.find(p => p.id === 'galaxy-background-3');
+
+
   return (
-    <div className="flex min-h-screen w-full flex-col">
+    <div className="flex min-h-screen w-full flex-col relative">
+      {galaxyImage && (
+        <Image
+          src={galaxyImage.imageUrl}
+          alt={galaxyImage.description}
+          fill
+          style={{ objectFit: 'cover' }}
+          className="-z-10"
+          data-ai-hint={galaxyImage.imageHint}
+        />
+      )}
       <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-border/40 bg-background/80 backdrop-blur-sm px-4 md:px-8">
         <div className="flex items-center gap-2">
           <YunexLogo className="h-10 w-10" />
@@ -66,7 +80,7 @@ export default function SendMoneyPage() {
           <div className="hidden md:flex items-center gap-2 text-sm font-medium">
             <Phone className="h-4 w-4 text-muted-foreground" />
             <span className="text-muted-foreground">Helpline:</span>
-            <span>+91 1800 123 4567</span>
+            <span className="text-white">+91 1800 123 4567</span>
           </div>
           <Avatar>
             <AvatarImage
@@ -86,10 +100,10 @@ export default function SendMoneyPage() {
           <Button variant="outline" size="icon" onClick={() => router.back()}>
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <h2 className="text-3xl font-bold tracking-tight font-headline">Send Money</h2>
+          <h2 className="text-3xl font-bold tracking-tight font-headline text-white">Send Money</h2>
         </div>
 
-        <Card className="w-full max-w-lg mx-auto">
+        <Card className="w-full max-w-lg mx-auto bg-card/80">
             <CardHeader>
                 <CardTitle>Send Money</CardTitle>
                 <CardDescription>Enter recipient details and amount to send.</CardDescription>

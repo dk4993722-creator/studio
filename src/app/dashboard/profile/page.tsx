@@ -45,6 +45,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
+import Image from "next/image";
 
 const FeatureDialog = ({ title, description }: { title: string, description: string }) => (
     <DialogContent>
@@ -76,8 +77,21 @@ export default function ProfilePage() {
     }
   ];
 
+  const galaxyImage = placeholderImages.placeholderImages.find(p => p.id === 'galaxy-background-3');
+
+
   return (
-    <div className="flex min-h-screen w-full flex-col">
+    <div className="flex min-h-screen w-full flex-col relative">
+      {galaxyImage && (
+        <Image
+          src={galaxyImage.imageUrl}
+          alt={galaxyImage.description}
+          fill
+          style={{ objectFit: 'cover' }}
+          className="-z-10"
+          data-ai-hint={galaxyImage.imageHint}
+        />
+      )}
       <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-border/40 bg-background/80 backdrop-blur-sm px-4 md:px-8">
         <div className="flex items-center gap-2">
           <YunexLogo className="h-10 w-10" />
@@ -87,7 +101,7 @@ export default function ProfilePage() {
           <div className="hidden md:flex items-center gap-2 text-sm font-medium">
             <Phone className="h-4 w-4 text-muted-foreground" />
             <span className="text-muted-foreground">Helpline:</span>
-            <span>+91 1800 123 4567</span>
+            <span className="text-white">+91 1800 123 4567</span>
           </div>
           <Avatar>
             <AvatarImage
@@ -107,18 +121,18 @@ export default function ProfilePage() {
           <Button variant="outline" size="icon" onClick={() => router.back()}>
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <h2 className="text-3xl font-bold tracking-tight font-headline">My Profile</h2>
+          <h2 className="text-3xl font-bold tracking-tight font-headline text-white">My Profile</h2>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
-          <Card onClick={() => router.push('/dashboard/profile/kyc')} className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
+          <Card onClick={() => router.push('/dashboard/profile/kyc')} className="cursor-pointer bg-card/80 hover:bg-card/95 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
             <BadgeCheck className="h-10 w-10 text-primary" />
             <p className="mt-2 font-semibold text-sm">KYC</p>
           </Card>
           {profileFeatures.map((feature) => (
             <Dialog key={feature.title}>
               <DialogTrigger asChild>
-                <Card className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
+                <Card className="cursor-pointer bg-card/80 hover:bg-card/95 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
                   {feature.icon}
                   <p className="mt-2 font-semibold text-sm">{feature.title}</p>
                 </Card>
