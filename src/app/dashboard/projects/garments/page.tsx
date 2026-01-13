@@ -13,6 +13,7 @@ import placeholderImages from "@/lib/placeholder-images.json";
 export default function GarmentsProjectPage() {
   const router = useRouter();
   const galaxyImage = placeholderImages.placeholderImages.find(p => p.id === 'galaxy-background-3');
+  const scooterImage = placeholderImages.placeholderImages.find(p => p.id === 'electric-scooter-hero-1');
 
   return (
     <div className="flex min-h-screen w-full flex-col relative">
@@ -57,6 +58,18 @@ export default function GarmentsProjectPage() {
           </Button>
           <h2 className="text-3xl font-bold tracking-tight font-headline text-white">Garments Project</h2>
         </div>
+
+        {scooterImage && (
+          <div className="relative w-full h-48 md:h-64 rounded-lg overflow-hidden shadow-lg mb-4">
+            <Image
+              src={scooterImage.imageUrl}
+              alt={scooterImage.description}
+              fill
+              style={{ objectFit: 'cover' }}
+              data-ai-hint={scooterImage.imageHint}
+            />
+          </div>
+        )}
         
         <Card className="bg-card/80">
             <CardHeader>
