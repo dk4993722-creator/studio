@@ -91,6 +91,7 @@ export default function BuyPackagePage() {
   const heroImage = placeholderImages.placeholderImages.find(p => p.id === 'electric-scooter-hero-1');
 
   return (
+    <>
     <div className="flex min-h-screen w-full flex-col relative bg-background">
       <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b px-4 md:px-8 bg-[#326cd1]">
         <div className="flex items-center gap-2">
@@ -162,7 +163,7 @@ export default function BuyPackagePage() {
                                         <FormControl>
                                             <SelectTrigger>
                                                 <SelectValue placeholder="Choose a package" />
-                                            </Trigger>
+                                            </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
                                             {packages.map(pkg => (
@@ -216,5 +217,6 @@ export default function BuyPackagePage() {
         </Card>
       </main>
     </div>
+    </>
   );
 }
