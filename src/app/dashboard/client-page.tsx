@@ -168,7 +168,8 @@ export function DashboardClientPage() {
   const projects = [
     {
         title: "Garments Project",
-        icon: <Shirt className="h-8 w-8 text-primary" />
+        icon: <Shirt className="h-8 w-8 text-primary" />,
+        href: "/dashboard/projects/garments"
     },
     {
         title: "Furniture Project",
@@ -272,22 +273,34 @@ export function DashboardClientPage() {
             <h3 className="text-2xl font-bold tracking-tight font-headline mb-4 text-white">Projects</h3>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 md:gap-8">
                 {projects.map((project) => (
-                <Dialog key={project.title}>
-                    <DialogTrigger asChild>
-                        <Card className="cursor-pointer bg-card/80 hover:bg-card/95 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
-                            <CardHeader className="flex flex-col items-center justify-center text-center p-6 flex-grow">
-                                {project.icon}
-                                <CardTitle className="mt-4 font-headline text-xl">{project.title}</CardTitle>
-                            </CardHeader>
-                        </Card>
-                    </DialogTrigger>
-                    <DialogContent>
-                        <DialogHeader>
-                            <DialogTitle>Feature not available</DialogTitle>
-                            <DialogDescription>This is a demo application. This feature has not been implemented.</DialogDescription>
-                        </DialogHeader>
-                    </DialogContent>
-                </Dialog>
+                  project.href ? (
+                      <Card 
+                        key={project.title}
+                        onClick={() => router.push(project.href!)}
+                        className="cursor-pointer bg-card/80 hover:bg-card/95 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
+                          <CardHeader className="flex flex-col items-center justify-center text-center p-6 flex-grow">
+                              {project.icon}
+                              <CardTitle className="mt-4 font-headline text-xl">{project.title}</CardTitle>
+                          </CardHeader>
+                      </Card>
+                  ) : (
+                    <Dialog key={project.title}>
+                        <DialogTrigger asChild>
+                            <Card className="cursor-pointer bg-card/80 hover:bg-card/95 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
+                                <CardHeader className="flex flex-col items-center justify-center text-center p-6 flex-grow">
+                                    {project.icon}
+                                    <CardTitle className="mt-4 font-headline text-xl">{project.title}</CardTitle>
+                                </CardHeader>
+                            </Card>
+                        </DialogTrigger>
+                        <DialogContent>
+                            <DialogHeader>
+                                <DialogTitle>Feature not available</DialogTitle>
+                                <DialogDescription>This is a demo application. This feature has not been implemented.</DialogDescription>
+                            </DialogHeader>
+                        </DialogContent>
+                    </Dialog>
+                  )
                 ))}
             </div>
         </div>
