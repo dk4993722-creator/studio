@@ -63,7 +63,7 @@ export default function AuthPage() {
     router.push(`/dashboard?name=${encodeURIComponent(values.name)}`);
   };
 
-  const galaxyImage = placeholderImages.placeholderImages.find(p => p.id === 'galaxy-background-3');
+  const galaxyImage = placeholderImages.placeholderImages.find(p => p.id === 'galaxy-background-4');
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-4">

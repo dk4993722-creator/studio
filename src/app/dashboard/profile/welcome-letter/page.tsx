@@ -36,7 +36,7 @@ export default function WelcomeLetterPage() {
     });
   };
 
-  const galaxyImage = placeholderImages.placeholderImages.find(p => p.id === 'galaxy-background-3');
+  const galaxyImage = placeholderImages.placeholderImages.find(p => p.id === 'galaxy-background-4');
   const userAvatar = placeholderImages.placeholderImages.find(p => p.id === 'user-avatar-1');
 
   return (

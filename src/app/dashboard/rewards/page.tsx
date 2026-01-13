@@ -35,7 +35,7 @@ const levelData = [
 
 export default function RewardsPage() {
   const router = useRouter();
-  const galaxyImage = placeholderImages.placeholderImages.find(p => p.id === 'galaxy-background-3');
+  const galaxyImage = placeholderImages.placeholderImages.find(p => p.id === 'galaxy-background-4');
 
 
   return (

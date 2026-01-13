@@ -58,7 +58,7 @@ export default function TeamPage() {
     { level: 10, totalMember: 59049, myTeam: "", remarks: "" },
   ];
 
-  const galaxyImage = placeholderImages.placeholderImages.find(p => p.id === 'galaxy-background-3');
+  const galaxyImage = placeholderImages.placeholderImages.find(p => p.id === 'galaxy-background-4');
 
 
   return (

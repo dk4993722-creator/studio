@@ -107,7 +107,7 @@ export default function KycPage() {
     router.push("/dashboard/profile");
   };
 
-  const galaxyImage = placeholderImages.placeholderImages.find(p => p.id === 'galaxy-background-3');
+  const galaxyImage = placeholderImages.placeholderImages.find(p => p.id === 'galaxy-background-4');
 
 
   return (

@@ -56,7 +56,7 @@ export default function SendMoneyPage() {
     router.push("/dashboard/wallet");
   };
 
-  const galaxyImage = placeholderImages.placeholderImages.find(p => p.id === 'galaxy-background-3');
+  const galaxyImage = placeholderImages.placeholderImages.find(p => p.id === 'galaxy-background-4');
 
 
   return (
