@@ -19,6 +19,8 @@ import {
   Sparkles,
   SprayCan,
   Shirt,
+  Armchair,
+  Sparkle,
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -165,12 +167,12 @@ export function DashboardClientPage() {
 
   const projects = [
     {
-        title: "Garments Project",
-        icon: <Shirt className="h-8 w-8 text-primary" />
+        title: "Jhadu Project",
+        icon: <Sparkle className="h-8 w-8 text-primary" />
     },
     {
-        title: "Agarbatti Project",
-        icon: <Wind className="h-8 w-8 text-primary" />
+        title: "Furniture Project",
+        icon: <Armchair className="h-8 w-8 text-primary" />
     },
     {
         title: "Petticoat Project",
