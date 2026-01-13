@@ -53,7 +53,7 @@ const TreeNode = ({ node }: { node: TreeNodeData }) => {
 
   return (
     <li className="flex flex-col items-center relative">
-      <div className="flex flex-col items-center p-0.5 m-0.5 rounded bg-card text-card-foreground shadow-sm min-w-[70px] border border-primary/20">
+      <div className="flex flex-col items-center p-0.5 m-0.5 rounded text-card-foreground min-w-[70px]">
         <User className="w-3 h-3 mb-0.5 text-primary" />
         <span className="font-semibold text-[11px] leading-tight">{node.name}</span>
         <span className="text-[9px] text-muted-foreground">ID: {node.id}</span>
@@ -123,7 +123,7 @@ export default function MlmTreePage() {
           </Button>
           <h2 className="text-3xl font-bold tracking-tight font-headline text-white">MLM Tree</h2>
         </div>
-        <Card className="overflow-x-auto bg-card/80">
+        <Card className="overflow-x-auto border-0">
             <CardContent className="p-6">
                 <div className="flex justify-center">
                     <ul className="flex flex-col items-center">
