@@ -47,6 +47,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 import placeholderImages from "@/lib/placeholder-images.json";
+import { Armchair, HandPlatter } from "lucide-react";
 
 export function DashboardClientPage() {
   const [balance, setBalance] = useState(1250.75);
@@ -165,18 +166,20 @@ export function DashboardClientPage() {
 
   const projects = [
     {
-        title: "Garments Project",
+        title: "Jhadu Project",
+        icon: <HandPlatter className="h-8 w-8 text-primary" />
+    },
+    {
+        title: "Furniture Project",
+        icon: <Armchair className="h-8 w-8 text-primary" />
+    },
+    {
+        title: "Petticoat Project",
         icon: <Shirt className="h-8 w-8 text-primary" />
-    },
-    {
-        title: "Agarbatti Project",
-        icon: <Wind className="h-8 w-8 text-primary" />
-    },
-    {
-        title: "Electronic Project",
-        icon: <CircuitBoard className="h-8 w-8 text-primary" />
     }
-  ]
+  ];
+
+  const heroImage = placeholderImages.placeholderImages.find(p => p.id === 'electric-scooter-hero-1');
 
   return (
     <div className="flex min-h-screen w-full flex-col">
@@ -201,6 +204,17 @@ export function DashboardClientPage() {
         </div>
       </header>
       <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
+        {heroImage && (
+          <div className="relative w-full h-48 md:h-64 rounded-lg overflow-hidden shadow-lg mb-4">
+            <Image
+              src={heroImage.imageUrl}
+              alt={heroImage.description}
+              fill
+              style={{ objectFit: 'cover' }}
+              data-ai-hint={heroImage.imageHint}
+            />
+          </div>
+        )}
         <h2 className="text-3xl font-bold tracking-tight font-headline">Welcome back, {name}!</h2>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 md:gap-8">
           <Card onClick={() => router.push('/dashboard/team')} className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
