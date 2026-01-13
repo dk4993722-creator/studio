@@ -123,7 +123,7 @@ export default function MlmTreePage() {
           </Button>
           <h2 className="text-3xl font-bold tracking-tight font-headline text-white">MLM Tree</h2>
         </div>
-        <Card className="overflow-x-auto bg-card/80">
+        <Card className="overflow-x-auto bg-transparent border-0 shadow-none">
             <CardContent className="p-6">
                 <div className="flex justify-center">
                     <ul className="flex flex-col items-center">
