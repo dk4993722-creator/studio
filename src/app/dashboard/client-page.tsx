@@ -58,6 +58,7 @@ export function DashboardClientPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [name, setName] = useState('User');
+  const userId = 'YUNEX12345'; // Example User ID
 
   useEffect(() => {
     const userName = searchParams.get('name');
@@ -155,31 +156,16 @@ export function DashboardClientPage() {
               </DialogHeader>
               <div className="grid gap-4 py-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="complaint-subject">Subject</Label>
-                  <Input id="complaint-subject" placeholder="e.g., Issue with wallet" />
+                  <Label htmlFor="complaint-user-id">User ID</Label>
+                  <Input id="complaint-user-id" value={userId} readOnly />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="complaint-category">Category</Label>
-                  <Select>
-                    <SelectTrigger id="complaint-category">
-                      <SelectValue placeholder="Select a category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="technical">Technical Issue</SelectItem>
-                      <SelectItem value="payment">Payment Issue</SelectItem>
-                      <SelectItem value="account">Account Problem</SelectItem>
-                      <SelectItem value="feedback">General Feedback</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="complaint-description">Description</Label>
+                  <Label htmlFor="complaint-description">Complaint</Label>
                   <Textarea id="complaint-description" placeholder="Type your message here." rows={4} />
                 </div>
               </div>
               <DialogFooter>
-                <Button onClick={() => handleComplainSubmit(close as () => void)} className="bg-accent hover:bg-accent/90 text-accent-foreground">Submit Complaint</Button>
+                <Button onClick={() => handleComplainSubmit(close as () => void)} className="bg-accent hover:bg-accent/90 text-accent-foreground">Submit</Button>
               </DialogFooter>
             </>
           )}
