@@ -133,15 +133,10 @@ export default function WalletPage() {
                 <p className="mt-2 font-semibold text-sm">Add Money</p>
             </Card>
 
-            <Dialog>
-              <DialogTrigger asChild>
-                <Card className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
-                  <Package className="h-10 w-10 text-primary" />
-                  <p className="mt-2 font-semibold text-sm">Buy Package</p>
-                </Card>
-              </DialogTrigger>
-              <FeatureDialog title="Buy Package" description="This feature is under development." />
-            </Dialog>
+            <Card onClick={() => router.push('/dashboard/wallet/buy-package')} className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
+                <Package className="h-10 w-10 text-primary" />
+                <p className="mt-2 font-semibold text-sm">Buy Package</p>
+            </Card>
 
             <Card onClick={() => router.push('/dashboard/wallet/send')} className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
                 <ArrowUpCircle className="h-10 w-10 text-primary" />
