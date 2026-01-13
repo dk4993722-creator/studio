@@ -53,9 +53,9 @@ const TreeNode = ({ node }: { node: TreeNodeData }) => {
 
   return (
     <li className="flex flex-col items-center relative">
-      <div className="flex flex-col items-center p-0.5 m-0.5 rounded text-card-foreground min-w-[70px]">
-        <User className="w-3 h-3 mb-0.5 text-primary" />
-        <span className="font-semibold text-[11px] leading-tight">{node.name}</span>
+      <div className="flex flex-col items-center justify-center p-2 m-0.5 rounded-full text-card-foreground w-16 h-16 border border-primary">
+        <User className="w-4 h-4 mb-0.5 text-primary" />
+        <span className="font-semibold text-[11px] leading-tight text-center">{node.name}</span>
         <span className="text-[9px] text-muted-foreground">ID: {node.id}</span>
       </div>
       {hasChildren && (
