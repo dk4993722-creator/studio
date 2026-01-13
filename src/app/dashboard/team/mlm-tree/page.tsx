@@ -62,9 +62,9 @@ const TreeNode = ({ node }: { node: TreeNodeData }) => {
       </div>
       {hasChildren && (
         <>
-          <div className="absolute top-[100%] w-px h-3 bg-border"></div>
+          <div className="absolute top-[100%] w-0.5 h-3 bg-white/50"></div>
           <ul className="flex justify-center pt-3 relative 
-                         before:content-[''] before:absolute before:top-0 before:h-px before:bg-border
+                         before:content-[''] before:absolute before:top-0 before:h-0.5 before:bg-white/50
                          before:left-[calc(50%_-_(var(--child-count)_-_1)_*_50%_/_var(--child-count)_+_var(--child-count)_*_0.25rem/_var(--child-count))] 
                          before:right-[calc(50%_-_(var(--child-count)_-_1)_*_50%_/_var(--child-count)_+_var(--child-count)_*_0.25rem/_var(--child-count))]
                          "
