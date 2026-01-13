@@ -75,7 +75,7 @@ export default function GarmentsProjectPage() {
             <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                     <Shirt className="h-6 w-6" />
-                    <span>Manage Your Garments</span>
+                    <span>Your Garments</span>
                 </CardTitle>
             </CardHeader>
             <CardContent>
