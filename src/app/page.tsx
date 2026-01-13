@@ -66,17 +66,18 @@ export default function AuthPage() {
   const galaxyImage = placeholderImages.placeholderImages.find(p => p.id === 'galaxy-background-3');
 
   return (
-    <main className="relative flex min-h-screen flex-col items-center justify-center p-4">
+    <main className="flex min-h-screen flex-col items-center justify-center p-4">
+      <div className="absolute inset-0 -z-10">
       {galaxyImage && (
          <Image
           src={galaxyImage.imageUrl}
           alt={galaxyImage.description}
           fill
           style={{ objectFit: 'cover' }}
-          className="-z-10"
           data-ai-hint={galaxyImage.imageHint}
         />
       )}
+      </div>
       <div className="flex items-center gap-4 mb-8">
         <YunexLogo className="h-16 w-16" />
         <h1 className="text-4xl font-headline font-bold text-white">

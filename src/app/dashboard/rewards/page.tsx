@@ -37,7 +37,7 @@ export default function RewardsPage() {
 
   return (
     <div className="flex min-h-screen w-full flex-col">
-      <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background/80 backdrop-blur-sm px-4 md:px-8">
+      <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-border/40 bg-background/80 backdrop-blur-sm px-4 md:px-8">
         <div className="flex items-center gap-2">
           <YunexLogo className="h-10 w-10" />
           <h1 className="text-xl font-bold text-primary font-headline">YUNEX</h1>
@@ -62,7 +62,7 @@ export default function RewardsPage() {
           <Button variant="outline" size="icon" onClick={() => router.back()}>
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <h2 className="text-3xl font-bold tracking-tight font-headline text-white">Level</h2>
+          <h2 className="text-3xl font-bold tracking-tight font-headline">Level</h2>
         </div>
         <Card>
           <CardContent className="pt-6">
