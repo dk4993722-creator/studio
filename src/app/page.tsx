@@ -85,13 +85,13 @@ export default function AuthPage() {
         </h1>
       </div>
       <Tabs defaultValue="login" className="w-full max-w-md">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-2 bg-white/20">
           <TabsTrigger value="login">Login</TabsTrigger>
           <TabsTrigger value="signup">Sign Up</TabsTrigger>
         </TabsList>
 
         <TabsContent value="login">
-          <Card className="bg-card/80 border-0">
+          <Card className="bg-black/30 backdrop-blur-sm border-white/20">
             <CardHeader>
               <CardTitle className="font-headline">Login</CardTitle>
               <CardDescription>
@@ -108,7 +108,7 @@ export default function AuthPage() {
                       <FormItem>
                         <FormLabel>Email</FormLabel>
                         <FormControl>
-                          <Input placeholder="you@example.com" {...field} className="bg-[#490ad1]/50 border-0" />
+                          <Input placeholder="you@example.com" {...field} className="bg-transparent border-white/30" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -122,7 +122,7 @@ export default function AuthPage() {
                         <FormLabel>Password</FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Input type={showPassword ? "text" : "password"} placeholder="••••••••" {...field} className="bg-[#490ad1]/50 border-0" />
+                            <Input type={showPassword ? "text" : "password"} placeholder="••••••••" {...field} className="bg-transparent border-white/30" />
                             <Button
                               type="button"
                               variant="ghost"
@@ -146,7 +146,7 @@ export default function AuthPage() {
         </TabsContent>
 
         <TabsContent value="signup">
-          <Card className="bg-card/80 border-0">
+          <Card className="bg-black/30 backdrop-blur-sm border-white/20">
             <CardHeader>
               <CardTitle className="font-headline">Sign Up</CardTitle>
               <CardDescription>
@@ -163,7 +163,7 @@ export default function AuthPage() {
                       <FormItem>
                         <FormLabel>Full Name</FormLabel>
                         <FormControl>
-                          <Input placeholder="John Doe" {...field} className="bg-[#490ad1]/50 border-0" />
+                          <Input placeholder="John Doe" {...field} className="bg-transparent border-white/30" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -176,7 +176,7 @@ export default function AuthPage() {
                       <FormItem>
                         <FormLabel>Email</FormLabel>
                         <FormControl>
-                          <Input placeholder="you@example.com" {...field} className="bg-[#490ad1]/50 border-0" />
+                          <Input placeholder="you@example.com" {...field} className="bg-transparent border-white/30" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -190,7 +190,7 @@ export default function AuthPage() {
                         <FormLabel>Password</FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Input type={showPassword ? "text" : "password"} placeholder="••••••••" {...field} className="bg-[#490ad1]/50 border-0" />
+                            <Input type={showPassword ? "text" : "password"} placeholder="••••••••" {...field} className="bg-transparent border-white/30" />
                             <Button
                               type="button"
                               variant="ghost"
