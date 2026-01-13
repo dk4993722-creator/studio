@@ -19,6 +19,7 @@ import {
   Shirt,
   CircuitBoard,
   Sparkle,
+  Armchair,
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -47,7 +48,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 import placeholderImages from "@/lib/placeholder-images.json";
-import { Armchair, HandPlatter } from "lucide-react";
+import { HandPlatter } from "lucide-react";
 
 export function DashboardClientPage() {
   const [balance, setBalance] = useState(1250.75);
@@ -170,8 +171,8 @@ export function DashboardClientPage() {
         icon: <Shirt className="h-8 w-8 text-primary" />
     },
     {
-        title: "Agarbatti Project",
-        icon: <Wind className="h-8 w-8 text-primary" />
+        title: "Furniture Project",
+        icon: <Armchair className="h-8 w-8 text-primary" />
     },
     {
         title: "Electronic Project",
