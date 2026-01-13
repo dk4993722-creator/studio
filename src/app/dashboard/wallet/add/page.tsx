@@ -35,6 +35,7 @@ import Image from "next/image";
 
 const addMoneySchema = z.object({
   amount: z.coerce.number().positive({ message: "Amount must be positive." }),
+  utrNumber: z.string().min(1, { message: "UTR/Bank Reference is required." }),
 });
 
 export default function AddMoneyPage() {
@@ -43,20 +44,21 @@ export default function AddMoneyPage() {
 
   const form = useForm<z.infer<typeof addMoneySchema>>({
     resolver: zodResolver(addMoneySchema),
-    defaultValues: { amount: 0 },
+    defaultValues: { amount: 0, utrNumber: "" },
   });
 
   const onSubmit = (values: z.infer<typeof addMoneySchema>) => {
     console.log("Adding money:", values);
     toast({
-      title: "Success!",
-      description: `₹${values.amount.toFixed(2)} has been added to your wallet.`,
+      title: "Request Submitted!",
+      description: `Your request to add ₹${values.amount.toFixed(2)} is being processed. It will reflect in your wallet after verification.`,
     });
     router.push("/dashboard/wallet");
   };
 
   const galaxyImage = placeholderImages.placeholderImages.find(p => p.id === 'galaxy-background-5');
   const heroImage = placeholderImages.placeholderImages.find(p => p.id === 'electric-scooter-hero-1');
+  const qrCodeImage = placeholderImages.placeholderImages.find(p => p.id === 'qr-code-placeholder');
 
 
   return (
@@ -117,9 +119,22 @@ export default function AddMoneyPage() {
         <Card className="w-full max-w-lg mx-auto bg-card/60 backdrop-blur-sm border-white/10">
             <CardHeader>
                 <CardTitle>Add Money to Wallet</CardTitle>
-                <CardDescription>Enter the amount you wish to add to your wallet.</CardDescription>
+                <CardDescription>Scan the QR code to pay, then enter the details below.</CardDescription>
             </CardHeader>
             <CardContent>
+                <div className="flex justify-center mb-6">
+                    {qrCodeImage && (
+                        <div className="p-4 bg-white rounded-lg">
+                            <Image
+                                src={qrCodeImage.imageUrl}
+                                alt={qrCodeImage.description}
+                                width={200}
+                                height={200}
+                                data-ai-hint={qrCodeImage.imageHint}
+                            />
+                        </div>
+                    )}
+                </div>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                         <FormField
@@ -135,7 +150,20 @@ export default function AddMoneyPage() {
                                 </FormItem>
                             )}
                         />
-                        <Button type="submit" className="w-full">Add Money</Button>
+                         <FormField
+                            control={form.control}
+                            name="utrNumber"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>UTR Number / Bank Reference</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="Enter transaction reference number" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <Button type="submit" className="w-full">Submit Request</Button>
                     </form>
                 </Form>
             </CardContent>
