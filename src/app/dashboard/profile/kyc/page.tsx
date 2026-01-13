@@ -58,7 +58,7 @@ const FileUpload = ({ field, label }: { field: any, label: string }) => {
             <FormLabel>{label}</FormLabel>
             <FormControl>
                 <div 
-                    className="relative flex items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-card hover:bg-muted"
+                    className="relative flex items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-card/60 hover:bg-muted"
                     onClick={() => inputRef.current?.click()}
                 >
                     <Input
@@ -107,7 +107,7 @@ export default function KycPage() {
     router.push("/dashboard/profile");
   };
 
-  const galaxyImage = placeholderImages.placeholderImages.find(p => p.id === 'galaxy-background-4');
+  const galaxyImage = placeholderImages.placeholderImages.find(p => p.id === 'galaxy-background-5');
 
 
   return (
@@ -154,7 +154,7 @@ export default function KycPage() {
           <h2 className="text-3xl font-bold tracking-tight font-headline text-white">KYC Verification</h2>
         </div>
 
-        <Card className="w-full max-w-2xl mx-auto bg-card/80">
+        <Card className="w-full max-w-2xl mx-auto bg-card/60 backdrop-blur-sm border-white/10">
           <CardHeader>
             <CardTitle>Submit Your Documents</CardTitle>
             <CardDescription>

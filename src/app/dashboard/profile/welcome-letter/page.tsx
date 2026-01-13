@@ -36,7 +36,7 @@ export default function WelcomeLetterPage() {
     });
   };
 
-  const galaxyImage = placeholderImages.placeholderImages.find(p => p.id === 'galaxy-background-4');
+  const galaxyImage = placeholderImages.placeholderImages.find(p => p.id === 'galaxy-background-5');
   const userAvatar = placeholderImages.placeholderImages.find(p => p.id === 'user-avatar-1');
 
   return (
@@ -93,7 +93,7 @@ export default function WelcomeLetterPage() {
         </div>
 
         <div className="flex justify-center items-start">
-            <Card className="w-full max-w-4xl bg-card/90 text-card-foreground p-4 sm:p-8">
+            <Card className="w-full max-w-4xl bg-card/60 backdrop-blur-sm border-white/10 text-card-foreground p-4 sm:p-8">
                 <CardContent className="p-2 sm:p-4">
                     <div className="border-4 border-primary p-4 sm:p-8 text-white">
                         <header className="flex justify-between items-start mb-8">

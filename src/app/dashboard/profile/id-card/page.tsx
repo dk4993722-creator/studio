@@ -23,7 +23,7 @@ export default function IdCardPage() {
     }
   }, [searchParams]);
 
-  const galaxyImage = placeholderImages.placeholderImages.find(p => p.id === 'galaxy-background-4');
+  const galaxyImage = placeholderImages.placeholderImages.find(p => p.id === 'galaxy-background-5');
   const userAvatar = placeholderImages.placeholderImages.find(p => p.id === 'user-avatar-1');
   const qrCodeImage = placeholderImages.placeholderImages.find(p => p.id === 'qr-code-placeholder');
 
@@ -76,7 +76,7 @@ export default function IdCardPage() {
         </div>
 
         <div className="flex justify-center items-start">
-            <Card className="w-full max-w-sm bg-gradient-to-br from-card to-card/70 border-primary shadow-2xl shadow-primary/20 overflow-hidden">
+            <Card className="w-full max-w-sm bg-gradient-to-br from-card/70 to-card/50 backdrop-blur-lg border-primary/50 shadow-2xl shadow-primary/20 overflow-hidden">
                 <CardContent className="p-6 flex flex-col items-center">
                     <div className="flex items-center justify-between w-full mb-6">
                         <YunexLogo className="h-12 w-12" />

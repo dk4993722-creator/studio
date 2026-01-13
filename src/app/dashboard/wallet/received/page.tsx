@@ -36,7 +36,7 @@ const receivedData = [
 
 export default function ReceivedBalancePage() {
   const router = useRouter();
-  const galaxyImage = placeholderImages.placeholderImages.find(p => p.id === 'galaxy-background-4');
+  const galaxyImage = placeholderImages.placeholderImages.find(p => p.id === 'galaxy-background-5');
 
 
   return (
@@ -83,7 +83,7 @@ export default function ReceivedBalancePage() {
           <h2 className="text-3xl font-bold tracking-tight font-headline text-white">Transaction History</h2>
         </div>
 
-        <Card className="bg-card/80">
+        <Card className="bg-card/60 backdrop-blur-sm border-white/10">
             <CardHeader>
                 <CardTitle>Transaction History</CardTitle>
                 <CardDescription>A list of funds you have received.</CardDescription>

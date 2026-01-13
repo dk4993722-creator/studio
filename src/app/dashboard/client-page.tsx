@@ -182,7 +182,7 @@ export function DashboardClientPage() {
   ];
 
   const heroImage = placeholderImages.placeholderImages.find(p => p.id === 'electric-scooter-hero-1');
-  const galaxyImage = placeholderImages.placeholderImages.find(p => p.id === 'galaxy-background-4');
+  const galaxyImage = placeholderImages.placeholderImages.find(p => p.id === 'galaxy-background-5');
 
 
   return (
@@ -231,7 +231,7 @@ export function DashboardClientPage() {
         )}
         <h2 className="text-3xl font-bold tracking-tight font-headline text-white">Welcome back, {name}!</h2>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 md:gap-8">
-          <Card onClick={() => router.push('/dashboard/team')} className="cursor-pointer bg-card/80 hover:bg-card/95 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
+          <Card onClick={() => router.push('/dashboard/team')} className="cursor-pointer bg-card/60 backdrop-blur-sm border-white/10 hover:bg-card/80 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
             <CardHeader className="flex flex-col items-center justify-center text-center p-6 flex-grow">
               <Users2 className="h-8 w-8 text-primary" />
               <CardTitle className="mt-4 font-headline">My Team</CardTitle>
@@ -241,7 +241,7 @@ export function DashboardClientPage() {
             </CardContent>
           </Card>
 
-          <Card onClick={() => router.push('/dashboard/wallet')} className="cursor-pointer bg-card/80 hover:bg-card/95 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
+          <Card onClick={() => router.push('/dashboard/wallet')} className="cursor-pointer bg-card/60 backdrop-blur-sm border-white/10 hover:bg-card/80 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
             <CardHeader className="flex flex-col items-center justify-center text-center p-6 flex-grow">
               <WalletCards className="h-8 w-8 text-primary" />
               <CardTitle className="mt-4 font-headline">Wallet</CardTitle>
@@ -254,7 +254,7 @@ export function DashboardClientPage() {
           {features.map((feature) => (
             <Dialog key={feature.title}>
               <DialogTrigger asChild>
-                <Card className="cursor-pointer bg-card/80 hover:bg-card/95 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
+                <Card className="cursor-pointer bg-card/60 backdrop-blur-sm border-white/10 hover:bg-card/80 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
                   <CardHeader className="flex flex-col items-center justify-center text-center p-6 flex-grow">
                     {feature.icon}
                     <CardTitle className="mt-4 font-headline">{feature.title}</CardTitle>
@@ -265,7 +265,7 @@ export function DashboardClientPage() {
                   </CardContent>
                 </Card>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[425px]">{feature.dialog}</DialogContent>
+              <DialogContent className="sm:max-w-[425px] bg-card/80 backdrop-blur-sm border-white/10">{feature.dialog}</DialogContent>
             </Dialog>
           ))}
         </div>
@@ -277,7 +277,7 @@ export function DashboardClientPage() {
                       <Card 
                         key={project.title}
                         onClick={() => router.push(project.href!)}
-                        className="cursor-pointer bg-card/80 hover:bg-card/95 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
+                        className="cursor-pointer bg-card/60 backdrop-blur-sm border-white/10 hover:bg-card/80 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
                           <CardHeader className="flex flex-col items-center justify-center text-center p-6 flex-grow">
                               {project.icon}
                               <CardTitle className="mt-4 font-headline text-xl">{project.title}</CardTitle>
@@ -286,14 +286,14 @@ export function DashboardClientPage() {
                   ) : (
                     <Dialog key={project.title}>
                         <DialogTrigger asChild>
-                            <Card className="cursor-pointer bg-card/80 hover:bg-card/95 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
+                            <Card className="cursor-pointer bg-card/60 backdrop-blur-sm border-white/10 hover:bg-card/80 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
                                 <CardHeader className="flex flex-col items-center justify-center text-center p-6 flex-grow">
                                     {project.icon}
                                     <CardTitle className="mt-4 font-headline text-xl">{project.title}</CardTitle>
                                 </CardHeader>
                             </Card>
                         </DialogTrigger>
-                        <DialogContent>
+                        <DialogContent className="bg-card/80 backdrop-blur-sm border-white/10">
                             <DialogHeader>
                                 <DialogTitle>Feature not available</DialogTitle>
                                 <DialogDescription>This is a demo application. This feature has not been implemented.</DialogDescription>

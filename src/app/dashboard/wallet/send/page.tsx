@@ -56,7 +56,7 @@ export default function SendMoneyPage() {
     router.push("/dashboard/wallet");
   };
 
-  const galaxyImage = placeholderImages.placeholderImages.find(p => p.id === 'galaxy-background-4');
+  const galaxyImage = placeholderImages.placeholderImages.find(p => p.id === 'galaxy-background-5');
 
 
   return (
@@ -103,7 +103,7 @@ export default function SendMoneyPage() {
           <h2 className="text-3xl font-bold tracking-tight font-headline text-white">Send Money</h2>
         </div>
 
-        <Card className="w-full max-w-lg mx-auto bg-card/80">
+        <Card className="w-full max-w-lg mx-auto bg-card/60 backdrop-blur-sm border-white/10">
             <CardHeader>
                 <CardTitle>Send Money</CardTitle>
                 <CardDescription>Enter recipient details and amount to send.</CardDescription>

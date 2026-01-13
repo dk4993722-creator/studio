@@ -26,7 +26,7 @@ const priceData = [
 
 export default function GarmentsProjectPage() {
   const router = useRouter();
-  const galaxyImage = placeholderImages.placeholderImages.find(p => p.id === 'galaxy-background-4');
+  const galaxyImage = placeholderImages.placeholderImages.find(p => p.id === 'galaxy-background-5');
   const scooterImage = placeholderImages.placeholderImages.find(p => p.id === 'electric-scooter-hero-1');
 
   return (
@@ -85,7 +85,7 @@ export default function GarmentsProjectPage() {
           </div>
         )}
         
-        <Card className="bg-card/80">
+        <Card className="bg-card/60 backdrop-blur-sm border-white/10">
             <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                     <Shirt className="h-6 w-6" />
@@ -97,7 +97,7 @@ export default function GarmentsProjectPage() {
             </CardContent>
         </Card>
 
-        <Card className="bg-card/80">
+        <Card className="bg-card/60 backdrop-blur-sm border-white/10">
           <CardHeader>
               <CardTitle>Price List</CardTitle>
           </CardHeader>

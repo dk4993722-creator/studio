@@ -63,7 +63,7 @@ export default function AuthPage() {
     router.push(`/dashboard?name=${encodeURIComponent(values.name)}`);
   };
 
-  const galaxyImage = placeholderImages.placeholderImages.find(p => p.id === 'galaxy-background-4');
+  const galaxyImage = placeholderImages.placeholderImages.find(p => p.id === 'galaxy-background-5');
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-4">
@@ -85,13 +85,13 @@ export default function AuthPage() {
         </h1>
       </div>
       <Tabs defaultValue="login" className="w-full max-w-md">
-        <TabsList className="grid w-full grid-cols-2 bg-white/20">
+        <TabsList className="grid w-full grid-cols-2 bg-card/60 backdrop-blur-sm border border-white/10">
           <TabsTrigger value="login">Login</TabsTrigger>
           <TabsTrigger value="signup">Sign Up</TabsTrigger>
         </TabsList>
 
         <TabsContent value="login">
-          <Card className="bg-black/30 backdrop-blur-sm border-white/20">
+          <Card className="bg-card/60 backdrop-blur-sm border-white/10">
             <CardHeader>
               <CardTitle className="font-headline">Login</CardTitle>
               <CardDescription>
@@ -146,7 +146,7 @@ export default function AuthPage() {
         </TabsContent>
 
         <TabsContent value="signup">
-          <Card className="bg-black/30 backdrop-blur-sm border-white/20">
+          <Card className="bg-card/60 backdrop-blur-sm border-white/10">
             <CardHeader>
               <CardTitle className="font-headline">Sign Up</CardTitle>
               <CardDescription>

@@ -35,7 +35,7 @@ import {
 import Image from "next/image";
 
 const FeatureDialog = ({ title, description }: { title: string, description: string }) => (
-  <DialogContent>
+  <DialogContent className="bg-card/80 backdrop-blur-sm border-white/10">
     <DialogHeader>
       <DialogTitle>{title}</DialogTitle>
       <DialogDescription>{description}</DialogDescription>
@@ -60,7 +60,7 @@ export default function WalletPage() {
     },
   ];
 
-  const galaxyImage = placeholderImages.placeholderImages.find(p => p.id === 'galaxy-background-4');
+  const galaxyImage = placeholderImages.placeholderImages.find(p => p.id === 'galaxy-background-5');
 
 
   return (
@@ -107,7 +107,7 @@ export default function WalletPage() {
           <h2 className="text-3xl font-bold tracking-tight font-headline text-white">My Wallet</h2>
         </div>
         
-        <Card className="w-full shadow-lg bg-card/80">
+        <Card className="w-full shadow-lg bg-card/60 backdrop-blur-sm border-white/10">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-lg font-medium">Wallet Balance</CardTitle>
             <Wallet className="h-6 w-6 text-muted-foreground" />
@@ -119,12 +119,12 @@ export default function WalletPage() {
         </Card>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
-            <Card onClick={() => router.push('/dashboard/wallet/send')} className="cursor-pointer bg-card/80 hover:bg-card/95 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
+            <Card onClick={() => router.push('/dashboard/wallet/send')} className="cursor-pointer bg-card/60 backdrop-blur-sm border-white/10 hover:bg-card/80 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
                 <ArrowUpCircle className="h-10 w-10 text-primary" />
                 <p className="mt-2 font-semibold text-sm">Send</p>
             </Card>
             
-            <Card onClick={() => router.push('/dashboard/wallet/received')} className="cursor-pointer bg-card/80 hover:bg-card/95 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
+            <Card onClick={() => router.push('/dashboard/wallet/received')} className="cursor-pointer bg-card/60 backdrop-blur-sm border-white/10 hover:bg-card/80 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
                 <ArrowDownCircle className="h-10 w-10 text-primary" />
                 <p className="mt-2 font-semibold text-sm">Transaction History</p>
             </Card>
@@ -132,7 +132,7 @@ export default function WalletPage() {
           {walletFeatures.map((feature) => (
             <Dialog key={feature.title}>
               <DialogTrigger asChild>
-                <Card className="cursor-pointer bg-card/80 hover:bg-card/95 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
+                <Card className="cursor-pointer bg-card/60 backdrop-blur-sm border-white/10 hover:bg-card/80 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
                   {feature.icon}
                   <p className="mt-2 font-semibold text-sm">{feature.title}</p>
                 </Card>
@@ -140,7 +140,7 @@ export default function WalletPage() {
               {feature.dialog}
             </Dialog>
           ))}
-          <Card onClick={() => router.push('/dashboard/profile')} className="cursor-pointer bg-card/80 hover:bg-card/95 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
+          <Card onClick={() => router.push('/dashboard/profile')} className="cursor-pointer bg-card/60 backdrop-blur-sm border-white/10 hover:bg-card/80 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
               <User className="h-10 w-10 text-primary" />
               <p className="mt-2 font-semibold text-sm">Profile</p>
           </Card>

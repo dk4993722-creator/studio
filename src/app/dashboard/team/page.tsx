@@ -58,7 +58,7 @@ export default function TeamPage() {
     { level: 10, totalMember: 59049, myTeam: "", remarks: "" },
   ];
 
-  const galaxyImage = placeholderImages.placeholderImages.find(p => p.id === 'galaxy-background-4');
+  const galaxyImage = placeholderImages.placeholderImages.find(p => p.id === 'galaxy-background-5');
 
 
   return (
@@ -102,7 +102,7 @@ export default function TeamPage() {
         </div>
         <div className="grid gap-6 md:grid-cols-3">
           {teamFeatures.map((feature) => (
-            <Card key={feature.title} onClick={feature.onClick} className="flex flex-col cursor-pointer bg-card/80 hover:bg-card/95 hover:shadow-lg transition-shadow">
+            <Card key={feature.title} onClick={feature.onClick} className="flex flex-col cursor-pointer bg-card/60 backdrop-blur-sm border-white/10 hover:bg-card/80 hover:shadow-lg transition-shadow">
               <CardHeader className="flex-row items-center gap-4 space-y-0">
                 {feature.icon}
                 <CardTitle>{feature.title}</CardTitle>
@@ -115,7 +115,7 @@ export default function TeamPage() {
         </div>
          {showTeamDetails && (
             <div className="mt-4">
-            <Card className="bg-card/80">
+            <Card className="bg-card/60 backdrop-blur-sm border-white/10">
                 <CardHeader>
                 <CardTitle>Team Details</CardTitle>
                 </CardHeader>

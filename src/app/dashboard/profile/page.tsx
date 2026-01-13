@@ -48,7 +48,7 @@ import { useState } from "react";
 import Image from "next/image";
 
 const FeatureDialog = ({ title, description }: { title: string, description: string }) => (
-    <DialogContent>
+    <DialogContent className="bg-card/80 backdrop-blur-sm border-white/10">
       <DialogHeader>
         <DialogTitle>{title}</DialogTitle>
         <DialogDescription>{description}</DialogDescription>
@@ -77,7 +77,7 @@ export default function ProfilePage() {
     }
   ];
 
-  const galaxyImage = placeholderImages.placeholderImages.find(p => p.id === 'galaxy-background-4');
+  const galaxyImage = placeholderImages.placeholderImages.find(p => p.id === 'galaxy-background-5');
 
 
   return (
@@ -125,20 +125,20 @@ export default function ProfilePage() {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
-          <Card onClick={() => router.push('/dashboard/profile/kyc')} className="cursor-pointer bg-card/80 hover:bg-card/95 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
+          <Card onClick={() => router.push('/dashboard/profile/kyc')} className="cursor-pointer bg-card/60 backdrop-blur-sm border-white/10 hover:bg-card/80 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
             <BadgeCheck className="h-10 w-10 text-primary" />
             <p className="mt-2 font-semibold text-sm">KYC</p>
           </Card>
           {profileFeatures.map((feature) => (
             feature.onClick ? (
-              <Card key={feature.title} onClick={feature.onClick} className="cursor-pointer bg-card/80 hover:bg-card/95 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
+              <Card key={feature.title} onClick={feature.onClick} className="cursor-pointer bg-card/60 backdrop-blur-sm border-white/10 hover:bg-card/80 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
                 {feature.icon}
                 <p className="mt-2 font-semibold text-sm">{feature.title}</p>
               </Card>
             ) : (
             <Dialog key={feature.title}>
               <DialogTrigger asChild>
-                <Card className="cursor-pointer bg-card/80 hover:bg-card/95 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
+                <Card className="cursor-pointer bg-card/60 backdrop-blur-sm border-white/10 hover:bg-card/80 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
                   {feature.icon}
                   <p className="mt-2 font-semibold text-sm">{feature.title}</p>
                 </Card>
