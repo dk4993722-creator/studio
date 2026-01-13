@@ -175,10 +175,6 @@ export function DashboardClientPage() {
     {
         title: "Electronic Project",
         icon: <CircuitBoard className="h-8 w-8 text-primary" />
-    },
-    {
-        title: "Sanitary Pads",
-        icon: <Droplets className="h-8 w-8 text-primary" />
     }
   ]
 
@@ -272,3 +268,5 @@ export function DashboardClientPage() {
     </div>
   );
 }
+
+    
