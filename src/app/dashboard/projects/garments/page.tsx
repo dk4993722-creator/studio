@@ -5,10 +5,24 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { ArrowLeft, Phone, LogOut, Shirt } from "lucide-react";
 import { YunexLogo } from "@/components/yunex-logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import placeholderImages from "@/lib/placeholder-images.json";
+
+const priceData = [
+  { sNo: 1, product: "Shirts", marketPrice: "450-650", yunexPrice: "50-80" },
+  { sNo: 2, product: "Jeans", marketPrice: "1200-1500", yunexPrice: "150-200" },
+  { sNo: 3, product: "T-shirts", marketPrice: "700-800", yunexPrice: "110-130" },
+];
 
 export default function GarmentsProjectPage() {
   const router = useRouter();
@@ -81,6 +95,34 @@ export default function GarmentsProjectPage() {
             <CardContent>
                 <p>This is the page for the Garments Project. You can add content and features related to this project here.</p>
             </CardContent>
+        </Card>
+
+        <Card className="bg-card/80">
+          <CardHeader>
+              <CardTitle>Price List</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-card-foreground">S. No.</TableHead>
+                  <TableHead className="text-card-foreground">Product</TableHead>
+                  <TableHead className="text-card-foreground">Market Price</TableHead>
+                  <TableHead className="text-card-foreground">YUNEX</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {priceData.map((item) => (
+                  <TableRow key={item.sNo}>
+                    <TableCell>{item.sNo}</TableCell>
+                    <TableCell>{item.product}</TableCell>
+                    <TableCell>{item.marketPrice}</TableCell>
+                    <TableCell>{item.yunexPrice}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
         </Card>
 
       </main>
