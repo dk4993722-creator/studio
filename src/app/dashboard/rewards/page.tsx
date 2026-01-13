@@ -21,7 +21,7 @@ import {
 const levelData = [
     { level: 1, totalMember: 3, reward: "12 Peticot" },
     { level: 2, totalMember: 9, reward: "Silai Machine" },
-    { level: 3, totalMember: 27, reward: "Android Mobile" },
+    { level: 3, totalMember: 27, reward: "6 E.V. Scooter / Cash 70%" },
     { level: 4, totalMember: 81, reward: "e.v. scooter" },
     { level: 5, totalMember: 243, reward: "10 Silai Machine" },
     { level: 6, totalMember: 729, reward: "Car (K 10)" },
