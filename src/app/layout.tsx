@@ -3,7 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-  title: 'Aapka Pay Wallet',
+  title: 'YUNEX Wallet',
   description: 'Your reliable digital wallet.',
 };
 

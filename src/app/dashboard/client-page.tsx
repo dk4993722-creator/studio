@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-import { AapkaPayLogo } from "@/components/aapka-pay-logo";
+import { YunexLogo } from "@/components/yunex-logo";
 import {
   Card,
   CardContent,
@@ -89,7 +89,7 @@ export function DashboardClientPage() {
   };
 
   const copyToClipboard = () => {
-    const link = "https://aapkapay.example.com/join?ref=12345";
+    const link = "https://yunex.example.com/join?ref=12345";
     navigator.clipboard.writeText(link);
     toast({
       title: "Copied!",
@@ -127,11 +127,11 @@ export function DashboardClientPage() {
       dialog: (
         <>
           <DialogHeader>
-            <DialogTitle className="font-headline">Share Aapka Pay</DialogTitle>
+            <DialogTitle className="font-headline">Share YUNEX</DialogTitle>
             <DialogDescription>Share this app with your friends and earn rewards!</DialogDescription>
           </DialogHeader>
           <div className="flex items-center space-x-2 py-4">
-            <Input id="link" defaultValue="https://aapkapay.example.com/join?ref=12345" readOnly />
+            <Input id="link" defaultValue="https://yunex.example.com/join?ref=12345" readOnly />
             <Button type="button" size="icon" className="bg-accent hover:bg-accent/90 shrink-0" onClick={copyToClipboard}>
               <Copy className="h-4 w-4 text-accent-foreground" />
             </Button>
@@ -166,16 +166,16 @@ export function DashboardClientPage() {
 
   const projects = [
     {
-        title: "Jhadu Project",
-        icon: <HandPlatter className="h-8 w-8 text-primary" />
-    },
-    {
-        title: "Furniture Project",
-        icon: <Armchair className="h-8 w-8 text-primary" />
-    },
-    {
-        title: "Petticoat Project",
+        title: "Garments Project",
         icon: <Shirt className="h-8 w-8 text-primary" />
+    },
+    {
+        title: "Agarbatti Project",
+        icon: <Wind className="h-8 w-8 text-primary" />
+    },
+    {
+        title: "Electronic Project",
+        icon: <CircuitBoard className="h-8 w-8 text-primary" />
     }
   ];
 
@@ -185,8 +185,8 @@ export function DashboardClientPage() {
     <div className="flex min-h-screen w-full flex-col">
       <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background/80 backdrop-blur-sm px-4 md:px-8">
         <div className="flex items-center gap-2">
-          <AapkaPayLogo className="h-10 w-10" />
-          <h1 className="text-xl font-bold text-primary font-headline">AAPKA PAY</h1>
+          <YunexLogo className="h-10 w-10" />
+          <h1 className="text-xl font-bold text-primary font-headline">YUNEX</h1>
         </div>
         <div className="ml-auto flex items-center gap-4">
           <div className="hidden md:flex items-center gap-2 text-sm font-medium">
@@ -282,5 +282,3 @@ export function DashboardClientPage() {
     </div>
   );
 }
-
-    

@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AapkaPayLogo } from "@/components/aapka-pay-logo";
+import { YunexLogo } from "@/components/yunex-logo";
 import {
   Form,
   FormControl,
@@ -63,7 +63,7 @@ export default function AuthPage() {
     router.push(`/dashboard?name=${encodeURIComponent(values.name)}`);
   };
 
-  const galaxyImage = placeholderImages.placeholderImages.find(p => p.id === 'galaxy-background-1');
+  const galaxyImage = placeholderImages.placeholderImages.find(p => p.id === 'galaxy-background-2');
 
   return (
     <main className="relative flex min-h-screen flex-col items-center justify-center p-4">
@@ -78,9 +78,9 @@ export default function AuthPage() {
         />
       )}
       <div className="flex items-center gap-4 mb-8">
-        <AapkaPayLogo className="h-16 w-16" />
+        <YunexLogo className="h-16 w-16" />
         <h1 className="text-4xl font-headline font-bold text-white">
-          Aapka Pay
+          YUNEX
         </h1>
       </div>
       <Tabs defaultValue="login" className="w-full max-w-md">
@@ -94,7 +94,7 @@ export default function AuthPage() {
             <CardHeader>
               <CardTitle className="font-headline">Login</CardTitle>
               <CardDescription>
-                Access your Aapka Pay wallet.
+                Access your YUNEX wallet.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -149,7 +149,7 @@ export default function AuthPage() {
             <CardHeader>
               <CardTitle className="font-headline">Sign Up</CardTitle>
               <CardDescription>
-                Create your new Aapka Pay wallet.
+                Create your new YUNEX wallet.
               </CardDescription>
             </CardHeader>
             <CardContent>

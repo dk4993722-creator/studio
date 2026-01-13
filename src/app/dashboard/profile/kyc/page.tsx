@@ -22,7 +22,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { ArrowLeft, Phone, LogOut, Upload } from "lucide-react";
-import { AapkaPayLogo } from "@/components/aapka-pay-logo";
+import { YunexLogo } from "@/components/yunex-logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import placeholderImages from "@/lib/placeholder-images.json";
 import { useToast } from "@/hooks/use-toast";
@@ -110,8 +110,8 @@ export default function KycPage() {
     <div className="flex min-h-screen w-full flex-col">
       <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background/80 backdrop-blur-sm px-4 md:px-8">
         <div className="flex items-center gap-2">
-          <AapkaPayLogo className="h-10 w-10" />
-          <h1 className="text-xl font-bold text-primary font-headline">AAPKA PAY</h1>
+          <YunexLogo className="h-10 w-10" />
+          <h1 className="text-xl font-bold text-primary font-headline">YUNEX</h1>
         </div>
         <div className="ml-auto flex items-center gap-4">
           <div className="hidden md:flex items-center gap-2 text-sm font-medium">
