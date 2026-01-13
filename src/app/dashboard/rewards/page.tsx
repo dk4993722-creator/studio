@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/table";
 
 const levelData = [
-    { level: 1, totalMember: 3, reward: "12 Peticot" },
+    { level: 1, totalMember: 3, reward: "" },
     { level: 2, totalMember: 9, reward: "Silai Machine" },
     { level: 3, totalMember: 27, reward: "6 E.V. Scooter / Cash 70%" },
     { level: 4, totalMember: 81, reward: "e.v. scooter" },
