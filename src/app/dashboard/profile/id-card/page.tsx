@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft, Phone, LogOut, QrCode } from "lucide-react";
+import { ArrowLeft, Phone, LogOut } from "lucide-react";
 import { YunexLogo } from "@/components/yunex-logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import placeholderImages from "@/lib/placeholder-images.json";
@@ -25,7 +25,6 @@ export default function IdCardPage() {
 
   const galaxyImage = placeholderImages.placeholderImages.find(p => p.id === 'galaxy-background-5');
   const userAvatar = placeholderImages.placeholderImages.find(p => p.id === 'user-avatar-1');
-  const qrCodeImage = placeholderImages.placeholderImages.find(p => p.id === 'qr-code-placeholder');
   const heroImage = placeholderImages.placeholderImages.find(p => p.id === 'electric-scooter-hero-1');
 
 
@@ -113,16 +112,6 @@ export default function IdCardPage() {
                         <p className="text-lg font-mono tracking-widest text-white">{userId}</p>
                     </div>
 
-                    <div className="w-full flex justify-center mb-4">
-                        {qrCodeImage ? (
-                             <Image src={qrCodeImage.imageUrl} alt="QR Code" width={128} height={128} className="rounded-lg bg-white p-1" data-ai-hint={qrCodeImage.imageHint} />
-                        ) : (
-                            <div className="w-32 h-32 bg-white flex items-center justify-center rounded-lg">
-                                <QrCode className="w-24 h-24 text-black" />
-                            </div>
-                        )}
-                    </div>
-                    <p className="text-xs text-muted-foreground text-center">Scan this code to verify</p>
                 </CardContent>
             </Card>
         </div>
