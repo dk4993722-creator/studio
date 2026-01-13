@@ -29,7 +29,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeft, Phone, LogOut } from "lucide-react";
+import { ArrowLeft, Phone, LogOut, Eye, EyeOff } from "lucide-react";
 import { YunexLogo } from "@/components/yunex-logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import placeholderImages from "@/lib/placeholder-images.json";
@@ -39,6 +39,7 @@ import { useState, useEffect } from "react";
 
 const buyPackageSchema = z.object({
   packageId: z.string().min(1, { message: "Please select a package." }),
+  pin: z.string().length(4, { message: "PIN must be 4 digits." }),
 });
 
 const packages = [
@@ -54,6 +55,8 @@ export default function BuyPackagePage() {
   const [name, setName] = useState('User');
   const [userId, setUserId] = useState('YUNEX12345');
   const [payableAmount, setPayableAmount] = useState(0);
+  const [showPin, setShowPin] = useState(false);
+
 
   useEffect(() => {
     const userName = searchParams.get('name');
@@ -64,6 +67,9 @@ export default function BuyPackagePage() {
 
   const form = useForm<z.infer<typeof buyPackageSchema>>({
     resolver: zodResolver(buyPackageSchema),
+    defaultValues: {
+        pin: "",
+    }
   });
 
   const handlePackageChange = (packageId: string) => {
@@ -73,11 +79,11 @@ export default function BuyPackagePage() {
   };
 
   const onSubmit = (values: z.infer<typeof buyPackageSchema>) => {
-    console.log("Buying package:", values);
+    console.log("Buying package with PIN:", values);
     const selectedPackage = packages.find(p => p.id === values.packageId);
     toast({
       title: "Package Purchase Successful!",
-      description: `You have purchased the ${selectedPackage?.name} for ₹${selectedPackage?.amount.toFixed(2)}.`,
+      description: `You have purchased the ${selectedPackage?.name} for ₹${selectedPackage?.amount.toFixed(2)} and your ID is activated.`,
     });
     router.push("/dashboard/wallet");
   };
@@ -132,7 +138,7 @@ export default function BuyPackagePage() {
         <Card className="w-full max-w-lg mx-auto">
             <CardHeader>
                 <CardTitle>Select a Package</CardTitle>
-                <CardDescription>Choose a package to purchase and activate.</CardDescription>
+                <CardDescription>Choose a package to purchase and activate your ID.</CardDescription>
             </CardHeader>
             <CardContent>
                 <Form {...form}>
@@ -156,7 +162,7 @@ export default function BuyPackagePage() {
                                         <FormControl>
                                             <SelectTrigger>
                                                 <SelectValue placeholder="Choose a package" />
-                                            </SelectTrigger>
+                                            </Trigger>
                                         </FormControl>
                                         <SelectContent>
                                             {packages.map(pkg => (
@@ -174,7 +180,36 @@ export default function BuyPackagePage() {
                             <FormLabel>Payable Amount</FormLabel>
                             <Input value={`₹${payableAmount.toLocaleString('en-IN')}`} readOnly disabled />
                         </div>
-                        <Button type="submit" className="w-full" disabled={!form.watch('packageId')}>Purchase Package</Button>
+                        <FormField
+                            control={form.control}
+                            name="pin"
+                            render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>PIN</FormLabel>
+                                <FormControl>
+                                <div className="relative">
+                                    <Input
+                                    type={showPin ? "text" : "password"}
+                                    placeholder="Enter your 4-digit PIN"
+                                    {...field}
+                                    maxLength={4}
+                                    />
+                                    <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon"
+                                    className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground"
+                                    onClick={() => setShowPin(!showPin)}
+                                    >
+                                    {showPin ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                    </Button>
+                                </div>
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                            )}
+                        />
+                        <Button type="submit" className="w-full" disabled={!form.watch('packageId')}>Purchase & Activate</Button>
                     </form>
                 </Form>
             </CardContent>
