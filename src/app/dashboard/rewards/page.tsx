@@ -26,7 +26,7 @@ const levelData = [
     { level: 5, totalMember: 243, reward: "20 E.V. Scooter / Cash 70%" },
     { level: 6, totalMember: 729, reward: "" },
     { level: 7, totalMember: 2187, reward: "" },
-    { level: 8, totalMember: 6561, reward: "" },
+    { level: 8, totalMember: 6561, reward: "40 E.V. Scooter / Cash 70%" },
     { level: 9, totalMember: 19683, reward: "" },
     { level: 10, totalMember: 59049, reward: "" },
 ];
