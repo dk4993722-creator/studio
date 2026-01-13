@@ -49,6 +49,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 import placeholderImages from "@/lib/placeholder-images.json";
 import { HandPlatter } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export function DashboardClientPage() {
   const [balance, setBalance] = useState(1250.75);
@@ -153,7 +154,29 @@ export function DashboardClientPage() {
                 <DialogDescription>We are sorry for the inconvenience. Please describe your issue below.</DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
-                <Textarea placeholder="Type your message here." rows={6} />
+                <div className="grid gap-2">
+                  <Label htmlFor="complaint-subject">Subject</Label>
+                  <Input id="complaint-subject" placeholder="e.g., Issue with wallet" />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="complaint-category">Category</Label>
+                  <Select>
+                    <SelectTrigger id="complaint-category">
+                      <SelectValue placeholder="Select a category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="technical">Technical Issue</SelectItem>
+                      <SelectItem value="payment">Payment Issue</SelectItem>
+                      <SelectItem value="account">Account Problem</SelectItem>
+                      <SelectItem value="feedback">General Feedback</SelectItem>
+                      <SelectItem value="other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="complaint-description">Description</Label>
+                  <Textarea id="complaint-description" placeholder="Type your message here." rows={4} />
+                </div>
               </div>
               <DialogFooter>
                 <Button onClick={() => handleComplainSubmit(close as () => void)} className="bg-accent hover:bg-accent/90 text-accent-foreground">Submit Complaint</Button>
