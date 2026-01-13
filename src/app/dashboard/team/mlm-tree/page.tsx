@@ -54,12 +54,12 @@ const TreeNode = ({ node }: { node: TreeNodeData }) => {
   return (
     <li className="flex flex-col items-center relative">
       <div 
-        className="flex flex-col items-center justify-center p-2 m-0.5 rounded-full text-card-foreground w-16 h-16 border"
-        style={{ borderColor: '#8a0a43', backgroundColor: 'rgba(138, 10, 67, 0.1)' }}
+        className="flex flex-col items-center justify-center p-2 m-0.5 rounded-lg text-white w-20 h-16"
+        style={{ backgroundColor: '#8a0a43' }}
       >
-        <User className="w-4 h-4 mb-0.5" style={{ color: '#8a0a43' }} />
+        <User className="w-4 h-4 mb-0.5" />
         <span className="font-semibold text-[11px] leading-tight text-center">{node.name}</span>
-        <span className="text-[9px] text-muted-foreground">ID: {node.id}</span>
+        <span className="text-[9px] opacity-80">ID: {node.id}</span>
       </div>
       {hasChildren && (
         <>
