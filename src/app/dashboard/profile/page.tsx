@@ -73,7 +73,7 @@ export default function ProfilePage() {
     {
       title: "ID Card",
       icon: <Clipboard className="h-10 w-10 text-primary" />,
-      dialog: <FeatureDialog title="ID Card" description="This feature is under development." />,
+      onClick: () => router.push('/dashboard/profile/id-card'),
     }
   ];
 
@@ -130,6 +130,12 @@ export default function ProfilePage() {
             <p className="mt-2 font-semibold text-sm">KYC</p>
           </Card>
           {profileFeatures.map((feature) => (
+            feature.onClick ? (
+              <Card key={feature.title} onClick={feature.onClick} className="cursor-pointer bg-card/80 hover:bg-card/95 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
+                {feature.icon}
+                <p className="mt-2 font-semibold text-sm">{feature.title}</p>
+              </Card>
+            ) : (
             <Dialog key={feature.title}>
               <DialogTrigger asChild>
                 <Card className="cursor-pointer bg-card/80 hover:bg-card/95 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
@@ -139,6 +145,7 @@ export default function ProfilePage() {
               </DialogTrigger>
               {feature.dialog}
             </Dialog>
+            )
           ))}
         </div>
       </main>
