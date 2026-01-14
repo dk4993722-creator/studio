@@ -281,7 +281,7 @@ export function DashboardClientPage() {
             </Card>
         </div>
         <div className="mt-4">
-            <h3 className="text-2xl font-bold tracking-tight font-headline mb-4">Projects</h3>
+            <h3 className="text-2xl font-bold tracking-tight font-headline mb-4">Garments Project</h3>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 md:gap-8">
                 {projects.map((project) => (
                   project.href ? (
@@ -319,5 +319,7 @@ export function DashboardClientPage() {
     </div>
   );
 }
+
+    
 
     
