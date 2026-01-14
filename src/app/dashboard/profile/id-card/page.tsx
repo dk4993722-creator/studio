@@ -107,7 +107,7 @@ export default function IdCardPage() {
                         data-ai-hint="barcode"
                         className="object-contain"
                       />
-                      <div className="w-full h-8 border-b-4 border-[#0057b7] mt-4"></div>
+                      <div className="w-full h-8 border-b-8 border-[#0057b7] mt-4"></div>
                     </div>
                 </CardContent>
             </Card>
