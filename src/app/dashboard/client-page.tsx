@@ -227,6 +227,18 @@ export function DashboardClientPage() {
           </div>
         )}
         <h2 className="text-3xl font-bold tracking-tight font-headline">Welcome back, {name}!</h2>
+        <Card className="mb-4">
+          <CardContent className="flex items-center gap-4 p-4">
+            <Avatar className="h-16 w-16">
+              <AvatarImage src={placeholderImages.placeholderImages.find(p => p.id === 'user-avatar-1')?.imageUrl} alt="User avatar" data-ai-hint={placeholderImages.placeholderImages.find(p => p.id === 'user-avatar-1')?.imageHint} />
+              <AvatarFallback>{name.charAt(0).toUpperCase()}</AvatarFallback>
+            </Avatar>
+            <div>
+              <p className="text-xl font-bold">{name}</p>
+              <p className="text-sm text-muted-foreground">Rank: Associate</p>
+            </div>
+          </CardContent>
+        </Card>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 md:gap-8">
           <Card onClick={() => router.push('/dashboard/team')} className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
             <CardHeader className="flex flex-col items-center justify-center text-center p-6 flex-grow">
