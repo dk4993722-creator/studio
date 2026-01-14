@@ -27,6 +27,7 @@ import {
 import { Eye, EyeOff } from "lucide-react";
 import placeholderImages from "@/lib/placeholder-images.json";
 import Image from "next/image";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),
@@ -38,6 +39,9 @@ const signupSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),
   mobile: z.string().min(10, { message: "Mobile number must be at least 10 digits." }),
   password: z.string().min(8, { message: "Password must be at least 8 characters." }),
+  terms: z.boolean().refine((val) => val === true, {
+    message: "You must accept the terms and conditions.",
+  }),
 });
 
 export default function AuthPage() {
@@ -51,7 +55,7 @@ export default function AuthPage() {
 
   const signupForm = useForm<z.infer<typeof signupSchema>>({
     resolver: zodResolver(signupSchema),
-    defaultValues: { name: "", email: "", mobile: "", password: "" },
+    defaultValues: { name: "", email: "", mobile: "", password: "", terms: false },
   });
 
   const onLogin = (values: z.infer<typeof loginSchema>) => {
@@ -205,6 +209,26 @@ export default function AuthPage() {
                           </div>
                         </FormControl>
                         <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={signupForm.control}
+                    name="terms"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                        <div className="space-y-1 leading-none">
+                          <FormLabel>
+                            I agree to the terms and conditions.
+                          </FormLabel>
+                           <FormMessage />
+                        </div>
                       </FormItem>
                     )}
                   />
