@@ -102,6 +102,7 @@ export default function IdCardPage() {
                         <p className="text-slate-500 font-semibold text-sm mt-1">Associate</p>
                         <hr className="w-12 my-2 mx-auto border-slate-300" />
                         <p className="text-slate-400 text-xs">ID: {userId}</p>
+                        <p className="text-slate-400 text-xs">Phone: {phone}</p>
                     </div>
                     
                     <div className="mt-auto flex flex-col items-center text-center w-full space-y-2 pb-2">
