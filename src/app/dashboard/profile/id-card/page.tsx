@@ -79,69 +79,36 @@ export default function IdCardPage() {
         </div>
 
         <div className="flex justify-center items-start py-8">
-            <Card className="w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden font-sans bg-white relative h-[580px]">
-                {/* Background Shapes */}
-                <div className="absolute top-0 left-0 w-full h-[220px] bg-[#0057b7] z-0"></div>
-                <div className="absolute top-[80px] -left-[100px] w-[calc(100%_+_100px)] h-[180px] bg-[#ff8200] transform -rotate-12 origin-bottom-left z-10"></div>
-                
-                <div className="absolute bottom-0 left-0 w-full h-[100px] bg-[#0057b7] z-0">
-                    <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute top-0 w-full h-full" style={{transform: 'translateY(-100%)'}}>
-                        <path d="M0,100 C40,0 60,0 100,100 Z" fill="#0057b7"></path>
-                    </svg>
-                </div>
-
-
-                {/* Content */}
-                <CardContent className="relative z-20 p-6 flex flex-col h-full">
-                    <div className="flex items-start justify-end w-full mb-6 text-white">
-                        <div className="flex items-center gap-2">
-                          <YunexLogo className="h-8 w-8 text-white" />
-                          <div className="flex flex-col">
-                            <span className="font-bold text-lg leading-tight">YUNEX</span>
-                            <span className="text-xs opacity-80">COMPANY</span>
-                          </div>
-                        </div>
+            <Card className="w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden font-sans bg-white relative">
+                <div className="absolute top-0 left-0 w-full h-[180px] bg-[#0057b7] rounded-b-[50%]"></div>
+                <CardContent className="relative z-10 p-6 flex flex-col items-center">
+                    <div className="flex items-center gap-2 text-white mb-8">
+                        <YunexLogo className="h-8 w-8" />
+                        <span className="font-bold text-lg">YUNEX</span>
                     </div>
 
-                    <div className="flex-shrink-0 flex items-center justify-center mt-4">
-                        <div className="relative">
-                            <Avatar className="w-32 h-32 border-4 border-white shadow-lg">
-                                <AvatarImage src={userAvatar?.imageUrl} alt={name} data-ai-hint={userAvatar?.imageHint} />
-                                <AvatarFallback className="text-4xl text-primary">{name.charAt(0).toUpperCase()}</AvatarFallback>
-                            </Avatar>
-                        </div>
+                    <Avatar className="w-32 h-32 border-4 border-white shadow-lg">
+                        <AvatarImage src={userAvatar?.imageUrl} alt={name} data-ai-hint={userAvatar?.imageHint} />
+                        <AvatarFallback className="text-4xl text-primary">{name.charAt(0).toUpperCase()}</AvatarFallback>
+                    </Avatar>
+
+                    <div className="text-center mt-6">
+                        <h2 className="text-2xl font-bold text-slate-800 uppercase">{name}</h2>
+                        <p className="text-slate-500 font-semibold text-md mt-1">Associate</p>
+                        <p className="text-slate-400 text-sm mt-1">ID: {userId}</p>
                     </div>
 
-                    <div className="text-center mt-6 flex-shrink-0">
-                        <h2 className="text-3xl font-bold text-slate-800 uppercase">{name.split(' ')[0]} <span className="text-[#ff8200]">{name.split(' ').slice(1).join(' ')}</span></h2>
-                        <p className="text-slate-500 font-semibold text-lg">Associate</p>
-                    </div>
-                    
-                    <div className="mt-8 space-y-3 text-slate-600 flex-shrink-0">
-                      <div className="flex items-center">
-                        <p><strong className="font-semibold text-slate-500 w-24 inline-block">ID:</strong> {userId}</p>
-                      </div>
-                      <div className="flex items-center">
-                          <p><strong className="font-semibold text-slate-500 w-24 inline-block">Join Date:</strong> {joinDate}</p>
-                      </div>
-                       <div className="flex items-center">
-                          <p><strong className="font-semibold text-slate-500 w-24 inline-block">Phone:</strong> {phone}</p>
-                      </div>
-                    </div>
-
-                    {/* Barcode */}
-                    <div className="mt-auto flex flex-col items-center text-center w-full pt-4">
+                    <div className="mt-8 flex flex-col items-center text-center w-full pt-4">
                       <Image 
                         src="https://storage.googleapis.com/aip-dev-product-326615.appspot.com/326615/5129665d-c0ba-4700-a681-31a69a4e09fd.png"
                         alt="barcode"
-                        width={280}
-                        height={50}
+                        width={200}
+                        height={40}
                         data-ai-hint="barcode"
                         className="object-contain"
                       />
-                      <p className="text-sm text-slate-500 mt-2">www.yunex.example.com</p>
+                      <div className="w-full h-8 border-b-4 border-[#0057b7] mt-4"></div>
                     </div>
-
                 </CardContent>
             </Card>
         </div>
