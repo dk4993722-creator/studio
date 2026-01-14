@@ -308,7 +308,7 @@ export function DashboardClientPage() {
         </div>
 
         <div className="mt-8">
-            <h2 className="text-3xl font-bold tracking-tight font-headline">Furniture</h2>
+            <h2 className="text-3xl font-bold tracking-tight font-headline">Furniture Projects</h2>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 md:gap-8 mt-4">
                 {furnitureCategories.map((category) => (
                     <Card key={category.title} onClick={() => router.push(category.page)} className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
@@ -326,4 +326,5 @@ export function DashboardClientPage() {
   );
 }
 
+    
     
