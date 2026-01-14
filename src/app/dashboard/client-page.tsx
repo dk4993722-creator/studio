@@ -181,6 +181,9 @@ export function DashboardClientPage() {
         icon: <Shirt className="h-8 w-8 text-primary" />,
         href: "/dashboard/projects/garments"
     },
+    { title: "Men's Wear", icon: <Shirt className="h-8 w-8 text-primary" /> },
+    { title: "Women's Wear", icon: <Shirt className="h-8 w-8 text-primary" /> },
+    { title: "Kids Wear", icon: <Shirt className="h-8 w-8 text-primary" /> },
     {
         title: "Furniture Project",
         icon: <Armchair className="h-8 w-8 text-primary" />
