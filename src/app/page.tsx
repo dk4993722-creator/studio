@@ -36,6 +36,7 @@ const loginSchema = z.object({
 const signupSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
   email: z.string().email({ message: "Invalid email address." }),
+  mobile: z.string().min(10, { message: "Mobile number must be at least 10 digits." }),
   password: z.string().min(8, { message: "Password must be at least 8 characters." }),
 });
 
@@ -50,7 +51,7 @@ export default function AuthPage() {
 
   const signupForm = useForm<z.infer<typeof signupSchema>>({
     resolver: zodResolver(signupSchema),
-    defaultValues: { name: "", email: "", password: "" },
+    defaultValues: { name: "", email: "", mobile: "", password: "" },
   });
 
   const onLogin = (values: z.infer<typeof loginSchema>) => {
@@ -165,6 +166,19 @@ export default function AuthPage() {
                         <FormLabel>Email</FormLabel>
                         <FormControl>
                           <Input placeholder="you@example.com" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={signupForm.control}
+                    name="mobile"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Mobile No.</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Your mobile number" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
