@@ -236,6 +236,7 @@ export function DashboardClientPage() {
             <div>
               <p className="text-xl font-bold">{name}</p>
               <p className="text-sm text-muted-foreground">Rank: Associate</p>
+              <p className="text-sm text-muted-foreground">ID: {userId}</p>
             </div>
           </CardContent>
         </Card>
