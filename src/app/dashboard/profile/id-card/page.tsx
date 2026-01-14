@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft, Phone, LogOut, Calendar, Smartphone } from "lucide-react";
+import { ArrowLeft, Phone, LogOut } from "lucide-react";
 import { YunexLogo } from "@/components/yunex-logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import placeholderImages from "@/lib/placeholder-images.json";
@@ -79,7 +79,7 @@ export default function IdCardPage() {
         </div>
 
         <div className="flex justify-center items-start py-8">
-            <Card className="w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden font-sans bg-white relative h-[560px]">
+            <Card className="w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden font-sans bg-white relative h-[580px]">
                 {/* Background Shapes */}
                 <div className="absolute top-0 left-0 w-full h-[220px] bg-[#0057b7] z-0"></div>
                 <div className="absolute top-[80px] -left-[100px] w-[calc(100%_+_100px)] h-[180px] bg-[#ff8200] transform -rotate-12 origin-bottom-left z-10"></div>
