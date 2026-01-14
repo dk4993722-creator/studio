@@ -176,6 +176,13 @@ export function DashboardClientPage() {
     },
   ];
 
+  const garmentCategories = [
+    { title: "Men's Wear", icon: <Shirt className="h-8 w-8 text-primary" />, page: "/dashboard/projects/garments" },
+    { title: "Women's Wear", icon: <Shirt className="h-8 w-8 text-primary" />, page: "/dashboard/projects/garments" },
+    { title: "Kids Wear", icon: <Shirt className="h-8 w-8 text-primary" />, page: "/dashboard/projects/garments" },
+];
+
+
   const heroImage = placeholderImages.placeholderImages.find(p => p.id === 'electric-scooter-hero-1');
 
   return (
@@ -274,13 +281,22 @@ export function DashboardClientPage() {
                 </CardContent>
             </Card>
         </div>
+
+        <div className="mt-8">
+            <h2 className="text-3xl font-bold tracking-tight font-headline">Garments Project</h2>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 md:gap-8 mt-4">
+                {garmentCategories.map((category) => (
+                    <Card key={category.title} onClick={() => router.push(category.page)} className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                        <CardHeader className="flex flex-col items-center justify-center text-center p-6 flex-grow">
+                            {category.icon}
+                            <CardTitle className="mt-4 font-headline">{category.title}</CardTitle>
+                        </CardHeader>
+                    </Card>
+                ))}
+            </div>
+        </div>
+
       </main>
     </div>
   );
 }
-
-    
-
-    
-
-    
