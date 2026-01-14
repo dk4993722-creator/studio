@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -176,17 +177,9 @@ export function DashboardClientPage() {
   ];
 
   const projects = [
-    { title: "Men's Wear", icon: <Shirt className="h-8 w-8 text-primary" />, href: "/dashboard/projects/garments" },
-    { title: "Women's Wear", icon: <Shirt className="h-8 w-8 text-primary" /> },
-    { title: "Kids Wear", icon: <Shirt className="h-8 w-8 text-primary" /> },
-    {
-        title: "Furniture Project",
-        icon: <Armchair className="h-8 w-8 text-primary" />
-    },
-    {
-        title: "Electronic Project",
-        icon: <CircuitBoard className="h-8 w-8 text-primary" />
-    }
+    { title: "Garments Project", icon: <Shirt className="h-8 w-8 text-primary" />, href: "/dashboard/projects/garments" },
+    { title: "Furniture Project", icon: <Armchair className="h-8 w-8 text-primary" /> },
+    { title: "Electronic Project", icon: <CircuitBoard className="h-8 w-8 text-primary" /> }
   ];
 
   const heroImage = placeholderImages.placeholderImages.find(p => p.id === 'electric-scooter-hero-1');
@@ -326,3 +319,5 @@ export function DashboardClientPage() {
     </div>
   );
 }
+
+    
