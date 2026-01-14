@@ -22,6 +22,10 @@ import {
   Sparkle,
   Armchair,
   User,
+  HandPlatter,
+  BedDouble,
+  Lamp,
+  ToyBrick,
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -50,7 +54,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 import placeholderImages from "@/lib/placeholder-images.json";
-import { HandPlatter } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export function DashboardClientPage() {
@@ -182,6 +185,14 @@ export function DashboardClientPage() {
     { title: "Kids Wear", icon: <Shirt className="h-8 w-8 text-primary" />, page: "/dashboard/projects/garments" },
 ];
 
+  const furnitureCategories = [
+    { title: "Furniture", icon: <Armchair className="h-8 w-8 text-primary" />, page: "/dashboard/projects/furniture" },
+    { title: "Kitchen & Dining", icon: <HandPlatter className="h-8 w-8 text-primary" />, page: "/dashboard/projects/furniture" },
+    { title: "Bedroom Furniture", icon: <BedDouble className="h-8 w-8 text-primary" />, page: "/dashboard/projects/furniture" },
+    { title: "Home Decor", icon: <Lamp className="h-8 w-8 text-primary" />, page: "/dashboard/projects/furniture" },
+    { title: "Kids Furniture", icon: <ToyBrick className="h-8 w-8 text-primary" />, page: "/dashboard/projects/furniture" },
+];
+
 
   const heroImage = placeholderImages.placeholderImages.find(p => p.id === 'electric-scooter-hero-1');
 
@@ -240,7 +251,7 @@ export function DashboardClientPage() {
               <CardTitle className="mt-4 font-headline">My Team</CardTitle>
             </CardHeader>
             <CardContent className="text-center text-sm text-muted-foreground pt-0 pb-6">
-              View team members & level
+              View team members &amp; level
             </CardContent>
           </Card>
 
@@ -296,7 +307,23 @@ export function DashboardClientPage() {
             </div>
         </div>
 
+        <div className="mt-8">
+            <h2 className="text-3xl font-bold tracking-tight font-headline">Furniture</h2>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 md:gap-8 mt-4">
+                {furnitureCategories.map((category) => (
+                    <Card key={category.title} onClick={() => router.push(category.page)} className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                        <CardHeader className="flex flex-col items-center justify-center text-center p-6 flex-grow">
+                            {category.icon}
+                            <CardTitle className="mt-4 font-headline">{category.title}</CardTitle>
+                        </CardHeader>
+                    </Card>
+                ))}
+            </div>
+        </div>
+
       </main>
     </div>
   );
 }
+
+    
