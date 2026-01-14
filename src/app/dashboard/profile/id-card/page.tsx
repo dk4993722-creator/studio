@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft, Phone, LogOut } from "lucide-react";
+import { ArrowLeft, Phone, LogOut, Calendar, Smartphone } from "lucide-react";
 import { YunexLogo } from "@/components/yunex-logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import placeholderImages from "@/lib/placeholder-images.json";
@@ -15,6 +15,9 @@ export default function IdCardPage() {
   const searchParams = useSearchParams();
   const [name, setName] = useState('User');
   const [userId, setUserId] = useState('YUNEX12345');
+  const [joinDate, setJoinDate] = useState('01/01/24');
+  const [phone, setPhone] = useState('+91 9876543210');
+
 
   useEffect(() => {
     const userName = searchParams.get('name');
@@ -75,30 +78,68 @@ export default function IdCardPage() {
           <h2 className="text-3xl font-bold tracking-tight font-headline">My ID Card</h2>
         </div>
 
-        <div className="flex justify-center items-start">
-            <Card className="w-full max-w-sm bg-gradient-to-br from-primary/80 to-primary/60 backdrop-blur-lg border-primary/50 shadow-2xl shadow-primary/20 overflow-hidden text-primary-foreground">
-                <CardContent className="p-6 flex flex-col items-center">
-                    <div className="flex items-center justify-between w-full mb-6">
-                        <YunexLogo className="h-12 w-12" />
-                        <h3 className="text-2xl font-bold font-headline text-white">YUNEX</h3>
-                    </div>
+        <div className="flex justify-center items-start py-8">
+            <Card className="w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden font-sans bg-white relative h-[560px]">
+                {/* Background Shapes */}
+                <div className="absolute top-0 left-0 w-full h-[220px] bg-[#0057b7] z-0"></div>
+                <div className="absolute top-[80px] -left-[100px] w-[calc(100%_+_100px)] h-[180px] bg-[#ff8200] transform -rotate-12 origin-bottom-left z-10"></div>
+                
+                <div className="absolute bottom-0 left-0 w-full h-[100px] bg-[#0057b7] z-0">
+                    <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute top-0 w-full h-full" style={{transform: 'translateY(-100%)'}}>
+                        <path d="M0,100 C40,0 60,0 100,100 Z" fill="#0057b7"></path>
+                    </svg>
+                </div>
 
-                    <div className="relative mb-4">
-                        <Avatar className="w-32 h-32 border-4 border-white">
-                            <AvatarImage src={userAvatar?.imageUrl} alt={name} data-ai-hint={userAvatar?.imageHint} />
-                            <AvatarFallback className="text-4xl text-primary">{name.charAt(0).toUpperCase()}</AvatarFallback>
-                        </Avatar>
-                        <div className="absolute bottom-0 right-0 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full border-2 border-card">
-                            Verified
+
+                {/* Content */}
+                <CardContent className="relative z-20 p-6 flex flex-col h-full">
+                    <div className="flex items-start justify-end w-full mb-6 text-white">
+                        <div className="flex items-center gap-2">
+                          <YunexLogo className="h-8 w-8 text-white" />
+                          <div className="flex flex-col">
+                            <span className="font-bold text-lg leading-tight">YUNEX</span>
+                            <span className="text-xs opacity-80">COMPANY</span>
+                          </div>
                         </div>
                     </div>
 
-                    <h2 className="text-2xl font-bold text-white mb-1">{name}</h2>
-                    <p className="text-white/80 font-semibold mb-4">Associate</p>
+                    <div className="flex-shrink-0 flex items-center justify-center mt-4">
+                        <div className="relative">
+                            <Avatar className="w-32 h-32 border-4 border-white shadow-lg">
+                                <AvatarImage src={userAvatar?.imageUrl} alt={name} data-ai-hint={userAvatar?.imageHint} />
+                                <AvatarFallback className="text-4xl text-primary">{name.charAt(0).toUpperCase()}</AvatarFallback>
+                            </Avatar>
+                        </div>
+                    </div>
+
+                    <div className="text-center mt-6 flex-shrink-0">
+                        <h2 className="text-3xl font-bold text-slate-800 uppercase">{name.split(' ')[0]} <span className="text-[#ff8200]">{name.split(' ').slice(1).join(' ')}</span></h2>
+                        <p className="text-slate-500 font-semibold text-lg">Associate</p>
+                    </div>
                     
-                    <div className="bg-black/20 rounded-lg p-4 w-full text-center mb-6">
-                        <p className="text-sm text-white/80 mb-1">USER ID</p>
-                        <p className="text-lg font-mono tracking-widest text-white">{userId}</p>
+                    <div className="mt-8 space-y-3 text-slate-600 flex-shrink-0">
+                      <div className="flex items-center">
+                        <p><strong className="font-semibold text-slate-500 w-24 inline-block">ID:</strong> {userId}</p>
+                      </div>
+                      <div className="flex items-center">
+                          <p><strong className="font-semibold text-slate-500 w-24 inline-block">Join Date:</strong> {joinDate}</p>
+                      </div>
+                       <div className="flex items-center">
+                          <p><strong className="font-semibold text-slate-500 w-24 inline-block">Phone:</strong> {phone}</p>
+                      </div>
+                    </div>
+
+                    {/* Barcode */}
+                    <div className="mt-auto flex flex-col items-center text-center w-full pt-4">
+                      <Image 
+                        src="https://storage.googleapis.com/aip-dev-product-326615.appspot.com/326615/5129665d-c0ba-4700-a681-31a69a4e09fd.png"
+                        alt="barcode"
+                        width={280}
+                        height={50}
+                        data-ai-hint="barcode"
+                        className="object-contain"
+                      />
+                      <p className="text-sm text-slate-500 mt-2">www.yunex.example.com</p>
                     </div>
 
                 </CardContent>
