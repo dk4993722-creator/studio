@@ -43,7 +43,7 @@ const buyPackageSchema = z.object({
 });
 
 const packages = [
-    { id: 'starter', name: 'Starter Package', amount: 500 },
+    { id: 'starter', name: 'Starter Package', amount: 15000 },
     { id: 'pro', name: 'Pro Package', amount: 1500 },
     { id: 'business', name: 'Business Package', amount: 5000 },
 ];
