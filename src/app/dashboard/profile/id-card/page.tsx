@@ -106,14 +106,6 @@ export default function IdCardPage() {
                     </div>
                     
                     <div className="mt-auto flex flex-col items-center text-center w-full space-y-2 pb-2">
-                      <Image 
-                        src="https://storage.googleapis.com/aip-dev-product-326615.appspot.com/326615/5129665d-c0ba-4700-a681-31a69a4e09fd.png"
-                        alt="barcode"
-                        width={200}
-                        height={40}
-                        data-ai-hint="barcode"
-                        className="object-contain"
-                      />
                        <div className="w-full h-2 bg-[#0057b7] rounded-full"></div>
                     </div>
                 </CardContent>
