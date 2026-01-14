@@ -24,6 +24,12 @@ const priceData = [
   { sNo: 3, product: "T-shirts", marketPrice: "700-800", yunexPrice: "110-130" },
 ];
 
+const garmentCategories = [
+    { title: "Men's Wear", icon: <Shirt className="h-8 w-8 text-primary" /> },
+    { title: "Women's Wear", icon: <Shirt className="h-8 w-8 text-primary" /> },
+    { title: "Kids Wear", icon: <Shirt className="h-8 w-8 text-primary" /> },
+];
+
 export default function GarmentsProjectPage() {
   const router = useRouter();
   const scooterImage = placeholderImages.placeholderImages.find(p => p.id === 'electric-scooter-hero-1');
@@ -74,17 +80,27 @@ export default function GarmentsProjectPage() {
           </div>
         )}
         
-        <Card>
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                    <Shirt className="h-6 w-6" />
-                    <span>Your Garments</span>
-                </CardTitle>
-            </CardHeader>
-            <CardContent>
-                <p>This is the page for the Garments Project. You can add content and features related to this project here.</p>
-            </CardContent>
-        </Card>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                        <Shirt className="h-6 w-6" />
+                        <span>Your Garments</span>
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <p>This is the page for the Garments Project. You can add content and features related to this project here.</p>
+                </CardContent>
+            </Card>
+            {garmentCategories.map((category) => (
+                <Card key={category.title} className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                    <CardHeader className="flex flex-col items-center justify-center text-center p-6 flex-grow">
+                        {category.icon}
+                        <CardTitle className="mt-4 font-headline">{category.title}</CardTitle>
+                    </CardHeader>
+                </Card>
+            ))}
+        </div>
 
         <Card>
           <CardHeader>
