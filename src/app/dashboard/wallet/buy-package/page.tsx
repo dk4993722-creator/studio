@@ -39,7 +39,7 @@ import { useState, useEffect } from "react";
 
 const buyPackageSchema = z.object({
   packageId: z.string().min(1, { message: "Please select a package." }),
-  pin: z.string().length(4, { message: "PIN must be 4 digits." }),
+  pin: z.string().length(6, { message: "PIN must be 6 digits." }),
 });
 
 const packages = [
@@ -191,9 +191,9 @@ export default function BuyPackagePage() {
                                 <div className="relative">
                                     <Input
                                     type={showPin ? "text" : "password"}
-                                    placeholder="Enter your 4-digit PIN"
+                                    placeholder="Enter your 6-digit PIN"
                                     {...field}
-                                    maxLength={4}
+                                    maxLength={6}
                                     />
                                     <Button
                                     type="button"
