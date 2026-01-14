@@ -79,41 +79,41 @@ export default function IdCardPage() {
         </div>
 
         <div className="flex justify-center items-start py-8">
-            <Card className="w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden font-sans bg-white relative">
-                <div className="absolute top-0 left-0 w-full h-[150px] bg-[#0057b7] rounded-b-[50%] z-0"></div>
-                <div className="absolute -top-12 -left-16 w-48 h-48 bg-white/20 rounded-full"></div>
-                <div className="absolute -top-4 -right-16 w-32 h-32 bg-white/20 rounded-full"></div>
+            <Card className="w-[324px] h-[204px] rounded-2xl shadow-2xl overflow-hidden font-sans bg-white relative flex flex-col">
+                <div className="absolute top-0 left-0 w-full h-[75px] bg-[#0057b7] rounded-b-[50%] z-0"></div>
+                <div className="absolute -top-6 -left-8 w-24 h-24 bg-white/20 rounded-full"></div>
+                <div className="absolute -top-2 -right-8 w-16 h-16 bg-white/20 rounded-full"></div>
                 
-                <CardContent className="relative z-10 p-6 flex flex-col items-center">
-                    <div className="flex items-center gap-2 text-white mb-4">
-                        <YunexLogo className="h-8 w-8" />
-                        <span className="font-bold text-lg">YUNEX</span>
+                <CardContent className="relative z-10 p-3 flex flex-col items-center flex-grow">
+                    <div className="flex items-center gap-1 text-white mb-2">
+                        <YunexLogo className="h-6 w-6" />
+                        <span className="font-bold text-base">YUNEX</span>
                     </div>
 
-                    <div className="bg-white p-1.5 rounded-full shadow-md mb-4">
-                      <Avatar className="w-32 h-32 border-4 border-white shadow-lg">
+                    <div className="bg-white p-0.5 rounded-full shadow-md mb-2">
+                      <Avatar className="w-16 h-16 border-2 border-white shadow-lg">
                           <AvatarImage src={userAvatar?.imageUrl} alt={name} data-ai-hint={userAvatar?.imageHint} />
-                          <AvatarFallback className="text-4xl text-primary">{name.charAt(0).toUpperCase()}</AvatarFallback>
+                          <AvatarFallback className="text-2xl text-primary">{name.charAt(0).toUpperCase()}</AvatarFallback>
                       </Avatar>
                     </div>
 
-                    <div className="text-center mt-4">
-                        <h2 className="text-3xl font-bold text-slate-800 uppercase tracking-wider">{name}</h2>
-                        <p className="text-slate-500 font-semibold text-md mt-1">Associate</p>
-                        <hr className="w-16 my-2 mx-auto border-slate-300" />
-                        <p className="text-slate-400 text-sm mt-1">ID: {userId}</p>
+                    <div className="text-center">
+                        <h2 className="text-xl font-bold text-slate-800 uppercase tracking-wider">{name}</h2>
+                        <p className="text-slate-500 font-semibold text-xs mt-0.5">Associate</p>
+                        <hr className="w-8 my-1 mx-auto border-slate-300" />
+                        <p className="text-slate-400 text-[10px]">ID: {userId}</p>
                     </div>
                     
-                    <div className="mt-8 flex flex-col items-center text-center w-full space-y-4">
+                    <div className="mt-auto flex flex-col items-center text-center w-full space-y-1">
                       <Image 
                         src="https://storage.googleapis.com/aip-dev-product-326615.appspot.com/326615/5129665d-c0ba-4700-a681-31a69a4e09fd.png"
                         alt="barcode"
-                        width={200}
-                        height={40}
+                        width={150}
+                        height={30}
                         data-ai-hint="barcode"
                         className="object-contain"
                       />
-                       <div className="w-full h-2 bg-[#0057b7] rounded-full"></div>
+                       <div className="w-full h-1.5 bg-[#0057b7] rounded-full"></div>
                     </div>
                 </CardContent>
             </Card>
