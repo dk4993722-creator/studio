@@ -176,12 +176,7 @@ export function DashboardClientPage() {
   ];
 
   const projects = [
-    {
-        title: "Garments Project",
-        icon: <Shirt className="h-8 w-8 text-primary" />,
-        href: "/dashboard/projects/garments"
-    },
-    { title: "Men's Wear", icon: <Shirt className="h-8 w-8 text-primary" /> },
+    { title: "Men's Wear", icon: <Shirt className="h-8 w-8 text-primary" />, href: "/dashboard/projects/garments" },
     { title: "Women's Wear", icon: <Shirt className="h-8 w-8 text-primary" /> },
     { title: "Kids Wear", icon: <Shirt className="h-8 w-8 text-primary" /> },
     {
