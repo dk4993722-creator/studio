@@ -79,7 +79,7 @@ export default function IdCardPage() {
         </div>
 
         <div className="flex justify-center items-start py-8">
-            <Card className="w-[240px] aspect-[54/85.6] rounded-2xl shadow-2xl overflow-hidden font-sans bg-white relative flex flex-col">
+            <Card className="w-[270px] aspect-[54/85.6] rounded-2xl shadow-2xl overflow-hidden font-sans bg-white relative flex flex-col">
                 <div className="absolute top-0 left-0 w-full h-[120px] bg-[#0057b7] rounded-b-[50%] z-0"></div>
                 <div className="absolute -top-6 -left-8 w-24 h-24 bg-white/20 rounded-full"></div>
                 <div className="absolute -top-2 -right-8 w-16 h-16 bg-white/20 rounded-full"></div>
@@ -106,6 +106,10 @@ export default function IdCardPage() {
                     </div>
                     
                     <div className="mt-auto flex flex-col items-center text-center w-full space-y-2 pb-2">
+                       <div className="text-center text-[7px] text-slate-600 leading-tight my-2">
+                            <p className="font-bold">Office address: Near D.C. Office, Satyam Nagar, Dhanbad, Jharkhand, INDIA. 826004.</p>
+                            <p>www.yunex.com | E-mail: info@yunex.com</p>
+                        </div>
                        <div className="w-full h-2 bg-[#0057b7] rounded-full"></div>
                     </div>
                 </CardContent>
