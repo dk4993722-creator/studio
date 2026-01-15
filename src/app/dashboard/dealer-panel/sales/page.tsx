@@ -4,7 +4,7 @@
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { ArrowLeft, Phone, LogOut, TrendingUp, Building, User } from "lucide-react";
+import { ArrowLeft, Phone, LogOut, TrendingUp, Building, User, Car } from "lucide-react";
 import { YunexLogo } from "@/components/yunex-logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import placeholderImages from "@/lib/placeholder-images.json";
@@ -121,6 +121,76 @@ export default function SalesPanelPage() {
               <div className="space-y-2">
                 <Label htmlFor="customer-gst">GST No.</Label>
                 <Input id="customer-gst" placeholder="Enter GST number (if applicable)" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Car className="h-6 w-6" />
+              <span>Vehicle Details</span>
+            </CardTitle>
+            <CardDescription>Enter the details for the vehicle.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="modal-no">Modal No.</Label>
+                <Input id="modal-no" placeholder="Enter modal number" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="color">Color</Label>
+                <Input id="color" placeholder="Enter vehicle color" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="no-of-seat">No Of Seat</Label>
+                <Input id="no-of-seat" placeholder="Enter number of seats" type="number" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="chassis-no">Chassis No.</Label>
+                <Input id="chassis-no" placeholder="Enter chassis number" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="controller-no">Controller No</Label>
+                <Input id="controller-no" placeholder="Enter controller number" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="charger-no-1">Charger No-1</Label>
+                <Input id="charger-no-1" placeholder="Enter charger number 1" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="charger-no-2">Charger No-2</Label>
+                <Input id="charger-no-2" placeholder="Enter charger number 2" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="type-of-battery">Type of Battery</Label>
+                <Input id="type-of-battery" placeholder="Enter battery type" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="battery-no-1">Battery No 1</Label>
+                <Input id="battery-no-1" placeholder="Enter battery number 1" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="battery-no-2">Battery No 2</Label>
+                <Input id="battery-no-2" placeholder="Enter battery number 2" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="battery-no-3">Battery No 3</Label>
+                <Input id="battery-no-3" placeholder="Enter battery number 3" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="battery-no-4">Battery No 4</Label>
+                <Input id="battery-no-4" placeholder="Enter battery number 4" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="battery-no-5">Battery No 5</Label>
+                <Input id="battery-no-5" placeholder="Enter battery number 5" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="battery-no-6">Battery No 6</Label>
+                <Input id="battery-no-6" placeholder="Enter battery number 6" />
               </div>
             </div>
           </CardContent>
