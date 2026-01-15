@@ -83,7 +83,7 @@ export default function GarmentsProjectPage() {
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                         <Shirt className="h-6 w-6" />
-                        <span>Your Garments</span>
+                        <span>Your Garments (Men's Wear)</span>
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
