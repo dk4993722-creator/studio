@@ -25,11 +25,19 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, User } from "lucide-react";
 import placeholderImages from "@/lib/placeholder-images.json";
 import Image from "next/image";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),
@@ -51,11 +59,19 @@ const adminLoginSchema = z.object({
   password: z.string().min(1, { message: "Password is required." }),
 });
 
+const agencyLoginSchema = z.object({
+  email: z.string().email({ message: "Invalid email address." }),
+  password: z.string().min(1, { message: "Password is required." }),
+});
+
+
 export default function AuthPage() {
   const router = useRouter();
+  const [activeTab, setActiveTab] = useState("login");
   const [showLoginPassword, setShowLoginPassword] = useState(false);
   const [showSignupPassword, setShowSignupPassword] = useState(false);
   const [showAdminPassword, setShowAdminPassword] = useState(false);
+  const [showAgencyPassword, setShowAgencyPassword] = useState(false);
   const { toast } = useToast();
 
   const loginForm = useForm<z.infer<typeof loginSchema>>({
@@ -70,6 +86,11 @@ export default function AuthPage() {
 
   const adminLoginForm = useForm<z.infer<typeof adminLoginSchema>>({
     resolver: zodResolver(adminLoginSchema),
+    defaultValues: { email: "", password: "" },
+  });
+  
+  const agencyLoginForm = useForm<z.infer<typeof agencyLoginSchema>>({
+    resolver: zodResolver(agencyLoginSchema),
     defaultValues: { email: "", password: "" },
   });
 
@@ -95,8 +116,33 @@ export default function AuthPage() {
     }
   };
 
+  const onAgencyLogin = (values: z.infer<typeof agencyLoginSchema>) => {
+    console.log("Agency login attempt with:", values.email);
+    toast({
+        title: "Coming Soon",
+        description: "The agency dashboard is not yet implemented.",
+    });
+  };
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-4">
+    <main className="relative flex min-h-screen flex-col items-center justify-center p-4">
+       <div className="absolute top-4 right-4 z-10">
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button variant="outline">
+                    <User className="mr-2 h-4 w-4" />
+                    <span>Login As</span>
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Select Role</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onSelect={() => setActiveTab('login')}>Dealer Login</DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => setActiveTab('agency')}>Agency Login</DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => setActiveTab('admin')}>Admin Login</DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
       <div className="absolute inset-0 -z-10 bg-background" />
       <div className="flex items-center gap-4 mb-8">
         <YunexLogo className="h-16 w-16" />
@@ -104,17 +150,18 @@ export default function AuthPage() {
           YUNEX
         </h1>
       </div>
-      <Tabs defaultValue="login" className="w-full max-w-md">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="login">Login</TabsTrigger>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full max-w-md">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="login">Dealer</TabsTrigger>
           <TabsTrigger value="signup">Sign Up</TabsTrigger>
+          <TabsTrigger value="agency">Agency</TabsTrigger>
           <TabsTrigger value="admin">Admin</TabsTrigger>
         </TabsList>
 
         <TabsContent value="login">
           <Card>
             <CardHeader>
-              <CardTitle className="font-headline">Login</CardTitle>
+              <CardTitle className="font-headline">Dealer Login</CardTitle>
               <CardDescription>
                 Access your YUNEX wallet.
               </CardDescription>
@@ -267,6 +314,61 @@ export default function AuthPage() {
           </Card>
         </TabsContent>
 
+        <TabsContent value="agency">
+          <Card>
+            <CardHeader>
+              <CardTitle className="font-headline">Agency Login</CardTitle>
+              <CardDescription>
+                Access the agency dashboard.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Form {...agencyLoginForm}>
+                <form onSubmit={agencyLoginForm.handleSubmit(onAgencyLogin)} className="space-y-6">
+                  <FormField
+                    control={agencyLoginForm.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Agency Email</FormLabel>
+                        <FormControl>
+                          <Input placeholder="agency@example.com" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={agencyLoginForm.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Agency Password</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Input type={showAgencyPassword ? "text" : "password"} placeholder="••••••••" {...field} />
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground"
+                              onClick={() => setShowAgencyPassword(!showAgencyPassword)}
+                            >
+                              {showAgencyPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                            </Button>
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Button type="submit" className="w-full">Login as Agency</Button>
+                </form>
+              </Form>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
         <TabsContent value="admin">
           <Card>
             <CardHeader>
@@ -325,3 +427,5 @@ export default function AuthPage() {
     </main>
   );
 }
+
+    
