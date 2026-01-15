@@ -12,7 +12,7 @@ import html2canvas from "html2canvas";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ArrowLeft, Phone, LogOut, Printer, FileDown, PlusCircle, Trash2 } from "lucide-react";
+import { ArrowLeft, Phone, LogOut, Printer, FileDown, PlusCircle, Trash2, Eye } from "lucide-react";
 import { YunexLogo } from "@/components/yunex-logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import placeholderImages from "@/lib/placeholder-images.json";
@@ -43,6 +43,19 @@ const salesInvoiceSchema = z.object({
 });
 
 type SalesInvoiceFormValues = z.infer<typeof salesInvoiceSchema>;
+type FullInvoiceData = SalesInvoiceFormValues & {
+    sno?: number;
+    items: (z.infer<typeof itemSchema> & { sno: number; amount: number; })[];
+    taxableValue: number;
+    cgstRate: number;
+    sgstRate: number;
+    cgstAmount: number;
+    sgstAmount: number;
+    totalTax: number;
+    totalAmount: number;
+    amountInWords: string;
+    seller: { name: string; address: string; gstin: string; state: string; };
+};
 
 const numberToWords = (num: number) => {
     const a = ['', 'One ', 'Two ', 'Three ', 'Four ', 'Five ', 'Six ', 'Seven ', 'Eight ', 'Nine ', 'Ten ', 'Eleven ', 'Twelve ', 'Thirteen ', 'Fourteen ', 'Fifteen ', 'Sixteen ', 'Seventeen ', 'Eighteen ', 'Nineteen '];
@@ -77,7 +90,8 @@ const numberToWords = (num: number) => {
 export default function SalesPanelPage() {
   const router = useRouter();
   const { toast } = useToast();
-  const [invoiceData, setInvoiceData] = useState<any>(null);
+  const [invoiceData, setInvoiceData] = useState<FullInvoiceData | null>(null);
+  const [invoiceHistory, setInvoiceHistory] = useState<FullInvoiceData[]>([]);
   const invoiceRef = useRef<HTMLDivElement>(null);
 
   const defaultInvoice = {
@@ -105,7 +119,7 @@ export default function SalesPanelPage() {
     name: "items",
   });
 
-  const onSubmit = (data: SalesInvoiceFormValues) => {
+  const processInvoiceData = (data: SalesInvoiceFormValues): FullInvoiceData => {
     const itemsWithAmount = data.items.map((item, index) => ({
       ...item,
       sno: index + 1,
@@ -121,7 +135,7 @@ export default function SalesPanelPage() {
     const totalAmount = taxableValue + totalTax;
     const amountInWords = numberToWords(totalAmount);
 
-    setInvoiceData({
+    return {
       ...defaultInvoice,
       ...data,
       items: itemsWithAmount,
@@ -133,29 +147,57 @@ export default function SalesPanelPage() {
       totalTax,
       totalAmount,
       amountInWords,
-    });
+    };
+  };
 
+  const onSubmit = (data: SalesInvoiceFormValues) => {
+    const newInvoice = processInvoiceData(data);
+    setInvoiceData(newInvoice);
+    setInvoiceHistory(prev => [newInvoice, ...prev]);
     toast({ title: "Success", description: "Sales invoice generated successfully." });
+    form.reset({
+        ...form.getValues(),
+        invoiceNo: `YUNEX-${Math.floor(100 + Math.random() * 900)}`
+    });
+  };
+
+  const generateAndDownloadPdf = (invoiceToDownload: FullInvoiceData) => {
+    // Temporarily set the invoice data to render the invoice for capture
+    const originalInvoiceData = invoiceData;
+    setInvoiceData(invoiceToDownload);
+
+    // Allow time for the component to re-render with the new data
+    setTimeout(() => {
+        const input = invoiceRef.current;
+        if (input) {
+            html2canvas(input, { scale: 2 }).then((canvas) => {
+                const imgData = canvas.toDataURL('image/png');
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = pdf.internal.pageSize.getHeight();
+                const imgWidth = canvas.width;
+                const imgHeight = canvas.height;
+                const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+                const imgX = (pdfWidth - imgWidth * ratio) / 2;
+                const imgY = 0;
+                pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
+                pdf.save(`invoice-${invoiceToDownload.invoiceNo}.pdf`);
+                // Restore the original state
+                setInvoiceData(originalInvoiceData);
+            });
+        } else {
+            // Restore if ref is null
+            setInvoiceData(originalInvoiceData);
+        }
+    }, 100); // 100ms delay to ensure re-render
   };
   
   const handleDownloadPdf = () => {
-    const input = invoiceRef.current;
-    if (input) {
-      html2canvas(input, { scale: 2 }).then((canvas) => {
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = pdf.internal.pageSize.getHeight();
-        const imgWidth = canvas.width;
-        const imgHeight = canvas.height;
-        const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
-        const imgX = (pdfWidth - imgWidth * ratio) / 2;
-        const imgY = 0;
-        pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
-        pdf.save(`invoice-${invoiceData.invoiceNo}.pdf`);
-      });
+    if (invoiceData) {
+        generateAndDownloadPdf(invoiceData);
     }
   };
+
 
   const handlePrint = () => {
     window.print();
@@ -210,59 +252,103 @@ export default function SalesPanelPage() {
         </div>
 
         {!invoiceData ? (
-          <Card className="p-6 md:p-8">
-              <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                      <div className="grid md:grid-cols-2 gap-8">
-                          <div>
-                              <h3 className="text-lg font-medium mb-4">Buyer Details</h3>
-                              <div className="space-y-4">
-                                  <FormField control={form.control} name="buyer.name" render={({ field }) => ( <FormItem><FormLabel>Buyer Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                                  <FormField control={form.control} name="buyer.address" render={({ field }) => ( <FormItem><FormLabel>Address</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                                  <FormField control={form.control} name="buyer.gstin" render={({ field }) => ( <FormItem><FormLabel>GSTIN</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                                  <FormField control={form.control} name="buyer.state" render={({ field }) => ( <FormItem><FormLabel>State</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                              </div>
-                          </div>
-                          <div>
-                              <h3 className="text-lg font-medium mb-4">Invoice Details</h3>
-                              <div className="space-y-4">
-                                  <FormField control={form.control} name="invoiceNo" render={({ field }) => ( <FormItem><FormLabel>Invoice No.</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                                  <FormField control={form.control} name="invoiceDate" render={({ field }) => ( <FormItem><FormLabel>Invoice Date</FormLabel><FormControl><Input type="date" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                                  <FormField control={form.control} name="deliveryNote" render={({ field }) => ( <FormItem><FormLabel>Delivery Note (Optional)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                                  <FormField control={form.control} name="paymentTerms" render={({ field }) => ( <FormItem><FormLabel>Payment Terms (Optional)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                              </div>
-                          </div>
-                      </div>
+          <>
+            <Card className="p-6 md:p-8">
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                        <div className="grid md:grid-cols-2 gap-8">
+                            <div>
+                                <h3 className="text-lg font-medium mb-4">Buyer Details</h3>
+                                <div className="space-y-4">
+                                    <FormField control={form.control} name="buyer.name" render={({ field }) => ( <FormItem><FormLabel>Buyer Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                    <FormField control={form.control} name="buyer.address" render={({ field }) => ( <FormItem><FormLabel>Address</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                    <FormField control={form.control} name="buyer.gstin" render={({ field }) => ( <FormItem><FormLabel>GSTIN</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                    <FormField control={form.control} name="buyer.state" render={({ field }) => ( <FormItem><FormLabel>State</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                </div>
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-medium mb-4">Invoice Details</h3>
+                                <div className="space-y-4">
+                                    <FormField control={form.control} name="invoiceNo" render={({ field }) => ( <FormItem><FormLabel>Invoice No.</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                    <FormField control={form.control} name="invoiceDate" render={({ field }) => ( <FormItem><FormLabel>Invoice Date</FormLabel><FormControl><Input type="date" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                    <FormField control={form.control} name="deliveryNote" render={({ field }) => ( <FormItem><FormLabel>Delivery Note (Optional)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                    <FormField control={form.control} name="paymentTerms" render={({ field }) => ( <FormItem><FormLabel>Payment Terms (Optional)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                </div>
+                            </div>
+                        </div>
 
-                      <Separator />
+                        <Separator />
 
-                      <div>
-                          <h3 className="text-lg font-medium mb-4">Items</h3>
-                          <div className="space-y-4">
-                              {fields.map((item, index) => (
-                                  <div key={item.id} className="grid grid-cols-1 md:grid-cols-10 gap-2 items-start">
-                                      <FormField control={form.control} name={`items.${index}.description`} render={({ field }) => (<FormItem className="md:col-span-3"><FormLabel className={index !== 0 ? 'hidden' : ''}>Description</FormLabel><FormControl><Input {...field} placeholder="Item description" /></FormControl><FormMessage /></FormItem>)} />
-                                      <FormField control={form.control} name={`items.${index}.hsn`} render={({ field }) => (<FormItem className="md:col-span-2"><FormLabel className={index !== 0 ? 'hidden' : ''}>HSN/SAC</FormLabel><FormControl><Input {...field} placeholder="HSN code" /></FormControl><FormMessage /></FormItem>)} />
-                                      <FormField control={form.control} name={`items.${index}.qty`} render={({ field }) => (<FormItem className="md:col-span-1"><FormLabel className={index !== 0 ? 'hidden' : ''}>Qty</FormLabel><FormControl><Input type="number" {...field} placeholder="1" /></FormControl><FormMessage /></FormItem>)} />
-                                      <FormField control={form.control} name={`items.${index}.rate`} render={({ field }) => (<FormItem className="md:col-span-2"><FormLabel className={index !== 0 ? 'hidden' : ''}>Rate</FormLabel><FormControl><Input type="number" {...field} placeholder="0.00" /></FormControl><FormMessage /></FormItem>)} />
-                                      <div className="md:col-span-1">
-                                          <FormLabel className={index !== 0 ? 'hidden' : 'hidden md:block'}>&nbsp;</FormLabel>
-                                          <Button type="button" variant="destructive" size="icon" onClick={() => remove(index)} disabled={fields.length === 1}><Trash2 className="h-4 w-4" /></Button>
-                                      </div>
-                                  </div>
-                              ))}
-                              <Button type="button" variant="outline" size="sm" onClick={() => append({ description: "", hsn: "", qty: 1, rate: 0 })}>
-                                  <PlusCircle className="mr-2 h-4 w-4" /> Add Item
-                              </Button>
-                          </div>
-                      </div>
+                        <div>
+                            <h3 className="text-lg font-medium mb-4">Items</h3>
+                            <div className="space-y-4">
+                                {fields.map((item, index) => (
+                                    <div key={item.id} className="grid grid-cols-1 md:grid-cols-10 gap-2 items-start">
+                                        <FormField control={form.control} name={`items.${index}.description`} render={({ field }) => (<FormItem className="md:col-span-3"><FormLabel className={index !== 0 ? 'hidden' : ''}>Description</FormLabel><FormControl><Input {...field} placeholder="Item description" /></FormControl><FormMessage /></FormItem>)} />
+                                        <FormField control={form.control} name={`items.${index}.hsn`} render={({ field }) => (<FormItem className="md:col-span-2"><FormLabel className={index !== 0 ? 'hidden' : ''}>HSN/SAC</FormLabel><FormControl><Input {...field} placeholder="HSN code" /></FormControl><FormMessage /></FormItem>)} />
+                                        <FormField control={form.control} name={`items.${index}.qty`} render={({ field }) => (<FormItem className="md:col-span-1"><FormLabel className={index !== 0 ? 'hidden' : ''}>Qty</FormLabel><FormControl><Input type="number" {...field} placeholder="1" /></FormControl><FormMessage /></FormItem>)} />
+                                        <FormField control={form.control} name={`items.${index}.rate`} render={({ field }) => (<FormItem className="md:col-span-2"><FormLabel className={index !== 0 ? 'hidden' : ''}>Rate</FormLabel><FormControl><Input type="number" {...field} placeholder="0.00" /></FormControl><FormMessage /></FormItem>)} />
+                                        <div className="md:col-span-1">
+                                            <FormLabel className={index !== 0 ? 'hidden' : 'hidden md:block'}>&nbsp;</FormLabel>
+                                            <Button type="button" variant="destructive" size="icon" onClick={() => remove(index)} disabled={fields.length === 1}><Trash2 className="h-4 w-4" /></Button>
+                                        </div>
+                                    </div>
+                                ))}
+                                <Button type="button" variant="outline" size="sm" onClick={() => append({ description: "", hsn: "", qty: 1, rate: 0 })}>
+                                    <PlusCircle className="mr-2 h-4 w-4" /> Add Item
+                                </Button>
+                            </div>
+                        </div>
 
-                      <div className="flex justify-end pt-4">
-                          <Button type="submit">Generate Invoice</Button>
-                      </div>
-                  </form>
-              </Form>
-          </Card>
+                        <div className="flex justify-end pt-4">
+                            <Button type="submit">Generate Invoice</Button>
+                        </div>
+                    </form>
+                </Form>
+            </Card>
+
+            {invoiceHistory.length > 0 && (
+                <Card className="mt-8">
+                    <CardHeader>
+                        <CardTitle>Invoice History</CardTitle>
+                        <CardDescription>View or download previously generated invoices.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Invoice No.</TableHead>
+                                    <TableHead>Date</TableHead>
+                                    <TableHead>Buyer Name</TableHead>
+                                    <TableHead className="text-right">Amount</TableHead>
+                                    <TableHead className="text-right">Actions</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {invoiceHistory.map((inv) => (
+                                    <TableRow key={inv.invoiceNo}>
+                                        <TableCell className="font-medium">{inv.invoiceNo}</TableCell>
+                                        <TableCell>{new Date(inv.invoiceDate).toLocaleDateString('en-GB')}</TableCell>
+                                        <TableCell>{inv.buyer.name}</TableCell>
+                                        <TableCell className="text-right">₹{inv.totalAmount.toFixed(2)}</TableCell>
+                                        <TableCell className="text-right">
+                                            <div className="flex justify-end gap-2">
+                                                <Button variant="outline" size="icon" onClick={() => setInvoiceData(inv)}>
+                                                    <Eye className="h-4 w-4" />
+                                                </Button>
+                                                <Button variant="secondary" size="icon" onClick={() => generateAndDownloadPdf(inv)}>
+                                                    <FileDown className="h-4 w-4" />
+                                                </Button>
+                                            </div>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </CardContent>
+                </Card>
+            )}
+          </>
         ) : (
           <div className="print-container">
             <Card className="p-6 md:p-8 print:shadow-none print:border-none" ref={invoiceRef}>
