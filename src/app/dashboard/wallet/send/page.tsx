@@ -51,7 +51,7 @@ export default function SendMoneyPage() {
     console.log("Sending money:", values);
     toast({
       title: "Success!",
-      description: `$${values.amount.toFixed(2)} has been sent to ${values.recipient}.`,
+      description: `₹${values.amount.toFixed(2)} has been sent to ${values.recipient}.`,
     });
     router.push("/dashboard/wallet");
   };
@@ -130,7 +130,7 @@ export default function SendMoneyPage() {
                             name="amount"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Amount ($)</FormLabel>
+                                    <FormLabel>Amount (₹)</FormLabel>
                                     <FormControl>
                                         <Input type="number" placeholder="0.00" {...field} />
                                     </FormControl>

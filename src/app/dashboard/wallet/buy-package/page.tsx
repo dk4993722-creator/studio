@@ -83,7 +83,7 @@ export default function BuyPackagePage() {
     const selectedPackage = packages.find(p => p.id === values.packageId);
     toast({
       title: "Package Purchase Successful!",
-      description: `You have purchased the ${selectedPackage?.name} for $${selectedPackage?.amount.toFixed(2)} and your ID is activated.`,
+      description: `You have purchased the ${selectedPackage?.name} for ₹${selectedPackage?.amount.toFixed(2)} and your ID is activated.`,
     });
     router.push("/dashboard/wallet");
   };
@@ -168,7 +168,7 @@ export default function BuyPackagePage() {
                                         <SelectContent>
                                             {packages.map(pkg => (
                                                 <SelectItem key={pkg.id} value={pkg.id}>
-                                                    {pkg.name} - ${pkg.amount.toLocaleString('en-US')}
+                                                    {pkg.name} - ₹{pkg.amount.toLocaleString('en-IN')}
                                                 </SelectItem>
                                             ))}
                                         </SelectContent>
@@ -179,7 +179,7 @@ export default function BuyPackagePage() {
                         />
                          <div className="space-y-2">
                             <FormLabel>Payable Amount</FormLabel>
-                            <Input value={`$${payableAmount.toLocaleString('en-US')}`} readOnly disabled />
+                            <Input value={`₹${payableAmount.toLocaleString('en-IN')}`} readOnly disabled />
                         </div>
                         <FormField
                             control={form.control}

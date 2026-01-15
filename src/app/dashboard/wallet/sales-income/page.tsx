@@ -100,7 +100,7 @@ export default function SalesIncomePage() {
                             <CardTitle>{product.name}</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <p className="text-xl font-semibold">${product.price.toLocaleString('en-US')}</p>
+                            <p className="text-xl font-semibold">₹{product.price.toLocaleString('en-IN')}</p>
                         </CardContent>
                     </Card>
                 ))}
@@ -130,7 +130,7 @@ export default function SalesIncomePage() {
                                 <TableCell>{transaction.evModelNo}</TableCell>
                                 <TableCell>{transaction.motorChassisNo}</TableCell>
                                 <TableCell>{transaction.dated}</TableCell>
-                                <TableCell className="text-right text-green-500">+ ${transaction.totalIncome.toFixed(2)}</TableCell>
+                                <TableCell className="text-right text-green-500">+ ₹{transaction.totalIncome.toFixed(2)}</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
