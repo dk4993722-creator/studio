@@ -53,7 +53,7 @@ export default function AddMoneyPage() {
     console.log("Adding money:", values);
     toast({
       title: "Request Submitted!",
-      description: `Your request to add ₹${values.amount.toFixed(2)} is being processed. It will reflect in your wallet after verification.`,
+      description: `Your request to add $${values.amount.toFixed(2)} is being processed. It will reflect in your wallet after verification.`,
     });
     router.push("/dashboard/wallet");
   };
@@ -133,7 +133,7 @@ export default function AddMoneyPage() {
                             name="amount"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Amount (₹)</FormLabel>
+                                    <FormLabel>Amount ($)</FormLabel>
                                     <FormControl>
                                         <Input type="number" placeholder="0.00" {...field} />
                                     </FormControl>
@@ -168,3 +168,5 @@ export default function AddMoneyPage() {
     </div>
   );
 }
+
+    

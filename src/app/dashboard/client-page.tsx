@@ -84,7 +84,7 @@ export function DashboardClientPage() {
             <span className="font-bold">Success!</span>
           </div>
         ),
-        description: `₹${amount.toFixed(2)} has been added to your wallet.`,
+        description: `$${amount.toFixed(2)} has been added to your wallet.`,
       });
       setAddAmount("");
       closeDialog();
@@ -345,4 +345,5 @@ const electronicsCategories = [
   );
 }
 
+    
     

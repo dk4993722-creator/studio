@@ -103,7 +103,7 @@ export default function ReceivedBalancePage() {
                             <TableRow key={index}>
                                 <TableCell className="font-medium">{transaction.from}</TableCell>
                                 <TableCell>{transaction.date}</TableCell>
-                                <TableCell className="text-right text-green-500">+ ₹{transaction.amount.toFixed(2)}</TableCell>
+                                <TableCell className="text-right text-green-500">+ ${transaction.amount.toFixed(2)}</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
@@ -114,3 +114,5 @@ export default function ReceivedBalancePage() {
     </div>
   );
 }
+
+    
