@@ -195,6 +195,10 @@ export default function SalesPanelPage() {
             </div>
           </CardContent>
         </Card>
+        
+        <div className="flex justify-end mt-8">
+            <Button size="lg">Generate Bill</Button>
+        </div>
       </main>
     </div>
   );
