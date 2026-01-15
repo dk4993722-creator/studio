@@ -109,6 +109,7 @@ export default function SalesPanelPage() {
       buyer: { name: "", address: "", gstin: "", state: "Jharkhand (Code: 20)" },
       invoiceNo: `YUNEX-${Math.floor(100 + Math.random() * 900)}`,
       invoiceDate: new Date().toISOString().split('T')[0],
+      deliveryNote: "",
       paymentTerms: "Due on Receipt",
       items: [{ description: "", hsn: "", qty: 1, rate: 0 }],
     },
