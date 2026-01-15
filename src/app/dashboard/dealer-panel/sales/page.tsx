@@ -24,7 +24,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 
 const invoiceSchema = z.object({
   // Branch Details
@@ -82,7 +82,7 @@ const tens = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 
 
 const toWords = (num: number): string => {
     if (num === 0) return 'Zero';
-    const numStr = num.toString();
+    const numStr = Math.floor(num).toString();
     const [, major] = numStr.match(/^(\d+)/) || [];
     if (!major) return '';
 
@@ -185,7 +185,7 @@ export default function SalesPanelPage() {
     doc.setDrawColor(200);
     doc.line(14, 45, pageWidth - 14, 45);
 
-    (doc as any).autoTable({
+    autoTable(doc, {
         startY: 50,
         theme: 'plain',
         body: [
@@ -227,7 +227,7 @@ export default function SalesPanelPage() {
         }
     });
 
-    (doc as any).autoTable({
+    autoTable(doc, {
         startY: (doc as any).lastAutoTable.finalY + 10,
         head: [tableColumn],
         body: tableRows,
@@ -251,7 +251,7 @@ export default function SalesPanelPage() {
     doc.setFont('helvetica', 'normal');
     doc.text(totalInWords, 14, finalY + 15, { maxWidth: pageWidth / 2 });
     
-    (doc as any).autoTable({
+    autoTable(doc, {
       startY: finalY + 5,
       body: [
         ['Total Invoice Value', `₹${invoiceData.total.toFixed(2)}`],
