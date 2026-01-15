@@ -26,8 +26,6 @@ const priceData = [
 
 const garmentCategories = [
     { title: "Men's Wear", icon: <Shirt className="h-8 w-8 text-primary" /> },
-    { title: "Women's Wear", icon: <Shirt className="h-8 w-8 text-primary" /> },
-    { title: "Kids Wear", icon: <Shirt className="h-8 w-8 text-primary" /> },
 ];
 
 export default function GarmentsProjectPage() {
