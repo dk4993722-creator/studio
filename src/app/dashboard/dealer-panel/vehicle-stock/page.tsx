@@ -19,10 +19,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import placeholderImages from "@/lib/placeholder-images.json";
 
 const stockData = [
-  { sNo: 1, eVehicle: 'Yunex-X1', openingStock: 50, closingStock: 45, date: '2024-07-29' },
-  { sNo: 2, eVehicle: 'Yunex-S1', openingStock: 30, closingStock: 20, date: '2024-07-29' },
-  { sNo: 3, eVehicle: 'Yunex-X2', openingStock: 40, closingStock: 40, date: '2024-07-29' },
-  { sNo: 4, eVehicle: 'Yunex-X3', openingStock: 25, closingStock: 22, date: '2024-07-29' },
+  { sNo: 1, branchCode: 'Yunex202601', eVehicle: 'Yunex-X1', openingStock: 50, closingStock: 45, date: '2024-07-29' },
+  { sNo: 2, branchCode: 'Yunex202602', eVehicle: 'Yunex-S1', openingStock: 30, closingStock: 20, date: '2024-07-29' },
+  { sNo: 3, branchCode: 'Yunex202601', eVehicle: 'Yunex-X2', openingStock: 40, closingStock: 40, date: '2024-07-29' },
+  { sNo: 4, branchCode: 'Yunex202603', eVehicle: 'Yunex-X3', openingStock: 25, closingStock: 22, date: '2024-07-29' },
 ];
 
 export default function VehicleStockPage() {
@@ -78,6 +78,7 @@ export default function VehicleStockPage() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>S. No.</TableHead>
+                      <TableHead>Branch Code</TableHead>
                       <TableHead>E. Vehicle</TableHead>
                       <TableHead className="text-right">Opening Stock Qty</TableHead>
                       <TableHead className="text-right">Closing Stock</TableHead>
@@ -88,6 +89,7 @@ export default function VehicleStockPage() {
                     {stockData.map((item) => (
                       <TableRow key={item.sNo}>
                         <TableCell>{item.sNo}</TableCell>
+                        <TableCell>{item.branchCode}</TableCell>
                         <TableCell className="font-medium">{item.eVehicle}</TableCell>
                         <TableCell className="text-right">{item.openingStock}</TableCell>
                         <TableCell className="text-right">{item.closingStock}</TableCell>
