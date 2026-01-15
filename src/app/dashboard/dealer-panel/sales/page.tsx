@@ -3,7 +3,7 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useForm, useFieldArray } from "react-hook-form";
+import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import jsPDF from "jspdf";
@@ -20,41 +20,77 @@ import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Textarea } from "@/components/ui/textarea";
 
 const itemSchema = z.object({
   description: z.string().min(1, "Description is required."),
   hsn: z.string().min(1, "HSN is required."),
-  qty: z.coerce.number().positive("Quantity must be positive."),
-  rate: z.coerce.number().positive("Rate must be positive."),
+  quantity: z.coerce.number().positive("Quantity must be positive."),
+  rateIncTax: z.coerce.number().positive("Rate must be positive."),
+  discount: z.coerce.number().min(0).max(100).default(0),
 });
 
 const salesInvoiceSchema = z.object({
-  buyer: z.object({
-    name: z.string().min(1, "Buyer name is required."),
-    address: z.string().min(1, "Buyer address is required."),
-    gstin: z.string().min(1, "Buyer GSTIN is required."),
-    state: z.string().min(1, "Buyer state is required."),
+  billingFrom: z.object({
+    name: z.string().min(1),
+    address: z.string().min(1),
+    gstin: z.string().min(1),
+    state: z.string().min(1),
+    stateCode: z.string().min(1)
+  }),
+  shippingFrom: z.object({
+    name: z.string().min(1),
+    address: z.string().min(1),
+    gstin: z.string().min(1),
+    state: z.string().min(1),
+    stateCode: z.string().min(1)
+  }),
+  billedTo: z.object({
+    name: z.string().min(1, "Receiver name is required."),
+    address: z.string().min(1, "Receiver address is required."),
+    gstin: z.string().min(1, "Receiver GSTIN is required."),
+    state: z.string().min(1, "Receiver state is required."),
+    stateCode: z.string().min(1, "Receiver state code is required."),
+    placeOfSupply: z.string().min(1, "Place of supply is required.")
+  }),
+  shippedTo: z.object({
+    name: z.string().min(1, "Shipping name is required."),
+    address: z.string().min(1, "Shipping address is required."),
+    gstin: z.string().min(1, "Shipping GSTIN is required."),
+    state: z.string().min(1, "Shipping state is required."),
+    stateCode: z.string().min(1, "Shipping state code is required.")
   }),
   invoiceNo: z.string().min(1, "Invoice number is required."),
   invoiceDate: z.string().min(1, "Invoice date is required."),
-  deliveryNote: z.string().optional(),
   paymentTerms: z.string().optional(),
   items: z.array(itemSchema).min(1, "At least one item is required."),
+  gstRate: z.coerce.number().min(0, "GST Rate cannot be negative").default(18),
+  insuranceCharges: z.coerce.number().min(0).default(0),
+  transportCharges: z.coerce.number().min(0).default(0),
+  roundOff: z.coerce.number().default(0),
+  termsAndCondition: z.string().optional(),
+  bankDetails: z.object({
+    bankName: z.string(),
+    accountName: z.string(),
+    accountNo: z.string(),
+    ifscCode: z.string(),
+  }),
+  sameAsBilledTo: z.boolean().default(true),
 });
 
 type SalesInvoiceFormValues = z.infer<typeof salesInvoiceSchema>;
 type FullInvoiceData = SalesInvoiceFormValues & {
     sno?: number;
-    items: (z.infer<typeof itemSchema> & { sno: number; amount: number; })[];
+    items: (z.infer<typeof itemSchema> & { sno: number; rate: number; amount: number; taxableValue: number; })[];
+    totalValue: number;
     taxableValue: number;
-    cgstRate: number;
-    sgstRate: number;
     cgstAmount: number;
     sgstAmount: number;
+    igstAmount: number;
     totalTax: number;
     totalAmount: number;
     amountInWords: string;
-    seller: { name: string; address: string; gstin: string; state: string; };
 };
 
 const numberToWords = (num: number) => {
@@ -67,7 +103,7 @@ const numberToWords = (num: number) => {
             str += convert(whole) + 'Rupees ';
         }
         if (decimal && parseInt(decimal) > 0) {
-            str += 'and ' + convert(decimal) + 'Paise ';
+            str += 'and ' + convert(decimal.substring(0,2)) + 'Paise ';
         }
         return str.trim() + ' Only';
     };
@@ -94,57 +130,109 @@ export default function SalesPanelPage() {
   const [invoiceHistory, setInvoiceHistory] = useState<FullInvoiceData[]>([]);
   const invoiceRef = useRef<HTMLDivElement>(null);
 
-  const defaultInvoice = {
-    seller: {
-      name: "YUNEX",
-      address: "Near D.C. Office, Satyam Nagar, Dhanbad, Jharkhand, INDIA. 826004",
-      gstin: "20AAAAA0000A1Z5",
-      state: "Jharkhand (Code: 20)",
+  const defaultValues = {
+    billingFrom: {
+      name: "Maa Luxmi E-Vehicles Private Limited",
+      address: "Purba Memari, Bardhaman-713146, IN",
+      gstin: "19AANCM0950F1ZD",
+      state: "West Bengal",
+      stateCode: "19",
     },
-  };
+    shippingFrom: {
+      name: "West Bengal Warehouse",
+      address: "Bagila More, GT Road, Memari, Purba, Bardhaman-713146",
+      gstin: "19AANCM0950F1ZD",
+      state: "West Bengal",
+      stateCode: "19",
+    },
+    billedTo: { name: "", address: "", gstin: "", state: "", stateCode: "", placeOfSupply: ""},
+    shippedTo: { name: "", address: "", gstin: "", state: "", stateCode: ""},
+    invoiceNo: `WB-PI/${new Date().getFullYear().toString().slice(-2)}/${Math.floor(1000 + Math.random() * 9000)}`,
+    invoiceDate: new Date().toISOString().split('T')[0],
+    paymentTerms: "Net-30",
+    items: [{ description: "", hsn: "", quantity: 1, rateIncTax: 0, discount: 0 }],
+    gstRate: 5,
+    insuranceCharges: 0,
+    transportCharges: 0,
+    roundOff: 0,
+    termsAndCondition: "The order will be confirmed upon receipt of a 30% payment.\nProduction will begin after the remaining 70% payment is made against the Proforma Invoice.\nDelivery time is a minimum of 15 days for fewer than 20 vehicles and 7 to 10 days for 20 or more vehicles.",
+    bankDetails: {
+      bankName: "AXIS Bank Ltd",
+      accountName: "Maa Luxmi E-Vehicles Pvt Ltd",
+      accountNo: "920020040809860",
+      ifscCode: "UTIB0000609"
+    },
+    sameAsBilledTo: true,
+  }
 
   const form = useForm<SalesInvoiceFormValues>({
     resolver: zodResolver(salesInvoiceSchema),
-    defaultValues: {
-      buyer: { name: "", address: "", gstin: "", state: "Jharkhand (Code: 20)" },
-      invoiceNo: `YUNEX-${Math.floor(100 + Math.random() * 900)}`,
-      invoiceDate: new Date().toISOString().split('T')[0],
-      deliveryNote: "",
-      paymentTerms: "Due on Receipt",
-      items: [{ description: "", hsn: "", qty: 1, rate: 0 }],
-    },
+    defaultValues,
   });
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: "items",
   });
+  
+  const sameAsBilledTo = form.watch("sameAsBilledTo");
+  const billedToValues = form.watch("billedTo");
+
+  React.useEffect(() => {
+    if (sameAsBilledTo) {
+      form.setValue("shippedTo", billedToValues);
+    } else {
+        form.setValue("shippedTo", { name: "", address: "", gstin: "", state: "", stateCode: "" });
+    }
+  }, [sameAsBilledTo, billedToValues, form]);
+
 
   const processInvoiceData = (data: SalesInvoiceFormValues): FullInvoiceData => {
-    const itemsWithAmount = data.items.map((item, index) => ({
-      ...item,
-      sno: index + 1,
-      amount: item.qty * item.rate,
-    }));
+    const gstRate = data.gstRate / 100;
 
-    const taxableValue = itemsWithAmount.reduce((acc, item) => acc + item.amount, 0);
-    const cgstRate = 9;
-    const sgstRate = 9;
-    const cgstAmount = (taxableValue * cgstRate) / 100;
-    const sgstAmount = (taxableValue * sgstRate) / 100;
-    const totalTax = cgstAmount + sgstAmount;
-    const totalAmount = taxableValue + totalTax;
+    const itemsWithCalculations = data.items.map((item, index) => {
+      const rate = item.rateIncTax / (1 + gstRate);
+      const grossAmount = rate * item.quantity;
+      const discountAmount = grossAmount * (item.discount / 100);
+      const amount = grossAmount - discountAmount;
+      return {
+        ...item,
+        sno: index + 1,
+        rate: rate,
+        amount: amount,
+        taxableValue: amount,
+      };
+    });
+
+    const totalValue = itemsWithCalculations.reduce((acc, item) => acc + item.amount, 0);
+
+    const taxableValue = totalValue + data.insuranceCharges + data.transportCharges;
+    
+    let cgstAmount = 0;
+    let sgstAmount = 0;
+    let igstAmount = 0;
+
+    const isIntraState = data.billingFrom.stateCode === data.billedTo.stateCode;
+
+    if(isIntraState) {
+        cgstAmount = (taxableValue * (gstRate/2));
+        sgstAmount = (taxableValue * (gstRate/2));
+    } else {
+        igstAmount = taxableValue * gstRate;
+    }
+    
+    const totalTax = cgstAmount + sgstAmount + igstAmount;
+    const totalAmount = taxableValue + totalTax + data.roundOff;
     const amountInWords = numberToWords(totalAmount);
 
     return {
-      ...defaultInvoice,
       ...data,
-      items: itemsWithAmount,
+      items: itemsWithCalculations,
+      totalValue,
       taxableValue,
-      cgstRate,
-      sgstRate,
       cgstAmount,
       sgstAmount,
+      igstAmount,
       totalTax,
       totalAmount,
       amountInWords,
@@ -155,25 +243,26 @@ export default function SalesPanelPage() {
     const newInvoice = processInvoiceData(data);
     setInvoiceData(newInvoice);
     setInvoiceHistory(prev => [newInvoice, ...prev]);
-    toast({ title: "Success", description: "Sales invoice generated successfully." });
+    toast({ title: "Success", description: "Proforma invoice generated successfully." });
     form.reset({
-        ...form.getValues(),
-        invoiceNo: `YUNEX-${Math.floor(100 + Math.random() * 900)}`
+        ...defaultValues,
+        invoiceNo: `WB-PI/${new Date().getFullYear().toString().slice(-2)}/${Math.floor(1000 + Math.random() * 9000)}`,
+        billedTo: { name: "", address: "", gstin: "", state: "", stateCode: "", placeOfSupply: ""},
+        shippedTo: { name: "", address: "", gstin: "", state: "", stateCode: ""},
+        items: [{ description: "", hsn: "", quantity: 1, rateIncTax: 0, discount: 0 }],
     });
   };
 
   const generateAndDownloadPdf = (invoiceToDownload: FullInvoiceData) => {
-    // Temporarily set the invoice data to render the invoice for capture
     const originalInvoiceData = invoiceData;
     setInvoiceData(invoiceToDownload);
 
-    // Allow time for the component to re-render with the new data
     setTimeout(() => {
         const input = invoiceRef.current;
         if (input) {
-            html2canvas(input, { scale: 2 }).then((canvas) => {
+            html2canvas(input, { scale: 3 }).then((canvas) => {
                 const imgData = canvas.toDataURL('image/png');
-                const pdf = new jsPDF('p', 'mm', 'a4');
+                const pdf = new jsPDF('p', 'mm', 'a4', true);
                 const pdfWidth = pdf.internal.pageSize.getWidth();
                 const pdfHeight = pdf.internal.pageSize.getHeight();
                 const imgWidth = canvas.width;
@@ -182,15 +271,13 @@ export default function SalesPanelPage() {
                 const imgX = (pdfWidth - imgWidth * ratio) / 2;
                 const imgY = 0;
                 pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
-                pdf.save(`invoice-${invoiceToDownload.invoiceNo}.pdf`);
-                // Restore the original state
+                pdf.save(`proforma-invoice-${invoiceToDownload.invoiceNo}.pdf`);
                 setInvoiceData(originalInvoiceData);
             });
         } else {
-            // Restore if ref is null
             setInvoiceData(originalInvoiceData);
         }
-    }, 100); // 100ms delay to ensure re-render
+    }, 100);
   };
   
   const handleDownloadPdf = () => {
@@ -198,7 +285,6 @@ export default function SalesPanelPage() {
         generateAndDownloadPdf(invoiceData);
     }
   };
-
 
   const handlePrint = () => {
     window.print();
@@ -237,16 +323,16 @@ export default function SalesPanelPage() {
                     <ArrowLeft className="h-4 w-4" />
                 </Button>
                 <h2 className="text-3xl font-bold tracking-tight font-headline">
-                    {invoiceData ? "Sales Invoice" : "Create Sales Invoice"}
+                    {invoiceData ? "Proforma Invoice" : "Create Proforma Invoice"}
                 </h2>
             </div>
             {invoiceData && (
               <div className="flex gap-2">
                   <Button variant="outline" onClick={handlePrint}>
-                      <Printer className="mr-2" /> Print
+                      <Printer className="mr-2 h-4 w-4" /> Print
                   </Button>
                   <Button onClick={handleDownloadPdf}>
-                      <FileDown className="mr-2" /> Download
+                      <FileDown className="mr-2 h-4 w-4" /> Download
                   </Button>
               </div>
             )}
@@ -258,25 +344,62 @@ export default function SalesPanelPage() {
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                         <div className="grid md:grid-cols-2 gap-8">
-                            <div>
-                                <h3 className="text-lg font-medium mb-4">Buyer Details</h3>
-                                <div className="space-y-4">
-                                    <FormField control={form.control} name="buyer.name" render={({ field }) => ( <FormItem><FormLabel>Buyer Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                                    <FormField control={form.control} name="buyer.address" render={({ field }) => ( <FormItem><FormLabel>Address</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                                    <FormField control={form.control} name="buyer.gstin" render={({ field }) => ( <FormItem><FormLabel>GSTIN</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                                    <FormField control={form.control} name="buyer.state" render={({ field }) => ( <FormItem><FormLabel>State</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                                </div>
-                            </div>
-                            <div>
-                                <h3 className="text-lg font-medium mb-4">Invoice Details</h3>
-                                <div className="space-y-4">
-                                    <FormField control={form.control} name="invoiceNo" render={({ field }) => ( <FormItem><FormLabel>Invoice No.</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                                    <FormField control={form.control} name="invoiceDate" render={({ field }) => ( <FormItem><FormLabel>Invoice Date</FormLabel><FormControl><Input type="date" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                                    <FormField control={form.control} name="deliveryNote" render={({ field }) => ( <FormItem><FormLabel>Delivery Note (Optional)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                                    <FormField control={form.control} name="paymentTerms" render={({ field }) => ( <FormItem><FormLabel>Payment Terms (Optional)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                                </div>
+                            <FormField control={form.control} name="invoiceNo" render={({ field }) => ( <FormItem><FormLabel>Proforma Invoice No.</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                            <FormField control={form.control} name="invoiceDate" render={({ field }) => ( <FormItem><FormLabel>Proforma Invoice Date</FormLabel><FormControl><Input type="date" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                        </div>
+
+                        <Separator />
+
+                        <div>
+                            <h3 className="text-lg font-medium mb-4">Receiver Details (Billed To)</h3>
+                            <div className="grid md:grid-cols-2 gap-4">
+                                <FormField control={form.control} name="billedTo.name" render={({ field }) => ( <FormItem><FormLabel>Name</FormLabel><FormControl><Input {...field} placeholder="M/S Sharmag Eco Motors" /></FormControl><FormMessage /></FormItem>)} />
+                                <FormField control={form.control} name="billedTo.gstin" render={({ field }) => ( <FormItem><FormLabel>GSTIN</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                <FormItem className="md:col-span-2"><FormLabel>Address</FormLabel><FormControl><Textarea {...form.register('billedTo.address')} placeholder="Vill Tilabad Po. Jamtara..." /></FormControl><FormMessage /></FormItem>
+                                <FormField control={form.control} name="billedTo.state" render={({ field }) => ( <FormItem><FormLabel>State</FormLabel><FormControl><Input {...field} placeholder="Jharkhand" /></FormControl><FormMessage /></FormItem>)} />
+                                <FormField control={form.control} name="billedTo.stateCode" render={({ field }) => ( <FormItem><FormLabel>State Code</FormLabel><FormControl><Input {...field} placeholder="20" /></FormControl><FormMessage /></FormItem>)} />
+                                <FormField control={form.control} name="billedTo.placeOfSupply" render={({ field }) => ( <FormItem className="md:col-span-2"><FormLabel>Place of Supply</FormLabel><FormControl><Input {...field} placeholder="Jharkhand" /></FormControl><FormMessage /></FormItem>)} />
                             </div>
                         </div>
+
+                        <Separator />
+
+                        <div>
+                          <Controller
+                              control={form.control}
+                              name="sameAsBilledTo"
+                              render={({ field }) => (
+                                  <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                                      <FormControl>
+                                          <Checkbox
+                                              checked={field.value}
+                                              onCheckedChange={field.onChange}
+                                          />
+                                      </FormControl>
+                                      <div className="space-y-1 leading-none">
+                                          <FormLabel>Shipping address is same as billing address</FormLabel>
+                                      </div>
+                                  </FormItem>
+                              )}
+                          />
+                        </div>
+                        
+                        {!sameAsBilledTo && (
+                          <>
+                          <Separator />
+                          <div>
+                              <h3 className="text-lg font-medium mb-4">Shipping Details (Shipped To)</h3>
+                              <div className="grid md:grid-cols-2 gap-4">
+                                  <FormField control={form.control} name="shippedTo.name" render={({ field }) => ( <FormItem><FormLabel>Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                  <FormField control={form.control} name="shippedTo.gstin" render={({ field }) => ( <FormItem><FormLabel>GSTIN</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                  <FormItem className="md:col-span-2"><FormLabel>Address</FormLabel><FormControl><Textarea {...form.register('shippedTo.address')} /></FormControl><FormMessage /></FormItem>
+                                  <FormField control={form.control} name="shippedTo.state" render={({ field }) => ( <FormItem><FormLabel>State</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                  <FormField control={form.control} name="shippedTo.stateCode" render={({ field }) => ( <FormItem><FormLabel>State Code</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                              </div>
+                          </div>
+                          </>
+                        )}
+
 
                         <Separator />
 
@@ -284,22 +407,37 @@ export default function SalesPanelPage() {
                             <h3 className="text-lg font-medium mb-4">Items</h3>
                             <div className="space-y-4">
                                 {fields.map((item, index) => (
-                                    <div key={item.id} className="grid grid-cols-1 md:grid-cols-10 gap-2 items-start">
-                                        <FormField control={form.control} name={`items.${index}.description`} render={({ field }) => (<FormItem className="md:col-span-3"><FormLabel className={index !== 0 ? 'hidden' : ''}>Description</FormLabel><FormControl><Input {...field} placeholder="Item description" /></FormControl><FormMessage /></FormItem>)} />
-                                        <FormField control={form.control} name={`items.${index}.hsn`} render={({ field }) => (<FormItem className="md:col-span-2"><FormLabel className={index !== 0 ? 'hidden' : ''}>HSN/SAC</FormLabel><FormControl><Input {...field} placeholder="HSN code" /></FormControl><FormMessage /></FormItem>)} />
-                                        <FormField control={form.control} name={`items.${index}.qty`} render={({ field }) => (<FormItem className="md:col-span-1"><FormLabel className={index !== 0 ? 'hidden' : ''}>Qty</FormLabel><FormControl><Input type="number" {...field} placeholder="1" /></FormControl><FormMessage /></FormItem>)} />
-                                        <FormField control={form.control} name={`items.${index}.rate`} render={({ field }) => (<FormItem className="md:col-span-2"><FormLabel className={index !== 0 ? 'hidden' : ''}>Rate</FormLabel><FormControl><Input type="number" {...field} placeholder="0.00" /></FormControl><FormMessage /></FormItem>)} />
+                                    <div key={item.id} className="grid grid-cols-1 md:grid-cols-12 gap-2 items-start">
+                                        <FormField control={form.control} name={`items.${index}.description`} render={({ field }) => (<FormItem className="md:col-span-4"><FormLabel className={index !== 0 ? 'hidden md:block' : ''}>Description</FormLabel><FormControl><Input {...field} placeholder="Item description" /></FormControl><FormMessage /></FormItem>)} />
+                                        <FormField control={form.control} name={`items.${index}.hsn`} render={({ field }) => (<FormItem className="md:col-span-2"><FormLabel className={index !== 0 ? 'hidden md:block' : ''}>HSN/SAC</FormLabel><FormControl><Input {...field} placeholder="HSN code" /></FormControl><FormMessage /></FormItem>)} />
+                                        <FormField control={form.control} name={`items.${index}.quantity`} render={({ field }) => (<FormItem className="md:col-span-1"><FormLabel className={index !== 0 ? 'hidden md:block' : ''}>Qty</FormLabel><FormControl><Input type="number" {...field} placeholder="1" /></FormControl><FormMessage /></FormItem>)} />
+                                        <FormField control={form.control} name={`items.${index}.rateIncTax`} render={({ field }) => (<FormItem className="md:col-span-2"><FormLabel className={index !== 0 ? 'hidden md:block' : ''}>Rate (Inc. Tax)</FormLabel><FormControl><Input type="number" {...field} placeholder="0.00" /></FormControl><FormMessage /></FormItem>)} />
+                                        <FormField control={form.control} name={`items.${index}.discount`} render={({ field }) => (<FormItem className="md:col-span-1"><FormLabel className={index !== 0 ? 'hidden md:block' : ''}>Disc %</FormLabel><FormControl><Input type="number" {...field} placeholder="0" /></FormControl><FormMessage /></FormItem>)} />
                                         <div className="md:col-span-1">
                                             <FormLabel className={index !== 0 ? 'hidden' : 'hidden md:block'}>&nbsp;</FormLabel>
                                             <Button type="button" variant="destructive" size="icon" onClick={() => remove(index)} disabled={fields.length === 1}><Trash2 className="h-4 w-4" /></Button>
                                         </div>
                                     </div>
                                 ))}
-                                <Button type="button" variant="outline" size="sm" onClick={() => append({ description: "", hsn: "", qty: 1, rate: 0 })}>
+                                <Button type="button" variant="outline" size="sm" onClick={() => append({ description: "", hsn: "", quantity: 1, rateIncTax: 0, discount: 0 })}>
                                     <PlusCircle className="mr-2 h-4 w-4" /> Add Item
                                 </Button>
                             </div>
                         </div>
+
+                        <Separator />
+
+                        <div>
+                            <h3 className="text-lg font-medium mb-4">Charges & Taxes</h3>
+                            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                <FormField control={form.control} name="gstRate" render={({ field }) => ( <FormItem><FormLabel>GST Rate (%)</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                <FormField control={form.control} name="insuranceCharges" render={({ field }) => ( <FormItem><FormLabel>Insurance Charges</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                <FormField control={form.control} name="transportCharges" render={({ field }) => ( <FormItem><FormLabel>Transport Charges</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                <FormField control={form.control} name="roundOff" render={({ field }) => ( <FormItem><FormLabel>Round Off</FormLabel><FormControl><Input type="number" step="0.01" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                <FormField control={form.control} name="paymentTerms" render={({ field }) => ( <FormItem><FormLabel>Payment Terms</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                            </div>
+                        </div>
+
 
                         <div className="flex justify-end pt-4">
                             <Button type="submit">Generate Invoice</Button>
@@ -330,7 +468,7 @@ export default function SalesPanelPage() {
                                     <TableRow key={inv.invoiceNo}>
                                         <TableCell className="font-medium">{inv.invoiceNo}</TableCell>
                                         <TableCell>{new Date(inv.invoiceDate).toLocaleDateString('en-GB')}</TableCell>
-                                        <TableCell>{inv.buyer.name}</TableCell>
+                                        <TableCell>{inv.billedTo.name}</TableCell>
                                         <TableCell className="text-right">₹{inv.totalAmount.toFixed(2)}</TableCell>
                                         <TableCell className="text-right">
                                             <div className="flex justify-end gap-2">
@@ -352,125 +490,165 @@ export default function SalesPanelPage() {
           </>
         ) : (
           <div className="print-container">
-            <Card className="p-6 md:p-8 print:shadow-none print:border-none" ref={invoiceRef}>
+            <Card className="p-4 md:p-6 text-sm print:shadow-none print:border-none" ref={invoiceRef}>
               <CardContent className="p-0">
-                  <div className="flex justify-between items-start mb-6">
-                      <div className="flex items-center gap-4">
-                          <YunexLogo className="h-16 w-16" />
-                          <div>
-                              <h3 className="text-2xl font-bold font-headline">{invoiceData.seller.name}</h3>
-                              <p className="text-sm text-muted-foreground">{invoiceData.seller.address}</p>
-                              <p className="text-sm text-muted-foreground">GSTIN: {invoiceData.seller.gstin}</p>
-                          </div>
-                      </div>
-                      <div className="text-center">
-                          <h2 className="text-2xl font-bold text-primary">TAX INVOICE</h2>
-                          <p className="text-sm">(Original for Recipient)</p>
-                      </div>
-                  </div>
+                    <div className="flex justify-between items-start mb-4 border-b-2 border-black pb-2">
+                        <div className="w-2/3">
+                            <h2 className="text-2xl font-bold">{invoiceData.billingFrom.name}</h2>
+                            <p>{invoiceData.billingFrom.address}</p>
+                            <p>Ph.No: Email: finance@yakuzaev.com</p>
+                            <p>Website: www.yakuzaev.com</p>
+                            <p>PAN No.: {invoiceData.billingFrom.gstin.substring(2, 12)} GSTIN: {invoiceData.billingFrom.gstin}</p>
+                        </div>
+                        <div className="w-1/3 flex flex-col items-center">
+                            <h3 className="text-lg font-bold">Proforma Invoice</h3>
+                            <p className="text-xs">For Customer</p>
+                            <YunexLogo className="h-20 w-20 mt-2"/>
+                        </div>
+                    </div>
+                    
+                    <div className="mb-4">
+                        <p><span className="font-bold">Proforma Invoice No:</span> {invoiceData.invoiceNo}</p>
+                        <p><span className="font-bold">Proforma Invoice Date:</span> {new Date(invoiceData.invoiceDate).toLocaleDateString('en-GB')}</p>
+                    </div>
 
-                  <Separator className="my-4"/>
+                    <div className="grid grid-cols-2 gap-2 text-xs border-t border-b border-l border-r">
+                        <div className="p-2 border-r">
+                            <p className="font-bold">Name & Address of (Billing From):</p>
+                            <p className="font-bold">{invoiceData.billingFrom.name}</p>
+                            <p>{invoiceData.billingFrom.address}</p>
+                            <p>IN GSTIN No.: {invoiceData.billingFrom.gstin}</p>
+                            <p>State Name: {invoiceData.billingFrom.state} State Code: {invoiceData.billingFrom.stateCode}</p>
+                        </div>
+                        <div className="p-2">
+                            <p className="font-bold">Name & Address of Receiver (Billed To):</p>
+                            <p className="font-bold">{invoiceData.billedTo.name}</p>
+                            <p>{invoiceData.billedTo.address}</p>
+                            <p>GSTIN No.: {invoiceData.billedTo.gstin}</p>
+                            <p>State Name: {invoiceData.billedTo.state} State Code: {invoiceData.billedTo.stateCode}</p>
+                            <p>Place of Supply: {invoiceData.billedTo.placeOfSupply}</p>
+                        </div>
+                        <div className="p-2 border-t border-r">
+                            <p className="font-bold">Name & Address of (Shipping From):</p>
+                            <p className="font-bold">{invoiceData.shippingFrom.name}</p>
+                            <p>{invoiceData.shippingFrom.address}</p>
+                            <p>GSTIN No.: {invoiceData.shippingFrom.gstin}</p>
+                            <p>State Name: {invoiceData.shippingFrom.state} State Code: {invoiceData.shippingFrom.stateCode}</p>
+                        </div>
+                         <div className="p-2 border-t">
+                            <p className="font-bold">Name & Address of Receiver (Shipped To):</p>
+                            <p className="font-bold">{invoiceData.shippedTo.name}</p>
+                            <p>{invoiceData.shippedTo.address}</p>
+                            <p>GSTIN No.: {invoiceData.shippedTo.gstin}</p>
+                            <p>State Name: {invoiceData.shippedTo.state} State Code: {invoiceData.shippedTo.stateCode}</p>
+                        </div>
+                    </div>
 
-                  <div className="grid md:grid-cols-2 gap-4 mb-6 text-sm">
-                      <div>
-                          <p className="font-semibold">Billed To:</p>
-                          <p className="font-bold">{invoiceData.buyer.name}</p>
-                          <p>{invoiceData.buyer.address}</p>
-                          <p>GSTIN: {invoiceData.buyer.gstin}</p>
-                          <p>State: {invoiceData.buyer.state}</p>
-                      </div>
-                      <div className="grid grid-cols-2 gap-x-4 gap-y-1">
-                          <p className="font-semibold">Invoice No:</p>
-                          <p>{invoiceData.invoiceNo}</p>
-                          <p className="font-semibold">Invoice Date:</p>
-                          <p>{new Date(invoiceData.invoiceDate).toLocaleDateString('en-GB')}</p>
-                          {invoiceData.deliveryNote && <>
-                            <p className="font-semibold">Delivery Note:</p>
-                            <p>{invoiceData.deliveryNote}</p>
-                          </>}
-                          {invoiceData.paymentTerms && <>
-                            <p className="font-semibold">Payment Terms:</p>
-                            <p>{invoiceData.paymentTerms}</p>
-                          </>}
-                      </div>
-                  </div>
-
-                  <div className="overflow-x-auto">
-                      <Table className="border">
+                    <div className="overflow-x-auto my-4">
+                      <Table className="border text-xs">
                           <TableHeader>
                               <TableRow>
-                                  <TableHead className="w-[50px]">S.No</TableHead>
-                                  <TableHead>Description of Goods</TableHead>
-                                  <TableHead>HSN/SAC</TableHead>
-                                  <TableHead className="text-right">Qty</TableHead>
-                                  <TableHead className="text-right">Rate</TableHead>
-                                  <TableHead className="text-right">Amount</TableHead>
+                                  <TableHead className="p-1">SNO.</TableHead>
+                                  <TableHead className="p-1">Description of Goods</TableHead>
+                                  <TableHead className="p-1">HSN/SAC</TableHead>
+                                  <TableHead className="p-1 text-right">Quantity</TableHead>
+                                  <TableHead className="p-1">UOM</TableHead>
+                                  <TableHead className="p-1 text-right">Rate (Inc. of Tax)</TableHead>
+                                  <TableHead className="p-1 text-right">Rate</TableHead>
+                                  <TableHead className="p-1 text-right">Disc. (%)</TableHead>
+                                  <TableHead className="p-1 text-right">Amount</TableHead>
                               </TableRow>
                           </TableHeader>
                           <TableBody>
                               {invoiceData.items.map((item: any) => (
                                   <TableRow key={item.sno}>
-                                      <TableCell>{item.sno}</TableCell>
-                                      <TableCell>{item.description}</TableCell>
-                                      <TableCell>{item.hsn}</TableCell>
-                                      <TableCell className="text-right">{item.qty}</TableCell>
-                                      <TableCell className="text-right">₹{item.rate.toFixed(2)}</TableCell>
-                                      <TableCell className="text-right">₹{item.amount.toFixed(2)}</TableCell>
+                                      <TableCell className="p-1">{item.sno}</TableCell>
+                                      <TableCell className="p-1">{item.description}</TableCell>
+                                      <TableCell className="p-1">{item.hsn}</TableCell>
+                                      <TableCell className="p-1 text-right">{item.quantity.toFixed(2)}</TableCell>
+                                      <TableCell className="p-1">NOS</TableCell>
+                                      <TableCell className="p-1 text-right">₹{item.rateIncTax.toFixed(2)}</TableCell>
+                                      <TableCell className="p-1 text-right">₹{item.rate.toFixed(2)}</TableCell>
+                                      <TableCell className="p-1 text-right">{item.discount.toFixed(2)}</TableCell>
+                                      <TableCell className="p-1 text-right">₹{item.amount.toFixed(2)}</TableCell>
                                   </TableRow>
                               ))}
                           </TableBody>
                       </Table>
-                  </div>
+                    </div>
+                  
+                    <div className="grid grid-cols-2 gap-2 text-xs">
+                        <div>
+                            <p><span className="font-bold">Destination:</span> {invoiceData.billedTo.state}</p>
+                            <p><span className="font-bold">Terms of Payment:</span> {invoiceData.paymentTerms}</p>
+                            <div className="mt-2">
+                                <p className="font-bold">Terms & Condition:</p>
+                                <p className="whitespace-pre-line">{invoiceData.termsAndCondition}</p>
+                            </div>
+                             <div className="mt-2">
+                                <p className="font-bold">Total in Words:</p>
+                                <p>{invoiceData.amountInWords}</p>
+                            </div>
+                        </div>
+                        <div className="border p-1">
+                            <div className="flex justify-between"><p>Total Value</p><p>₹{invoiceData.totalValue.toFixed(2)}</p></div>
+                            <div className="flex justify-between"><p>Round Off</p><p>₹{invoiceData.roundOff.toFixed(2)}</p></div>
+                            <div className="flex justify-between"><p>Transport Charges</p><p>₹{invoiceData.transportCharges.toFixed(2)}</p></div>
+                            <div className="flex justify-between border-b pb-1"><p>Insurance Charges</p><p>₹{invoiceData.insuranceCharges.toFixed(2)}</p></div>
+                            <div className="flex justify-between font-bold"><p>Taxable Value</p><p>₹{invoiceData.taxableValue.toFixed(2)}</p></div>
+                            <div className="flex justify-between"><p>CGST</p><p>₹{invoiceData.cgstAmount.toFixed(2)}</p></div>
+                            <div className="flex justify-between"><p>SGST</p><p>₹{invoiceData.sgstAmount.toFixed(2)}</p></div>
+                            <div className="flex justify-between border-b pb-1"><p>IGST</p><p>₹{invoiceData.igstAmount.toFixed(2)}</p></div>
+                            <div className="flex justify-between font-bold text-sm"><p>Total Value</p><p>₹{invoiceData.totalAmount.toFixed(2)}</p></div>
+                        </div>
+                    </div>
+                    
+                    <div className="text-xs mt-2">
+                        <Table className="border">
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead className="p-1">HSN</TableHead>
+                                    <TableHead className="p-1">GST %</TableHead>
+                                    <TableHead className="p-1">SGST</TableHead>
+                                    <TableHead className="p-1">CGST</TableHead>
+                                    <TableHead className="p-1">IGST</TableHead>
+                                    <TableHead className="p-1">Taxable Value</TableHead>
+                                    <TableHead className="p-1">Value</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                <TableRow>
+                                    <TableCell className="p-1">{invoiceData.items[0]?.hsn}</TableCell>
+                                    <TableCell className="p-1">{invoiceData.gstRate.toFixed(2)}%</TableCell>
+                                    <TableCell className="p-1">₹{invoiceData.sgstAmount.toFixed(2)}</TableCell>
+                                    <TableCell className="p-1">₹{invoiceData.cgstAmount.toFixed(2)}</TableCell>
+                                    <TableCell className="p-1">₹{invoiceData.igstAmount.toFixed(2)}</TableCell>
+                                    <TableCell className="p-1">₹{invoiceData.taxableValue.toFixed(2)}</TableCell>
+                                    <TableCell className="p-1">₹{invoiceData.totalTax.toFixed(2)}</TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                    </div>
 
-                  <div className="grid md:grid-cols-2 gap-4 mt-4">
-                      <div className="space-y-1 text-sm">
-                          <p><span className="font-semibold">Amount in words:</span> {invoiceData.amountInWords}</p>
-                      </div>
-                      <div className="space-y-1 text-sm">
-                          <div className="flex justify-between">
-                              <p>Taxable Value</p>
-                              <p className="font-semibold">₹{invoiceData.taxableValue.toFixed(2)}</p>
-                          </div>
-                          <div className="flex justify-between">
-                              <p>CGST @{invoiceData.cgstRate}%</p>
-                              <p>₹{invoiceData.cgstAmount.toFixed(2)}</p>
-                          </div>
-                          <div className="flex justify-between">
-                              <p>SGST @{invoiceData.sgstRate}%</p>
-                              <p>₹{invoiceData.sgstAmount.toFixed(2)}</p>
-                          </div>
-                          <Separator />
-                          <div className="flex justify-between font-bold text-base">
-                              <p>Total Amount</p>
-                              <p>₹{invoiceData.totalAmount.toFixed(2)}</p>
-                          </div>
-                      </div>
-                  </div>
-
-                  <Separator className="my-6" />
-
-                  <div className="text-xs text-muted-foreground">
-                      <p className="font-semibold">Terms & Conditions:</p>
-                      <ol className="list-decimal list-inside">
-                          <li>Goods once sold will not be taken back.</li>
-                          <li>Interest @18% p.a. will be charged on overdue bills.</li>
-                          <li>This is a computer-generated invoice.</li>
-                      </ol>
-                  </div>
-
-                  <div className="mt-8 flex justify-between items-end">
-                      <div>
-                          <p>Bank Details:</p>
-                          <p className="text-sm">Bank Name: State Bank of India</p>
-                          <p className="text-sm">A/C No: 1234567890</p>
-                          <p className="text-sm">IFSC: SBIN0001234</p>
-                      </div>
-                      <div className="text-center">
-                          <p className="font-bold">For YUNEX</p>
-                          <div className="h-16"></div>
-                          <p className="border-t pt-1">Authorised Signatory</p>
-                      </div>
-                  </div>
+                    <div className="text-xs mt-2">
+                        <p><span className="font-bold">E-Way-Bill No:</span></p>
+                        <p><span className="font-bold">E-Way-Date:</span></p>
+                    </div>
+                    
+                    <div className="mt-4 grid grid-cols-2 gap-4 text-xs">
+                        <div>
+                            <p className="font-bold">Bank Details:</p>
+                            <p><span className="font-bold">Bank Name:</span> {invoiceData.bankDetails.bankName}</p>
+                            <p><span className="font-bold">Account Name:</span> {invoiceData.bankDetails.accountName}</p>
+                            <p><span className="font-bold">Account No.:</span> {invoiceData.bankDetails.accountNo}</p>
+                            <p><span className="font-bold">IFSC Code:</span> {invoiceData.bankDetails.ifscCode}</p>
+                        </div>
+                        <div className="flex flex-col justify-between items-center text-center">
+                            <p className="font-bold">For {invoiceData.billingFrom.name}</p>
+                            <div className="h-16"></div>
+                            <p className="border-t w-full pt-1">Authorized Signatory</p>
+                        </div>
+                    </div>
               </CardContent>
             </Card>
           </div>
@@ -480,6 +658,7 @@ export default function SalesPanelPage() {
         @media print {
           body * {
             visibility: hidden;
+            font-size: 8px;
           }
           .print-container, .print-container * {
             visibility: visible;
@@ -490,8 +669,14 @@ export default function SalesPanelPage() {
             top: 0;
             width: 100%;
           }
+          .print-container .text-2xl { font-size: 1.2rem; }
+          .print-container .text-lg { font-size: 0.9rem; }
+          .print-container .text-sm { font-size: 0.7rem; }
+          .print-container .text-xs { font-size: 0.6rem; }
+
         }
       `}</style>
     </div>
   );
 }
+
