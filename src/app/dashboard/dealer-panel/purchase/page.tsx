@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { ArrowLeft, Phone, LogOut, ShoppingCart, Plus } from "lucide-react";
+import { ArrowLeft, Phone, LogOut, ShoppingCart, Plus, Download } from "lucide-react";
 import { YunexLogo } from "@/components/yunex-logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import placeholderImages from "@/lib/placeholder-images.json";
@@ -74,6 +74,46 @@ export default function PurchasePanelPage() {
       title: "Purchase Added!",
       description: `${data.product} has been added to your purchase history.`,
     });
+  };
+
+  const handleDownload = () => {
+    if (purchases.length === 0) {
+      toast({
+        variant: "destructive",
+        title: "No Data",
+        description: "There is no purchase history to download.",
+      });
+      return;
+    }
+
+    const headers = ["S. No.", "Product", "Date", "Quantity", "Rate (₹)", "Amount (₹)"];
+    const csvContent = [
+      headers.join(","),
+      ...purchases.map((p, index) => [
+        purchases.length - index,
+        `"${p.product.replace(/"/g, '""')}"`, // Handle quotes in product name
+        p.date.toLocaleDateString(),
+        p.quantity,
+        p.rate.toFixed(2),
+        p.amount.toFixed(2),
+      ].join(","))
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    if (link.download !== undefined) {
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", "purchase-history.csv");
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      toast({
+        title: "Download Started",
+        description: "Your purchase history is being downloaded as a CSV file.",
+      });
+    }
   };
 
   return (
@@ -175,9 +215,15 @@ export default function PurchasePanelPage() {
         </Card>
 
         <Card>
-            <CardHeader>
-                <CardTitle>Purchase History</CardTitle>
-                <CardDescription>View all recorded purchases.</CardDescription>
+            <CardHeader className="flex-row items-center justify-between">
+                <div>
+                    <CardTitle>Purchase History</CardTitle>
+                    <CardDescription>View all recorded purchases.</CardDescription>
+                </div>
+                <Button onClick={handleDownload} variant="outline">
+                    <Download className="mr-2 h-4 w-4" />
+                    Download CSV
+                </Button>
             </CardHeader>
             <CardContent>
                 <Table>
