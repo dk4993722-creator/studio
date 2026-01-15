@@ -1,6 +1,7 @@
 
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -26,8 +27,21 @@ import {
   DialogTrigger,
   DialogClose,
 } from "@/components/ui/dialog";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { useToast } from "@/hooks/use-toast";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 
-const mockBranches = [
+const initialBranches = [
   { id: '01', district: 'Deoghar', branchCode: 'Yunex202601' },
   { id: '02', district: 'Dumka', branchCode: 'Yunex202602' },
   { id: '03', district: 'Bokaro', branchCode: 'Yunex202603' },
@@ -54,8 +68,36 @@ const mockBranches = [
   { id: '24', district: 'Khunti', branchCode: 'Yunex202624' },
 ];
 
+const branchSchema = z.object({
+  district: z.string().min(1, "District is required."),
+  branchCode: z.string().min(1, "Branch code is required."),
+});
+
 export default function BranchDetailsPage() {
   const router = useRouter();
+  const { toast } = useToast();
+  const [branches, setBranches] = useState(initialBranches);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+
+  const form = useForm<z.infer<typeof branchSchema>>({
+    resolver: zodResolver(branchSchema),
+    defaultValues: {
+      district: "",
+      branchCode: "",
+    },
+  });
+
+  function onSubmit(values: z.infer<typeof branchSchema>) {
+    const newId = (branches.length + 1).toString().padStart(2, '0');
+    const newBranch = { id: newId, ...values };
+    setBranches(prev => [...prev, newBranch]);
+    toast({
+      title: "Branch Added",
+      description: `Branch "${values.district}" has been successfully added.`,
+    });
+    form.reset();
+    setIsAddDialogOpen(false);
+  }
 
   return (
     <div className="flex min-h-screen w-full flex-col relative bg-background">
@@ -95,9 +137,9 @@ export default function BranchDetailsPage() {
                     </CardTitle>
                     <CardDescription>Add, edit, or remove branch details from this panel.</CardDescription>
                 </div>
-                 <Dialog>
+                 <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
                     <DialogTrigger asChild>
-                       <Button>
+                       <Button onClick={() => setIsAddDialogOpen(true)}>
                           <PlusCircle className="mr-2 h-4 w-4" />
                           Add New Branch
                        </Button>
@@ -106,16 +148,45 @@ export default function BranchDetailsPage() {
                         <DialogHeader>
                         <DialogTitle>Add New Branch</DialogTitle>
                         <DialogDescription>
-                            This functionality is for demonstration purposes and is not yet implemented.
+                            Fill in the details for the new branch.
                         </DialogDescription>
                         </DialogHeader>
-                        <DialogFooter>
-                          <DialogClose asChild>
-                            <Button type="button" variant="secondary">
-                              Close
-                            </Button>
-                          </DialogClose>
-                        </DialogFooter>
+                        <Form {...form}>
+                          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                            <FormField
+                              control={form.control}
+                              name="district"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>District (Branch)</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="e.g., New District" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="branchCode"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Branch Code</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="e.g., Yunex202625" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <DialogFooter>
+                              <Button type="button" variant="secondary" onClick={() => setIsAddDialogOpen(false)}>
+                                Cancel
+                              </Button>
+                              <Button type="submit">Save Branch</Button>
+                            </DialogFooter>
+                          </form>
+                        </Form>
                     </DialogContent>
                 </Dialog>
             </CardHeader>
@@ -130,7 +201,7 @@ export default function BranchDetailsPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {mockBranches.map(branch => (
+                    {branches.map(branch => (
                       <TableRow key={branch.id}>
                         <TableCell>{branch.id}</TableCell>
                         <TableCell className="font-medium">{branch.district}</TableCell>
