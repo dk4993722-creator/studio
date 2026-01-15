@@ -40,6 +40,18 @@ const mockBranches = [
   { id: '10', district: 'East-Singhbhum', branchCode: 'Yunex202610' },
   { id: '11', district: 'Jamtara', branchCode: 'Yunex202611' },
   { id: '12', district: 'Saraikela-Kharsawan', branchCode: 'Yunex202612' },
+  { id: '13', district: 'Ranchi', branchCode: 'Yunex202613' },
+  { id: '14', district: 'Pakur', branchCode: 'Yunex202614' },
+  { id: '15', district: 'Latehar', branchCode: 'Yunex202615' },
+  { id: '16', district: 'Hazaribagh', branchCode: 'Yunex202616' },
+  { id: '17', district: 'Lohardaga', branchCode: 'Yunex202617' },
+  { id: '18', district: 'Palamu', branchCode: 'Yunex202618' },
+  { id: '19', district: 'Ramghar', branchCode: 'Yunex202619' },
+  { id: '20', district: 'Simdega', branchCode: 'Yunex202620' },
+  { id: '21', district: 'West-Singhbhum', branchCode: 'Yunex202621' },
+  { id: '22', district: 'Sahebganj', branchCode: 'Yunex202622' },
+  { id: '23', district: 'Gumla', branchCode: 'Yunex202623' },
+  { id: '24', district: 'Khunti', branchCode: 'Yunex202624' },
 ];
 
 export default function BranchDetailsPage() {
