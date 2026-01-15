@@ -22,6 +22,7 @@ import {
   PlusCircle,
   CheckCircle,
   Package,
+  DollarSign,
 } from "lucide-react";
 import { YunexLogo } from "@/components/yunex-logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -136,6 +137,11 @@ export default function WalletPage() {
             <Card onClick={() => router.push('/dashboard/wallet/buy-package')} className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
                 <Package className="h-10 w-10 text-primary" />
                 <p className="mt-2 font-semibold text-sm">Buy Package</p>
+            </Card>
+
+            <Card onClick={() => router.push('/dashboard/wallet/sales-income')} className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
+                <DollarSign className="h-10 w-10 text-primary" />
+                <p className="mt-2 font-semibold text-sm">Sales Income</p>
             </Card>
 
             <Card onClick={() => router.push('/dashboard/wallet/send')} className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
