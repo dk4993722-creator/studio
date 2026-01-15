@@ -22,6 +22,7 @@ import {
   ArrowLeft,
   Phone,
   LogOut,
+  Info,
 } from "lucide-react";
 import { YunexLogo } from "@/components/yunex-logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -84,6 +85,20 @@ export default function NonWorkingIncomePage() {
           <h2 className="text-3xl font-bold tracking-tight font-headline">Non Working Income</h2>
         </div>
 
+        <Card className="bg-accent/50 border-accent">
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                    <Info className="h-5 w-5 text-primary" />
+                    How It Works
+                </CardTitle>
+            </CardHeader>
+            <CardContent>
+                <p className="text-foreground">
+                    For every ₹1000 of non-working income generated, the amount is distributed among all "Starter Package" users by dispatching an E.V. scooter from the plant.
+                </p>
+            </CardContent>
+        </Card>
+
         <Card>
             <CardHeader>
                 <CardTitle>Income History</CardTitle>
@@ -116,3 +131,4 @@ export default function NonWorkingIncomePage() {
     </div>
   );
 }
+
