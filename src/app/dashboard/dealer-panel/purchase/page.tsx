@@ -9,72 +9,23 @@ import { ArrowLeft, Phone, LogOut, ShoppingCart, Plus, Download } from "lucide-r
 import { YunexLogo } from "@/components/yunex-logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import placeholderImages from "@/lib/placeholder-images.json";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
-const purchaseSchema = z.object({
-  product: z.string().min(1, "Product name is required"),
-  quantity: z.coerce.number().min(1, "Quantity must be at least 1"),
-  rate: z.coerce.number().min(0, "Rate cannot be negative"),
-});
-
-type Purchase = z.infer<typeof purchaseSchema> & {
+type Purchase = {
   id: number;
-  date: Date;
+  product: string;
+  quantity: number;
+  rate: number;
   amount: number;
+  date: Date;
 };
 
 export default function PurchasePanelPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [purchases, setPurchases] = useState<Purchase[]>([]);
-  const [totalAmount, setTotalAmount] = useState(0);
-
-  const form = useForm<z.infer<typeof purchaseSchema>>({
-    resolver: zodResolver(purchaseSchema),
-    defaultValues: {
-      product: "",
-      quantity: 1,
-      rate: 0,
-    },
-  });
-
-  const { watch } = form;
-  const quantity = watch("quantity");
-  const rate = watch("rate");
-
-  useEffect(() => {
-    const amount = (quantity || 0) * (rate || 0);
-    setTotalAmount(amount);
-  }, [quantity, rate]);
-
-  const onSubmit = (data: z.infer<typeof purchaseSchema>) => {
-    const newPurchase: Purchase = {
-      ...data,
-      id: purchases.length + 1,
-      date: new Date(),
-      amount: data.quantity * data.rate,
-    };
-    setPurchases(prev => [newPurchase, ...prev]);
-    form.reset();
-    toast({
-      title: "Purchase Added!",
-      description: `${data.product} has been added to your purchase history.`,
-    });
-  };
 
   const handleDownload = () => {
     if (purchases.length === 0) {
@@ -149,70 +100,6 @@ export default function PurchasePanelPage() {
           </Button>
           <h2 className="text-3xl font-bold tracking-tight font-headline">Purchase Panel</h2>
         </div>
-        
-        <Card>
-          <CardHeader>
-            <CardTitle>Add New Purchase</CardTitle>
-            <CardDescription>Fill in the details to record a new purchase.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
-                  <FormField
-                    control={form.control}
-                    name="product"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Product Name</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Enter product name" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="quantity"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Quantity</FormLabel>
-                        <FormControl>
-                          <Input type="number" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="rate"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Rate (per item)</FormLabel>
-                        <FormControl>
-                          <Input type="number" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <div className="flex justify-between items-center pt-4 border-t">
-                    <div>
-                        <p className="text-sm text-muted-foreground">Total Amount</p>
-                        <p className="text-2xl font-bold">₹{totalAmount.toFixed(2)}</p>
-                    </div>
-                    <Button type="submit">
-                        <Plus className="mr-2 h-4 w-4" />
-                        Add Purchase
-                    </Button>
-                </div>
-              </form>
-            </Form>
-          </CardContent>
-        </Card>
 
         <Card>
             <CardHeader className="flex-row items-center justify-between">
