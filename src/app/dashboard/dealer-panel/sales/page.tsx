@@ -25,8 +25,35 @@ import { useState, useEffect } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-// Updated schema: added branchCode, removed customer details
+const branches = [
+  { id: '01', district: 'Deoghar', branchCode: 'Yunex202601' },
+  { id: '02', district: 'Dumka', branchCode: 'Yunex202602' },
+  { id: '03', district: 'Bokaro', branchCode: 'Yunex202603' },
+  { id: '04', district: 'Giridih', branchCode: 'Yunex202604' },
+  { id: '05', district: 'Koderma', branchCode: 'Yunex202605' },
+  { id: '06', district: 'Godda', branchCode: 'Yunex202606' },
+  { id: '07', district: 'Chatra', branchCode: 'Yunex202607' },
+  { id: '08', district: 'Dhanbad', branchCode: 'Yunex202608' },
+  { id: '09', district: 'Garhwa', branchCode: 'Yunex202609' },
+  { id: '10', district: 'East-Singhbhum', branchCode: 'Yunex202610' },
+  { id: '11', district: 'Jamtara', branchCode: 'Yunex202611' },
+  { id: '12', district: 'Saraikela-Kharsawan', branchCode: 'Yunex202612' },
+  { id: '13', district: 'Ranchi', branchCode: 'Yunex202613' },
+  { id: '14', district: 'Pakur', branchCode: 'Yunex202614' },
+  { id: '15', district: 'Latehar', branchCode: 'Yunex202615' },
+  { id: '16', district: 'Hazaribagh', branchCode: 'Yunex202616' },
+  { id: '17', district: 'Lohardaga', branchCode: 'Yunex202617' },
+  { id: '18', district: 'Palamu', branchCode: 'Yunex202618' },
+  { id: '19', district: 'Ramghar', branchCode: 'Yunex202619' },
+  { id: '20', district: 'Simdega', branchCode: 'Yunex202620' },
+  { id: '21', district: 'West-Singhbhum', branchCode: 'Yunex202621' },
+  { id: '22', district: 'Sahebganj', branchCode: 'Yunex202622' },
+  { id: '23', district: 'Gumla', branchCode: 'Yunex202623' },
+  { id: '24', district: 'Khunti', branchCode: 'Yunex202624' },
+];
+
 const invoiceSchema = z.object({
   // Branch Details
   branchName: z.string().min(1, "Branch name is required"),
@@ -357,7 +384,48 @@ export default function SalesPanelPage() {
                 </CardHeader>
                 <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   <FormField control={form.control} name="branchName" render={({ field }) => ( <FormItem> <FormLabel>Branch Name</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )} />
-                  <FormField control={form.control} name="branchCode" render={({ field }) => ( <FormItem> <FormLabel>Branch Code</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )} />
+                  <FormField
+                    control={form.control}
+                    name="branchCode"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Branch Code</FormLabel>
+                        <Select
+                          onValueChange={(value) => {
+                            field.onChange(value);
+                            const selectedBranch = branches.find(
+                              (b) => b.branchCode === value
+                            );
+                            if (selectedBranch) {
+                              form.setValue("branchName", selectedBranch.district);
+                              form.setValue("branchDistrict", selectedBranch.district);
+                              form.setValue("branchCity", selectedBranch.district);
+                              form.setValue("branchState", "Jharkhand");
+                              form.setValue("branchAddress", "");
+                              form.setValue("branchPinCode", "");
+                              form.setValue("branchGstNo", "");
+                              form.setValue("branchContact", "");
+                            }
+                          }}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select a branch" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {branches.map((branch) => (
+                              <SelectItem key={branch.id} value={branch.branchCode}>
+                                {branch.district} ({branch.branchCode})
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                   <FormField control={form.control} name="branchGstNo" render={({ field }) => ( <FormItem> <FormLabel>GST No.</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )} />
                   <FormField control={form.control} name="branchContact" render={({ field }) => ( <FormItem> <FormLabel>Contact</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )} />
                   <FormField control={form.control} name="branchAddress" render={({ field }) => ( <FormItem className="md:col-span-2"> <FormLabel>Address</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )} />
