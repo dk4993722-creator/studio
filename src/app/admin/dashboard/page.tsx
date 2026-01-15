@@ -22,7 +22,6 @@ export default function AdminDashboardPage() {
   const adminFeatures = [
     { title: "User Management", icon: <Users className="h-10 w-10 text-primary" />, onClick: () => router.push("/admin/users"), description: "Edit and manage user data." },
     { title: "Sales Panel", icon: <TrendingUp className="h-10 w-10 text-primary" />, onClick: () => router.push("/dashboard/dealer-panel/sales"), description: "Access and edit sales data." },
-    { title: "Purchase Panel", icon: <ShoppingCart className="h-10 w-10 text-primary" />, onClick: () => router.push("/dashboard/dealer-panel/purchase"), description: "Access and edit purchase data." },
     { title: "Vehicle Stock", icon: <Warehouse className="h-10 w-10 text-primary" />, onClick: () => router.push("/dashboard/dealer-panel/vehicle-stock"), description: "Manage vehicle inventory." },
     { title: "Spare Parts Stock", icon: <Wrench className="h-10 w-10 text-primary" />, onClick: () => router.push("/dashboard/dealer-panel/spare-parts-stock"), description: "Manage spare parts inventory." },
     { title: "Branch Details", icon: <Building2 className="h-10 w-10 text-primary" />, onClick: () => router.push("/admin/branches"), description: "Manage branch information." },
