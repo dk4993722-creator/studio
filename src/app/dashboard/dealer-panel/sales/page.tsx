@@ -26,9 +26,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
+// Updated schema: added branchCode, removed customer details
 const invoiceSchema = z.object({
   // Branch Details
   branchName: z.string().min(1, "Branch name is required"),
+  branchCode: z.string().min(1, "Branch code is required"),
   branchGstNo: z.string().optional(),
   branchContact: z.string().min(1, "Contact is required"),
   branchAddress: z.string().min(1, "Address is required"),
@@ -36,19 +38,6 @@ const invoiceSchema = z.object({
   branchDistrict: z.string().min(1, "District is required"),
   branchState: z.string().min(1, "State is required"),
   branchPinCode: z.string().min(1, "Pin code is required"),
-
-  // Customer Details
-  customerName: z.string().min(1, "Customer name is required"),
-  customerAddress: z.string().min(1, "Address is required"),
-  customerCity: z.string().min(1, "City is required"),
-  customerDistrict: z.string().min(1, "District is required"),
-  customerState: z.string().min(1, "State is required"),
-  customerPinCode: z.string().min(1, "Pin code is required"),
-  customerContact: z.string().min(1, "Contact is required"),
-  customerAlternateNo: z.string().optional(),
-  customerAadharNo: z.string().optional(),
-  customerPanNo: z.string().optional(),
-  customerGstNo: z.string().optional(),
 
   // Vehicle Details
   model: z.string().optional(),
@@ -109,6 +98,7 @@ export default function SalesPanelPage() {
     resolver: zodResolver(invoiceSchema),
     defaultValues: {
       branchName: "",
+      branchCode: "",
       branchGstNo: "",
       branchContact: "",
       branchAddress: "",
@@ -116,17 +106,6 @@ export default function SalesPanelPage() {
       branchDistrict: "",
       branchState: "",
       branchPinCode: "",
-      customerName: "",
-      customerAddress: "",
-      customerCity: "",
-      customerDistrict: "",
-      customerState: "",
-      customerPinCode: "",
-      customerContact: "",
-      customerAlternateNo: "",
-      customerAadharNo: "",
-      customerPanNo: "",
-      customerGstNo: "",
       model: "",
       noOfSeat: "",
       chassisNo: "",
@@ -146,7 +125,7 @@ export default function SalesPanelPage() {
     },
   });
 
-  const { watch, setValue } = form;
+  const { watch } = form;
   const quantity = watch("quantity");
   const rate = watch("rate");
 
@@ -191,11 +170,9 @@ export default function SalesPanelPage() {
         body: [
             [
                 { content: 'Billed By:', styles: { fontStyle: 'bold', textColor: primaryColor } },
-                { content: 'Billed To:', styles: { fontStyle: 'bold', textColor: primaryColor } },
             ],
             [
-                `${invoiceData.branchName}\n${invoiceData.branchAddress}, ${invoiceData.branchCity}, ${invoiceData.branchDistrict}, ${invoiceData.branchState} - ${invoiceData.branchPinCode}\nGSTIN: ${invoiceData.branchGstNo || 'N/A'}\nContact: ${invoiceData.branchContact}`,
-                `${invoiceData.customerName}\n${invoiceData.customerAddress}, ${invoiceData.customerCity}, ${invoiceData.customerDistrict}, ${invoiceData.customerState} - ${invoiceData.customerPinCode}\nContact: ${invoiceData.customerContact}\nAadhar: ${invoiceData.customerAadharNo || 'N/A'}\nPAN: ${invoiceData.customerPanNo || 'N/A'}`,
+                `${invoiceData.branchName}\nBranch Code: ${invoiceData.branchCode}\n${invoiceData.branchAddress}, ${invoiceData.branchCity}, ${invoiceData.branchDistrict}, ${invoiceData.branchState} - ${invoiceData.branchPinCode}\nGSTIN: ${invoiceData.branchGstNo || 'N/A'}\nContact: ${invoiceData.branchContact}`,
             ],
         ],
         styles: { fontSize: 9, cellPadding: 1 },
@@ -204,7 +181,7 @@ export default function SalesPanelPage() {
     const tableColumn = ["S. No.", "Description", "Particular", "Qty", "Rate", "Amount"];
     const tableRows: any[][] = [];
 
-    const productRow = ['', { content: 'Yunex - E.Bike', styles: { fontStyle: 'bold' } }, '', invoiceData.quantity, `₹${invoiceData.rate.toFixed(2)}`, `₹${invoiceData.total.toFixed(2)}`];
+    const productRow = ['', { content: invoiceData.model || 'Yunex - E.Bike', styles: { fontStyle: 'bold' } }, '', invoiceData.quantity, `₹${invoiceData.rate.toFixed(2)}`, `₹${invoiceData.total.toFixed(2)}`];
     tableRows.push(productRow);
 
     const specs = [
@@ -311,10 +288,29 @@ export default function SalesPanelPage() {
       total: data.quantity * data.rate,
     };
     setInvoices(prev => [newInvoice, ...prev]);
+    
+    // Create purchase entry and save to localStorage
+    const newPurchase = {
+      id: newInvoice.id,
+      product: newInvoice.model || "Yunex E.Bike",
+      quantity: newInvoice.quantity,
+      rate: newInvoice.rate,
+      amount: newInvoice.total,
+      date: newInvoice.date.toISOString(), // Store as ISO string
+    };
+
+    try {
+      const existingPurchases = JSON.parse(localStorage.getItem('yunex-purchases') || '[]');
+      const updatedPurchases = [newPurchase, ...existingPurchases];
+      localStorage.setItem('yunex-purchases', JSON.stringify(updatedPurchases));
+    } catch (error) {
+      console.error("Failed to update purchases in localStorage", error);
+    }
+    
     form.reset();
     toast({
       title: "Invoice Generated!",
-      description: "The new invoice has been added to the history.",
+      description: "The new invoice has been added to history and purchase panel.",
     });
   };
 
@@ -323,7 +319,7 @@ export default function SalesPanelPage() {
       <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b px-4 md:px-8 bg-[#326cd1]">
         <div className="flex items-center gap-2">
           <YunexLogo className="h-10 w-10" />
-          <h1 className="text-xl font-bold text-primary-foreground font-headline">YUNEX</h1>
+          <h1 className="text-xl font-bold text-primary-foreground font-headline">YUNEX - Sales Panel</h1>
         </div>
         <div className="ml-auto flex items-center gap-4">
           <div className="hidden md:flex items-center gap-2 text-sm font-medium">
@@ -337,7 +333,7 @@ export default function SalesPanelPage() {
               alt="User avatar"
               data-ai-hint={placeholderImages.placeholderImages[0].imageHint}
             />
-            <AvatarFallback>U</AvatarFallback>
+            <AvatarFallback>A</AvatarFallback>
           </Avatar>
           <Button variant="ghost" size="icon" onClick={() => router.push("/")} aria-label="Log Out">
             <LogOut className="h-5 w-5 text-muted-foreground" />
@@ -349,7 +345,7 @@ export default function SalesPanelPage() {
           <Button variant="outline" size="icon" onClick={() => router.back()}>
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <h2 className="text-3xl font-bold tracking-tight font-headline">Sales Panel</h2>
+          <h2 className="text-3xl font-bold tracking-tight font-headline">Create Sales Invoice</h2>
         </div>
 
         <FormProvider {...form}>
@@ -361,32 +357,14 @@ export default function SalesPanelPage() {
                 </CardHeader>
                 <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   <FormField control={form.control} name="branchName" render={({ field }) => ( <FormItem> <FormLabel>Branch Name</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )} />
+                  <FormField control={form.control} name="branchCode" render={({ field }) => ( <FormItem> <FormLabel>Branch Code</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )} />
                   <FormField control={form.control} name="branchGstNo" render={({ field }) => ( <FormItem> <FormLabel>GST No.</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )} />
                   <FormField control={form.control} name="branchContact" render={({ field }) => ( <FormItem> <FormLabel>Contact</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )} />
-                  <FormField control={form.control} name="branchAddress" render={({ field }) => ( <FormItem className="md:col-span-2 lg:col-span-3"> <FormLabel>Address</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )} />
+                  <FormField control={form.control} name="branchAddress" render={({ field }) => ( <FormItem className="md:col-span-2"> <FormLabel>Address</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )} />
                   <FormField control={form.control} name="branchCity" render={({ field }) => ( <FormItem> <FormLabel>City</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )} />
                   <FormField control={form.control} name="branchDistrict" render={({ field }) => ( <FormItem> <FormLabel>District</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )} />
                   <FormField control={form.control} name="branchState" render={({ field }) => ( <FormItem> <FormLabel>State</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )} />
                   <FormField control={form.control} name="branchPinCode" render={({ field }) => ( <FormItem> <FormLabel>Pin Code</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )} />
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Customer Details</CardTitle>
-                </CardHeader>
-                <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <FormField control={form.control} name="customerName" render={({ field }) => ( <FormItem> <FormLabel>Customer Name</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )} />
-                    <FormField control={form.control} name="customerAddress" render={({ field }) => ( <FormItem className="md:col-span-2"> <FormLabel>Address</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )} />
-                    <FormField control={form.control} name="customerCity" render={({ field }) => ( <FormItem> <FormLabel>City</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )} />
-                    <FormField control={form.control} name="customerDistrict" render={({ field }) => ( <FormItem> <FormLabel>District</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )} />
-                    <FormField control={form.control} name="customerState" render={({ field }) => ( <FormItem> <FormLabel>State</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )} />
-                    <FormField control={form.control} name="customerPinCode" render={({ field }) => ( <FormItem> <FormLabel>Pin Code</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )} />
-                    <FormField control={form.control} name="customerContact" render={({ field }) => ( <FormItem> <FormLabel>Contact</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )} />
-                    <FormField control={form.control} name="customerAlternateNo" render={({ field }) => ( <FormItem> <FormLabel>Alternate No.</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )} />
-                    <FormField control={form.control} name="customerAadharNo" render={({ field }) => ( <FormItem> <FormLabel>Aadhar No.</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )} />
-                    <FormField control={form.control} name="customerPanNo" render={({ field }) => ( <FormItem> <FormLabel>Pan Card No.</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )} />
-                    <FormField control={form.control} name="customerGstNo" render={({ field }) => ( <FormItem> <FormLabel>GST No.</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )} />
                 </CardContent>
               </Card>
 
@@ -441,7 +419,7 @@ export default function SalesPanelPage() {
                     <TableHeader>
                         <TableRow>
                             <TableHead>Invoice ID</TableHead>
-                            <TableHead>Customer</TableHead>
+                            <TableHead>Branch</TableHead>
                             <TableHead>Date</TableHead>
                             <TableHead className="text-right">Amount</TableHead>
                             <TableHead className="text-center">Actions</TableHead>
@@ -452,7 +430,7 @@ export default function SalesPanelPage() {
                             invoices.map((invoice) => (
                                 <TableRow key={invoice.id}>
                                     <TableCell className="font-medium">{invoice.id}</TableCell>
-                                    <TableCell>{invoice.customerName}</TableCell>
+                                    <TableCell>{invoice.branchName}</TableCell>
                                     <TableCell>{invoice.date.toLocaleDateString()}</TableCell>
                                     <TableCell className="text-right">₹{invoice.total.toFixed(2)}</TableCell>
                                     <TableCell className="flex justify-center items-center gap-2">

@@ -2,19 +2,18 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { ArrowLeft, Phone, LogOut, ShoppingCart, Plus, Download } from "lucide-react";
+import { ArrowLeft, Phone, LogOut, Download } from "lucide-react";
 import { YunexLogo } from "@/components/yunex-logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import placeholderImages from "@/lib/placeholder-images.json";
 import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 type Purchase = {
-  id: number;
+  id: string; // Changed to string to match invoice ID
   product: string;
   quantity: number;
   rate: number;
@@ -26,6 +25,25 @@ export default function PurchasePanelPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [purchases, setPurchases] = useState<Purchase[]>([]);
+
+  useEffect(() => {
+    try {
+      const storedPurchases = JSON.parse(localStorage.getItem('yunex-purchases') || '[]');
+      // Convert date string back to Date object
+      const formattedPurchases = storedPurchases.map((p: any) => ({
+        ...p,
+        date: new Date(p.date),
+      }));
+      setPurchases(formattedPurchases);
+    } catch (error) {
+      console.error("Failed to load purchases from localStorage", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Could not load purchase history.",
+      });
+    }
+  }, []);
 
   const handleDownload = () => {
     if (purchases.length === 0) {
@@ -72,7 +90,7 @@ export default function PurchasePanelPage() {
       <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b px-4 md:px-8 bg-[#326cd1]">
         <div className="flex items-center gap-2">
           <YunexLogo className="h-10 w-10" />
-          <h1 className="text-xl font-bold text-primary-foreground font-headline">YUNEX</h1>
+          <h1 className="text-xl font-bold text-primary-foreground font-headline">YUNEX - Purchase Panel</h1>
         </div>
         <div className="ml-auto flex items-center gap-4">
           <div className="hidden md:flex items-center gap-2 text-sm font-medium">
@@ -105,7 +123,7 @@ export default function PurchasePanelPage() {
             <CardHeader className="flex-row items-center justify-between">
                 <div>
                     <CardTitle>Purchase History</CardTitle>
-                    <CardDescription>View all recorded purchases.</CardDescription>
+                    <CardDescription>This is a read-only view of all recorded purchases from the sales panel.</CardDescription>
                 </div>
                 <Button onClick={handleDownload} variant="outline">
                     <Download className="mr-2 h-4 w-4" />
