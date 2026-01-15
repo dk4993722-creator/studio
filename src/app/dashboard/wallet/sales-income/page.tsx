@@ -29,9 +29,9 @@ import placeholderImages from "@/lib/placeholder-images.json";
 import Image from "next/image";
 
 const salesData = [
-    { from: 'Product Sale #123', amount: 350.00, date: '2024-07-28' },
-    { from: 'Product Sale #124', amount: 420.50, date: '2024-07-27' },
-    { from: 'Affiliate Commission', amount: 75.00, date: '2024-07-26' },
+    { sNo: 1, motorChassisNo: "MTRCH12345XYZ", salesQty: 1, totalIncome: 3500.00 },
+    { sNo: 2, motorChassisNo: "MTRCH67890ABC", salesQty: 2, totalIncome: 7000.00 },
+    { sNo: 3, motorChassisNo: "MTRCH54321DEF", salesQty: 1, totalIncome: 3500.00 },
 ];
 
 export default function SalesIncomePage() {
@@ -93,17 +93,19 @@ export default function SalesIncomePage() {
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead>Source</TableHead>
-                            <TableHead>Date</TableHead>
-                            <TableHead className="text-right">Amount</TableHead>
+                            <TableHead>S.No.</TableHead>
+                            <TableHead>Motor Chassis No.</TableHead>
+                            <TableHead>Sales Qty</TableHead>
+                            <TableHead className="text-right">Total Income</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {salesData.map((transaction, index) => (
-                            <TableRow key={index}>
-                                <TableCell className="font-medium">{transaction.from}</TableCell>
-                                <TableCell>{transaction.date}</TableCell>
-                                <TableCell className="text-right text-green-500">+ ₹{transaction.amount.toFixed(2)}</TableCell>
+                        {salesData.map((transaction) => (
+                            <TableRow key={transaction.sNo}>
+                                <TableCell className="font-medium">{transaction.sNo}</TableCell>
+                                <TableCell>{transaction.motorChassisNo}</TableCell>
+                                <TableCell>{transaction.salesQty}</TableCell>
+                                <TableCell className="text-right text-green-500">+ ₹{transaction.totalIncome.toFixed(2)}</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
