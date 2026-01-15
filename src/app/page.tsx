@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -52,7 +53,9 @@ const adminLoginSchema = z.object({
 
 export default function AuthPage() {
   const router = useRouter();
-  const [showPassword, setShowPassword] = useState(false);
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
+  const [showSignupPassword, setShowSignupPassword] = useState(false);
+  const [showAdminPassword, setShowAdminPassword] = useState(false);
   const { toast } = useToast();
 
   const loginForm = useForm<z.infer<typeof loginSchema>>({
@@ -81,7 +84,7 @@ export default function AuthPage() {
   };
 
   const onAdminLogin = (values: z.infer<typeof adminLoginSchema>) => {
-    if (values.email === 'admin@yunex.com' && values.password === 'admin') {
+    if (values.email.trim() === 'admin@yunex.com' && values.password.trim() === 'admin') {
       router.push('/admin/dashboard');
     } else {
       toast({
@@ -140,15 +143,15 @@ export default function AuthPage() {
                         <FormLabel>Password</FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Input type={showPassword ? "text" : "password"} placeholder="••••••••" {...field} />
+                            <Input type={showLoginPassword ? "text" : "password"} placeholder="••••••••" {...field} />
                             <Button
                               type="button"
                               variant="ghost"
                               size="icon"
                               className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground"
-                              onClick={() => setShowPassword(!showPassword)}
+                              onClick={() => setShowLoginPassword(!showLoginPassword)}
                             >
-                              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                              {showLoginPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                             </Button>
                           </div>
                         </FormControl>
@@ -221,15 +224,15 @@ export default function AuthPage() {
                         <FormLabel>Password</FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Input type={showPassword ? "text" : "password"} placeholder="••••••••" {...field} />
+                            <Input type={showSignupPassword ? "text" : "password"} placeholder="••••••••" {...field} />
                             <Button
                               type="button"
                               variant="ghost"
                               size="icon"
                               className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground"
-                              onClick={() => setShowPassword(!showPassword)}
+                              onClick={() => setShowSignupPassword(!showSignupPassword)}
                             >
-                              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                              {showSignupPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                             </Button>
                           </div>
                         </FormControl>
@@ -296,15 +299,15 @@ export default function AuthPage() {
                         <FormLabel>Admin Password</FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Input type={showPassword ? "text" : "password"} placeholder="••••••••" {...field} />
+                            <Input type={showAdminPassword ? "text" : "password"} placeholder="••••••••" {...field} />
                             <Button
                               type="button"
                               variant="ghost"
                               size="icon"
                               className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground"
-                              onClick={() => setShowPassword(!showPassword)}
+                              onClick={() => setShowAdminPassword(!showAdminPassword)}
                             >
-                              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                              {showAdminPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                             </Button>
                           </div>
                         </FormControl>
