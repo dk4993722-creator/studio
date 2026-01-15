@@ -27,6 +27,7 @@ import {
   Lamp,
   ToyBrick,
   Car,
+  Building,
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -179,6 +180,15 @@ export function DashboardClientPage() {
       ),
     },
   ];
+  
+  const otherFeatures = [
+    {
+      title: "Dealer Panel",
+      description: "Access dealer tools",
+      icon: <Building className="h-8 w-8 text-primary" />,
+      onClick: () => router.push("/dashboard/dealer-panel"),
+    },
+  ]
 
   const garmentCategories = [
     { title: "Women's Wear", icon: <Shirt className="h-8 w-8 text-primary" />, page: "/dashboard/projects/garments" },
@@ -296,6 +306,17 @@ const electronicsCategories = [
               <DialogContent className="sm:max-w-[425px]">{feature.dialog}</DialogContent>
             </Dialog>
           ))}
+          {otherFeatures.map((feature) => (
+            <Card key={feature.title} onClick={feature.onClick} className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
+              <CardHeader className="flex flex-col items-center justify-center text-center p-6 flex-grow">
+                {feature.icon}
+                <CardTitle className="mt-4 font-headline">{feature.title}</CardTitle>
+              </CardHeader>
+              <CardContent className="text-center text-sm text-muted-foreground pt-0 pb-6">
+                {feature.description}
+              </CardContent>
+            </Card>
+          ))}
         </div>
 
         <div className="mt-8">
@@ -344,6 +365,3 @@ const electronicsCategories = [
     </div>
   );
 }
-
-    
-    
