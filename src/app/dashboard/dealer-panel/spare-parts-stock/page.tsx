@@ -2,17 +2,31 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { ArrowLeft, Phone, LogOut, Wrench } from "lucide-react";
 import { YunexLogo } from "@/components/yunex-logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import placeholderImages from "@/lib/placeholder-images.json";
 
+const stockData = [
+  { sNo: 1, sparePart: 'Brake Pad', openingStock: 200, closingStock: 180, date: '2024-07-30' },
+  { sNo: 2, sparePart: 'Headlight', openingStock: 100, closingStock: 95, date: '2024-07-30' },
+  { sNo: 3, sparePart: 'Battery 48V', openingStock: 50, closingStock: 48, date: '2024-07-30' },
+  { sNo: 4, sparePart: 'Tyre 10-inch', openingStock: 150, closingStock: 140, date: '2024-07-30' },
+];
+
+
 export default function SparePartsStockPage() {
   const router = useRouter();
-  const heroImage = placeholderImages.placeholderImages.find(p => p.id === 'electric-scooter-hero-1');
 
   return (
     <div className="flex min-h-screen w-full flex-col relative bg-background">
@@ -54,9 +68,33 @@ export default function SparePartsStockPage() {
                     <Wrench className="h-6 w-6" />
                     <span>Spare Parts Stock</span>
                 </CardTitle>
+                <CardDescription>
+                  A summary of your spare parts inventory including opening and closing stock.
+                </CardDescription>
             </CardHeader>
             <CardContent>
-                <p>This is the page for Spare Parts Stock. You can add content and features related to spare parts inventory here.</p>
+               <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>S. No.</TableHead>
+                      <TableHead>Spare Parts</TableHead>
+                      <TableHead className="text-right">Opening Stock Qty</TableHead>
+                      <TableHead className="text-right">Closing Stock</TableHead>
+                      <TableHead>Date</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {stockData.map((item) => (
+                      <TableRow key={item.sNo}>
+                        <TableCell>{item.sNo}</TableCell>
+                        <TableCell className="font-medium">{item.sparePart}</TableCell>
+                        <TableCell className="text-right">{item.openingStock}</TableCell>
+                        <TableCell className="text-right">{item.closingStock}</TableCell>
+                        <TableCell>{item.date}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
             </CardContent>
         </Card>
       </main>
