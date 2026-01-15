@@ -23,6 +23,7 @@ import {
   CheckCircle,
   Package,
   DollarSign,
+  Briefcase,
 } from "lucide-react";
 import { YunexLogo } from "@/components/yunex-logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -43,31 +44,11 @@ import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-const FeatureDialog = ({ title, description }: { title: string, description: string }) => (
-  <DialogContent>
-    <DialogHeader>
-      <DialogTitle>{title}</DialogTitle>
-      <DialogDescription>{description}</DialogDescription>
-    </DialogHeader>
-    <DialogFooter>
-        <DialogClose asChild>
-            <Button>Close</Button>
-        </DialogClose>
-    </DialogFooter>
-  </DialogContent>
-);
-
 export default function WalletPage() {
   const router = useRouter();
   const [balance, setBalance] = useState(1250.75);
   
-  const walletFeatures = [
-    {
-      title: "Withdraw",
-      icon: <CreditCard className="h-10 w-10 text-primary" />,
-      dialog: <FeatureDialog title="Withdraw" description="This feature is under development." />,
-    },
-  ];
+  const walletFeatures = [];
 
   const heroImage = placeholderImages.placeholderImages.find(p => p.id === 'electric-scooter-hero-1');
 
@@ -128,7 +109,7 @@ export default function WalletPage() {
           </CardContent>
         </Card>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 md:gap-6">
             <Card onClick={() => router.push('/dashboard/wallet/add')} className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
                 <PlusCircle className="h-10 w-10 text-primary" />
                 <p className="mt-2 font-semibold text-sm">Add Money</p>
@@ -144,6 +125,11 @@ export default function WalletPage() {
                 <p className="mt-2 font-semibold text-sm">Sales Income</p>
             </Card>
 
+            <Card onClick={() => router.push('/dashboard/wallet/non-working-income')} className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
+                <Briefcase className="h-10 w-10 text-primary" />
+                <p className="mt-2 font-semibold text-sm">Non Working Income</p>
+            </Card>
+
             <Card onClick={() => router.push('/dashboard/wallet/send')} className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
                 <ArrowUpCircle className="h-10 w-10 text-primary" />
                 <p className="mt-2 font-semibold text-sm">Send</p>
@@ -152,6 +138,11 @@ export default function WalletPage() {
             <Card onClick={() => router.push('/dashboard/wallet/received')} className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
                 <ArrowDownCircle className="h-10 w-10 text-primary" />
                 <p className="mt-2 font-semibold text-sm">Transaction History</p>
+            </Card>
+            
+            <Card onClick={() => router.push('/dashboard/wallet/withdraw')} className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
+                <CreditCard className="h-10 w-10 text-primary" />
+                <p className="mt-2 font-semibold text-sm">Withdraw</p>
             </Card>
 
           {walletFeatures.map((feature) => (
@@ -174,5 +165,3 @@ export default function WalletPage() {
     </div>
   );
 }
-
-    
