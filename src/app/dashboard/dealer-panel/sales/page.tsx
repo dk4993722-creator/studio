@@ -4,7 +4,7 @@
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { ArrowLeft, Phone, LogOut, TrendingUp, Building } from "lucide-react";
+import { ArrowLeft, Phone, LogOut, TrendingUp, Building, User } from "lucide-react";
 import { YunexLogo } from "@/components/yunex-logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import placeholderImages from "@/lib/placeholder-images.json";
@@ -76,6 +76,55 @@ export default function SalesPanelPage() {
           </CardContent>
         </Card>
         
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <User className="h-6 w-6" />
+              <span>Customer Details</span>
+            </CardTitle>
+            <CardDescription>Enter the details for the customer.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2 md:col-span-2">
+                <Label htmlFor="customer-name">Customer Name</Label>
+                <Input id="customer-name" placeholder="Enter customer name" />
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <Label htmlFor="customer-address">Address</Label>
+                <Textarea id="customer-address" placeholder="Enter customer address" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="customer-city">City</Label>
+                <Input id="customer-city" placeholder="Enter city" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="customer-contact">Contact</Label>
+                <Input id="customer-contact" placeholder="Enter contact number" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="customer-alt-contact">Alternate No.</Label>
+                <Input id="customer-alt-contact" placeholder="Enter alternate contact number" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="customer-age">Age</Label>
+                <Input id="customer-age" placeholder="Enter age" type="number" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="customer-aadhar">Aadhar No.</Label>
+                <Input id="customer-aadhar" placeholder="Enter Aadhar number" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="customer-pan">Pan No.</Label>
+                <Input id="customer-pan" placeholder="Enter PAN number" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="customer-gst">GST No.</Label>
+                <Input id="customer-gst" placeholder="Enter GST number (if applicable)" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </main>
     </div>
   );
