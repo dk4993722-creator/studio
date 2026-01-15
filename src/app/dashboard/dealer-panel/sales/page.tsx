@@ -77,6 +77,28 @@ type Invoice = z.infer<typeof invoiceSchema> & {
   total: number;
 };
 
+const ones = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
+const tens = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
+
+const toWords = (num: number): string => {
+    if (num === 0) return 'Zero';
+    const numStr = num.toString();
+    const [, major] = numStr.match(/^(\d+)/) || [];
+    if (!major) return '';
+
+    const numberToWords = (n: number): string => {
+        if (n < 20) return ones[n];
+        const digit = n % 10;
+        if (n < 100) return tens[Math.floor(n / 10)] + (digit ? ' ' + ones[digit] : '');
+        if (n < 1000) return ones[Math.floor(n / 100)] + ' hundred' + (n % 100 !== 0 ? ' ' + numberToWords(n % 100) : '');
+        if (n < 100000) return numberToWords(Math.floor(n / 1000)) + ' thousand' + (n % 1000 !== 0 ? ' ' + numberToWords(n % 1000) : '');
+        if (n < 10000000) return numberToWords(Math.floor(n / 100000)) + ' lakh' + (n % 100000 !== 0 ? ' ' + numberToWords(n % 100000) : '');
+        return numberToWords(Math.floor(n / 10000000)) + ' crore' + (n % 10000000 !== 0 ? ' ' + numberToWords(n % 10000000) : '');
+    };
+    return numberToWords(parseInt(major));
+};
+
+
 export default function SalesPanelPage() {
   const router = useRouter();
   const { toast } = useToast();
@@ -135,30 +157,54 @@ export default function SalesPanelPage() {
 
   const generatePDF = (invoiceData: Invoice) => {
     const doc = new jsPDF();
+    const pageHeight = doc.internal.pageSize.height || doc.internal.pageSize.getHeight();
+    const pageWidth = doc.internal.pageSize.width || doc.internal.pageSize.getWidth();
+
+    const primaryColor = '#326cd1';
+    const mutedColor = '#6c757d';
+
+    const logoSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100"><circle cx="50" cy="50" r="48" fill="${primaryColor}" /><text x="50%" y="50%" text-anchor="middle" dy=".3em" fill="white" font-size="48" font-family="Helvetica, sans-serif" font-weight="bold">YU</text></svg>`;
+    const logoDataUri = 'data:image/svg+xml;base64,' + btoa(logoSvg);
+    
+    doc.addImage(logoDataUri, 'SVG', 14, 15, 25, 25);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(28);
+    doc.setTextColor(primaryColor);
+    doc.text('YUNEX', 42, 30);
     
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(20);
-    doc.text('Sales Invoice', doc.internal.pageSize.getWidth() / 2, 20, { align: 'center' });
+    doc.setFontSize(22);
+    doc.setTextColor('#000000');
+    doc.text('TAX INVOICE', pageWidth - 14, 25, { align: 'right' });
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.setTextColor(mutedColor);
+    doc.text(`Invoice No: ${invoiceData.id}`, pageWidth - 14, 32, { align: 'right' });
+    doc.text(`Date: ${invoiceData.date.toLocaleDateString('en-IN')}`, pageWidth - 14, 37, { align: 'right' });
 
-    doc.autoTable({
-        startY: 25,
+    doc.setDrawColor(200);
+    doc.line(14, 45, pageWidth - 14, 45);
+
+    (doc as any).autoTable({
+        startY: 50,
         theme: 'plain',
         body: [
             [
-                { content: 'Branch Details', styles: { fontStyle: 'bold' } },
-                { content: 'Customer Details', styles: { fontStyle: 'bold' } },
+                { content: 'Billed By:', styles: { fontStyle: 'bold', textColor: primaryColor } },
+                { content: 'Billed To:', styles: { fontStyle: 'bold', textColor: primaryColor } },
             ],
             [
-                `Name: ${invoiceData.branchName}\nGST No: ${invoiceData.branchGstNo}\nContact: ${invoiceData.branchContact}\nAddress: ${invoiceData.branchAddress}, ${invoiceData.branchCity}, ${invoiceData.branchDistrict}, ${invoiceData.branchState} - ${invoiceData.branchPinCode}`,
-                `Name: ${invoiceData.customerName}\nAddress: ${invoiceData.customerAddress}, ${invoiceData.customerCity}, ${invoiceData.customerDistrict}, ${invoiceData.customerState} - ${invoiceData.customerPinCode}\nContact: ${invoiceData.customerContact}\nAlt. Contact: ${invoiceData.customerAlternateNo}\nAadhar: ${invoiceData.customerAadharNo}\nPAN: ${invoiceData.customerPanNo}\nGST: ${invoiceData.customerGstNo}`,
+                `${invoiceData.branchName}\n${invoiceData.branchAddress}, ${invoiceData.branchCity}, ${invoiceData.branchDistrict}, ${invoiceData.branchState} - ${invoiceData.branchPinCode}\nGSTIN: ${invoiceData.branchGstNo || 'N/A'}\nContact: ${invoiceData.branchContact}`,
+                `${invoiceData.customerName}\n${invoiceData.customerAddress}, ${invoiceData.customerCity}, ${invoiceData.customerDistrict}, ${invoiceData.customerState} - ${invoiceData.customerPinCode}\nContact: ${invoiceData.customerContact}\nAadhar: ${invoiceData.customerAadharNo || 'N/A'}\nPAN: ${invoiceData.customerPanNo || 'N/A'}`,
             ],
         ],
+        styles: { fontSize: 9, cellPadding: 1 },
     });
 
     const tableColumn = ["S. No.", "Description", "Particular", "Qty", "Rate", "Amount"];
-    const tableRows = [];
+    const tableRows: any[][] = [];
 
-    const productRow = ['', 'Yunex - E.Bike', '', invoiceData.quantity, invoiceData.rate.toFixed(2), invoiceData.total.toFixed(2)];
+    const productRow = ['', { content: 'Yunex - E.Bike', styles: { fontStyle: 'bold' } }, '', invoiceData.quantity, `₹${invoiceData.rate.toFixed(2)}`, `₹${invoiceData.total.toFixed(2)}`];
     tableRows.push(productRow);
 
     const specs = [
@@ -170,36 +216,73 @@ export default function SalesPanelPage() {
         { desc: 'Charger No - 1', value: invoiceData.chargerNo1 },
         { desc: 'Charger No - 2', value: invoiceData.chargerNo2 },
         { desc: 'Battery Maker', value: invoiceData.batteryMaker },
-        { desc: 'Battery No-1', value: invoiceData.batteryNo1 },
-        { desc: 'Battery No-2', value: invoiceData.batteryNo2 },
-        { desc: 'Battery No-3', value: invoiceData.batteryNo3 },
-        { desc: 'Battery No-4', value: invoiceData.batteryNo4 },
-        { desc: 'Battery No-5', value: invoiceData.batteryNo5 },
-        { desc: 'Battery No-6', value: invoiceData.batteryNo6 },
+        ...[1, 2, 3, 4, 5, 6].map(i => ({ desc: `Battery No-${i}`, value: invoiceData[`batteryNo${i}` as keyof Invoice] }))
     ];
 
-    specs.forEach((spec, index) => {
-        const row = [index + 1, spec.desc, spec.value || '', '', '', ''];
-        tableRows.push(row);
+    let specIndex = 1;
+    specs.forEach((spec) => {
+        if (spec.value) {
+            const row = [specIndex++, spec.desc, spec.value, '', '', ''];
+            tableRows.push(row);
+        }
     });
 
-    doc.autoTable({
+    (doc as any).autoTable({
+        startY: (doc as any).lastAutoTable.finalY + 10,
         head: [tableColumn],
         body: tableRows,
-        startY: (doc as any).lastAutoTable.finalY + 5,
-        didDrawCell: (data) => {
-            if (data.section === 'body' && data.row.index === 0) {
-                 doc.setFont('helvetica', 'bold');
-            }
+        theme: 'grid',
+        headStyles: { fillColor: [50, 108, 209], textColor: [255, 255, 255], fontStyle: 'bold' },
+        columnStyles: {
+            0: { halign: 'center', cellWidth: 15 },
+            2: { cellWidth: 'auto' },
+            3: { halign: 'right', cellWidth: 20 },
+            4: { halign: 'right', cellWidth: 30 },
+            5: { halign: 'right', cellWidth: 30 },
         },
     });
     
-    const finalY = (doc as any).lastAutoTable.finalY;
+    let finalY = (doc as any).lastAutoTable.finalY;
+    const totalInWords = toWords(invoiceData.total).trim().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ') + ' Only';
+
+    doc.setFontSize(10);
     doc.setFont('helvetica', 'bold');
-    doc.text(`TOTAL INVOICE VALUE (IN Rs.): ${invoiceData.total.toFixed(2)}`, 14, finalY + 15);
+    doc.text('Total In Words:', 14, finalY + 10);
+    doc.setFont('helvetica', 'normal');
+    doc.text(totalInWords, 14, finalY + 15, { maxWidth: pageWidth / 2 });
     
+    (doc as any).autoTable({
+      startY: finalY + 5,
+      body: [
+        ['Total Invoice Value', `₹${invoiceData.total.toFixed(2)}`],
+      ],
+      theme: 'plain',
+      tableWidth: 80,
+      margin: { left: pageWidth - 80 - 14 },
+      styles: { halign: 'right' },
+      bodyStyles: { fontStyle: 'bold', fontSize: 12, cellPadding: { top: 5, right: 0 } },
+    });
+
+    finalY = (doc as any).lastAutoTable.finalY;
+    let signatureY = finalY > pageHeight - 70 ? pageHeight - 60 : finalY + 30;
+    
+    const footerY = pageHeight - 20;
+    doc.setDrawColor(220);
+    doc.line(14, footerY - 5, pageWidth - 14, footerY - 5);
+    
+    doc.setFontSize(8);
+    doc.setTextColor(mutedColor);
+    doc.text(`Office address: Near D.C. Office, Satyam Nagar, Dhanbad, Jharkhand, INDIA. 826004.`, 14, footerY);
+    doc.text(`www.yunex.com | E-mail: info@yunex.com`, 14, footerY + 4);
+
+    doc.setFontSize(10);
+    doc.setTextColor('#000000');
+    doc.text('For YUNEX', pageWidth - 14, signatureY, { align: 'right' });
+    doc.text('Authorised Signatory', pageWidth - 14, signatureY + 20, { align: 'right' });
+
     return doc;
   };
+
 
   const handleDownload = (invoice: Invoice) => {
     try {
@@ -395,5 +478,3 @@ export default function SalesPanelPage() {
     </div>
   );
 }
-
-    
