@@ -34,6 +34,13 @@ const salesData = [
     { sNo: 3, evModelNo: "YUNEX-X1", motorChassisNo: "MTRCH54321DEF", dated: "2024-07-26", totalIncome: 3500.00 },
 ];
 
+const products = [
+    { name: "YUNEX-X1", price: 45000 },
+    { name: "YUNEX-X2", price: 40000 },
+    { name: "YUNEX-X3", price: 35000 },
+    { name: "YUNEX-X4", price: 33500 },
+];
+
 export default function SalesIncomePage() {
   const router = useRouter();
   const heroImage = placeholderImages.placeholderImages.find(p => p.id === 'electric-scooter-hero-1');
@@ -82,6 +89,22 @@ export default function SalesIncomePage() {
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <h2 className="text-3xl font-bold tracking-tight font-headline">Sales Income</h2>
+        </div>
+
+        <div className="mb-8">
+            <h3 className="text-2xl font-bold tracking-tight font-headline mb-4">Products</h3>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                {products.map((product) => (
+                    <Card key={product.name}>
+                        <CardHeader>
+                            <CardTitle>{product.name}</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-xl font-semibold">₹{product.price.toLocaleString('en-IN')}</p>
+                        </CardContent>
+                    </Card>
+                ))}
+            </div>
         </div>
 
         <Card>
