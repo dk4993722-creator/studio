@@ -94,7 +94,7 @@ export default function NonWorkingIncomePage() {
             </CardHeader>
             <CardContent>
                 <p className="text-foreground">
-                    For every ₹1000 of non-working income generated, the amount is distributed among all "Starter Package" users by dispatching an E.V. scooter from the plant.
+                    This income is distributed among all 'Starter Package' users.
                 </p>
             </CardContent>
         </Card>
