@@ -107,12 +107,11 @@ export function DashboardClientPage() {
     });
   };
 
-  const handleComplainSubmit = (closeDialog: () => void) => {
+  const handleComplainSubmit = () => {
     toast({
       title: "Submitted",
       description: "Your complaint has been submitted. We will get back to you shortly.",
     });
-    closeDialog();
   };
   
   const notImplementedDialog = (
@@ -146,6 +145,11 @@ export function DashboardClientPage() {
               <Copy className="h-4 w-4" />
             </Button>
           </div>
+          <DialogFooter>
+            <DialogClose asChild>
+                <Button variant="secondary">Close</Button>
+            </DialogClose>
+          </DialogFooter>
         </>
       ),
     },
@@ -154,29 +158,27 @@ export function DashboardClientPage() {
       description: "Submit a complaint",
       icon: <MessageSquareWarning className="h-8 w-8 text-primary" />,
       dialog: (
-        <DialogClose asChild>
-          {(close) => (
-            <>
-              <DialogHeader>
-                <DialogTitle className="font-headline">Submit a Complaint</DialogTitle>
-                <DialogDescription>We are sorry for the inconvenience. Please describe your issue below.</DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="complaint-user-id">User ID</Label>
-                  <Input id="complaint-user-id" value={userId} readOnly />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="complaint-description">Complaint</Label>
-                  <Textarea id="complaint-description" placeholder="Type your message here." rows={4} />
-                </div>
-              </div>
-              <DialogFooter>
-                <Button onClick={() => handleComplainSubmit(close as () => void)}>Submit</Button>
-              </DialogFooter>
-            </>
-          )}
-        </DialogClose>
+        <>
+          <DialogHeader>
+            <DialogTitle className="font-headline">Submit a Complaint</DialogTitle>
+            <DialogDescription>We are sorry for the inconvenience. Please describe your issue below.</DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="complaint-user-id">User ID</Label>
+              <Input id="complaint-user-id" value={userId} readOnly />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="complaint-description">Complaint</Label>
+              <Textarea id="complaint-description" placeholder="Type your message here." rows={4} />
+            </div>
+          </div>
+          <DialogFooter>
+            <DialogClose asChild>
+                <Button onClick={handleComplainSubmit}>Submit</Button>
+            </DialogClose>
+          </DialogFooter>
+        </>
       ),
     },
   ];
@@ -365,3 +367,5 @@ const electronicsCategories = [
     </div>
   );
 }
+
+    
