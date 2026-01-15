@@ -181,7 +181,6 @@ export function DashboardClientPage() {
   ];
 
   const garmentCategories = [
-    { title: "Men's Wear", icon: <Shirt className="h-8 w-8 text-primary" />, page: "/dashboard/projects/garments" },
     { title: "Women's Wear", icon: <Shirt className="h-8 w-8 text-primary" />, page: "/dashboard/projects/garments" },
     { title: "Kids Wear", icon: <Shirt className="h-8 w-8 text-primary" />, page: "/dashboard/projects/garments" },
 ];
@@ -345,3 +344,5 @@ const electronicsCategories = [
     </div>
   );
 }
+
+    
