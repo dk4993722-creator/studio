@@ -250,6 +250,16 @@ const electronicsCategories = [
           </CardContent>
         </Card>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 md:gap-8">
+            <Card onClick={() => router.push('/dashboard/profile')} className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
+              <CardHeader className="flex flex-col items-center justify-center text-center p-6 flex-grow">
+                <User className="h-8 w-8 text-primary" />
+                <CardTitle className="mt-4 font-headline">Profile</CardTitle>
+              </CardHeader>
+               <CardContent className="text-center text-sm text-muted-foreground pt-0 pb-6">
+                    View your profile
+                </CardContent>
+            </Card>
+
           <Card onClick={() => router.push('/dashboard/team')} className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
             <CardHeader className="flex flex-col items-center justify-center text-center p-6 flex-grow">
               <Users2 className="h-8 w-8 text-primary" />
@@ -287,15 +297,6 @@ const electronicsCategories = [
               <DialogContent className="sm:max-w-[425px]">{feature.dialog}</DialogContent>
             </Dialog>
           ))}
-            <Card onClick={() => router.push('/dashboard/profile')} className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
-              <CardHeader className="flex flex-col items-center justify-center text-center p-6 flex-grow">
-                <User className="h-8 w-8 text-primary" />
-                <CardTitle className="mt-4 font-headline">Profile</CardTitle>
-              </CardHeader>
-               <CardContent className="text-center text-sm text-muted-foreground pt-0 pb-6">
-                    View your profile
-                </CardContent>
-            </Card>
         </div>
 
         <div className="mt-8">
