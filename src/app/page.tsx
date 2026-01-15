@@ -28,6 +28,7 @@ import { Eye, EyeOff } from "lucide-react";
 import placeholderImages from "@/lib/placeholder-images.json";
 import Image from "next/image";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useToast } from "@/hooks/use-toast";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),
@@ -44,9 +45,15 @@ const signupSchema = z.object({
   }),
 });
 
+const adminLoginSchema = z.object({
+  email: z.string().email({ message: "Invalid email address." }),
+  password: z.string().min(1, { message: "Password is required." }),
+});
+
 export default function AuthPage() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+  const { toast } = useToast();
 
   const loginForm = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -56,6 +63,11 @@ export default function AuthPage() {
   const signupForm = useForm<z.infer<typeof signupSchema>>({
     resolver: zodResolver(signupSchema),
     defaultValues: { name: "", email: "", mobile: "", password: "", terms: false },
+  });
+
+  const adminLoginForm = useForm<z.infer<typeof adminLoginSchema>>({
+    resolver: zodResolver(adminLoginSchema),
+    defaultValues: { email: "", password: "" },
   });
 
   const onLogin = (values: z.infer<typeof loginSchema>) => {
@@ -68,6 +80,18 @@ export default function AuthPage() {
     router.push(`/dashboard?name=${encodeURIComponent(values.name)}`);
   };
 
+  const onAdminLogin = (values: z.infer<typeof adminLoginSchema>) => {
+    if (values.email === 'admin@yunex.com' && values.password === 'admin') {
+      router.push('/admin/dashboard');
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Login Failed",
+        description: "Invalid admin credentials.",
+      });
+    }
+  };
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-4">
       <div className="absolute inset-0 -z-10 bg-background" />
@@ -78,9 +102,10 @@ export default function AuthPage() {
         </h1>
       </div>
       <Tabs defaultValue="login" className="w-full max-w-md">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="login">Login</TabsTrigger>
           <TabsTrigger value="signup">Sign Up</TabsTrigger>
+          <TabsTrigger value="admin">Admin</TabsTrigger>
         </TabsList>
 
         <TabsContent value="login">
@@ -233,6 +258,61 @@ export default function AuthPage() {
                     )}
                   />
                   <Button type="submit" className="w-full">Create Account</Button>
+                </form>
+              </Form>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="admin">
+          <Card>
+            <CardHeader>
+              <CardTitle className="font-headline">Admin Login</CardTitle>
+              <CardDescription>
+                Access the admin dashboard.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Form {...adminLoginForm}>
+                <form onSubmit={adminLoginForm.handleSubmit(onAdminLogin)} className="space-y-6">
+                  <FormField
+                    control={adminLoginForm.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Admin Email</FormLabel>
+                        <FormControl>
+                          <Input placeholder="admin@yunex.com" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={adminLoginForm.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Admin Password</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Input type={showPassword ? "text" : "password"} placeholder="••••••••" {...field} />
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground"
+                              onClick={() => setShowPassword(!showPassword)}
+                            >
+                              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                            </Button>
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Button type="submit" className="w-full">Login as Admin</Button>
                 </form>
               </Form>
             </CardContent>
