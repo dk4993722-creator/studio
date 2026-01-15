@@ -3,11 +3,14 @@
 
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Phone, LogOut, TrendingUp } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { ArrowLeft, Phone, LogOut, TrendingUp, Building } from "lucide-react";
 import { YunexLogo } from "@/components/yunex-logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import placeholderImages from "@/lib/placeholder-images.json";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 
 export default function SalesPanelPage() {
   const router = useRouter();
@@ -40,15 +43,37 @@ export default function SalesPanelPage() {
         </div>
 
         <Card>
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                    <TrendingUp className="h-6 w-6" />
-                    <span>Sales Panel</span>
-                </CardTitle>
-            </CardHeader>
-            <CardContent>
-                <p>This is the page for the Sales Panel. You can add content and features related to sales here.</p>
-            </CardContent>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Building className="h-6 w-6" />
+              <span>Branch Details</span>
+            </CardTitle>
+            <CardDescription>Enter the details for the branch.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="branch-name">Branch Name</Label>
+                <Input id="branch-name" placeholder="Enter branch name" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="gst-no">GST No.</Label>
+                <Input id="gst-no" placeholder="Enter GST number" />
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <Label htmlFor="address">Address</Label>
+                <Textarea id="address" placeholder="Enter branch address" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="pin-code">Pin Code</Label>
+                <Input id="pin-code" placeholder="Enter pin code" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="contact-details">Contact Details</Label>
+                <Input id="contact-details" placeholder="Enter contact number" />
+              </div>
+            </div>
+          </CardContent>
         </Card>
         
       </main>
