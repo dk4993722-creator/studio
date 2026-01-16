@@ -194,8 +194,43 @@ export default function AuthPage() {
             <CardContent>
               <Form {...loginForm}>
                 <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-6">
-                  <FormField control={loginForm.control} name="email" render={({ field }) => ( <FormItem> <FormLabel>{currentRoleConfig.emailLabel}</FormLabel> <FormControl><Input placeholder={currentRoleConfig.emailPlaceholder} {...field} /></FormControl> <FormMessage /> </FormItem> )} />
-                  <FormField control={loginForm.control} name="password" render={({ field }) => ( <FormItem> <FormLabel>{currentRoleConfig.passwordLabel}</FormLabel> <FormControl> <div className="relative"> <Input type={showPassword ? "text" : "password"} placeholder="••••••••" {...field} /> <Button type="button" variant="ghost" size="icon" className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground" onClick={() => setShowPassword(!showPassword)} > {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />} </Button> </div> </FormControl> <FormMessage /> </FormItem> )} />
+                  <FormField
+                    control={loginForm.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{currentRoleConfig.emailLabel}</FormLabel>
+                        <FormControl>
+                          <Input placeholder={currentRoleConfig.emailPlaceholder} {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={loginForm.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{currentRoleConfig.passwordLabel}</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Input type={showPassword ? "text" : "password"} placeholder="••••••••" {...field} />
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground"
+                              onClick={() => setShowPassword(!showPassword)}
+                            >
+                              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                            </Button>
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                   <Button type="submit" className="w-full">{currentRoleConfig.buttonText}</Button>
                 </form>
               </Form>
@@ -212,11 +247,84 @@ export default function AuthPage() {
             <CardContent>
               <Form {...signupForm}>
                 <form onSubmit={signupForm.handleSubmit(onSignup)} className="space-y-6">
-                  <FormField control={signupForm.control} name="name" render={({ field }) => ( <FormItem> <FormLabel>Full Name</FormLabel> <FormControl><Input placeholder="John Doe" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
-                  <FormField control={signupForm.control} name="email" render={({ field }) => ( <FormItem> <FormLabel>Email</FormLabel> <FormControl><Input placeholder="you@example.com" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
-                  <FormField control={signupForm.control} name="mobile" render={({ field }) => ( <FormItem> <FormLabel>Mobile No.</FormLabel> <FormControl><Input placeholder="Your mobile number" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
-                  <FormField control={signupForm.control} name="password" render={({ field }) => ( <FormItem> <FormLabel>Password</FormLabel> <FormControl> <div className="relative"> <Input type={showSignupPassword ? "text" : "password"} placeholder="••••••••" {...field} /> <Button type="button" variant="ghost" size="icon" className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground" onClick={() => setShowSignupPassword(!showSignupPassword)} > {showSignupPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />} </Button> </div> </FormControl> <FormMessage /> </FormItem> )} />
-                  <FormField control={signupForm.control} name="terms" render={({ field }) => ( <FormItem className="flex flex-row items-start space-x-3 space-y-0"> <FormControl> <Checkbox checked={field.value} onCheckedChange={field.onChange} /> </FormControl> <div className="space-y-1 leading-none"> <FormLabel>I agree to the terms and conditions.</FormLabel> <FormMessage /> </div> </FormItem> )} />
+                  <FormField
+                    control={signupForm.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Full Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="John Doe" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={signupForm.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input placeholder="you@example.com" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={signupForm.control}
+                    name="mobile"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Mobile No.</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Your mobile number" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={signupForm.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Password</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Input type={showSignupPassword ? "text" : "password"} placeholder="••••••••" {...field} />
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground"
+                              onClick={() => setShowSignupPassword(!showSignupPassword)}
+                            >
+                              {showSignupPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                            </Button>
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={signupForm.control}
+                    name="terms"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                        <FormControl>
+                          <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                        </FormControl>
+                        <div className="space-y-1 leading-none">
+                          <FormLabel>I agree to the terms and conditions.</FormLabel>
+                          <FormMessage />
+                        </div>
+                      </FormItem>
+                    )}
+                  />
                   <Button type="submit" className="w-full">Create Account</Button>
                 </form>
               </Form>
