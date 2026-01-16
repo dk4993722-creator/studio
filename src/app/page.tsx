@@ -15,7 +15,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { YunexLogo } from "@/components/yunex-logo";
 import {
   Form,
@@ -26,8 +25,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Eye, EyeOff, User } from "lucide-react";
-import placeholderImages from "@/lib/placeholder-images.json";
-import Image from "next/image";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -38,6 +35,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),
@@ -54,25 +52,15 @@ const signupSchema = z.object({
   }),
 });
 
-const adminLoginSchema = z.object({
-  email: z.string().email({ message: "Invalid email address." }),
-  password: z.string().min(1, { message: "Password is required." }),
-});
-
-const agencyLoginSchema = z.object({
-  email: z.string().email({ message: "Invalid email address." }),
-  password: z.string().min(1, { message: "Password is required." }),
-});
-
-
 export default function AuthPage() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState("login");
-  const [showLoginPassword, setShowLoginPassword] = useState(false);
-  const [showSignupPassword, setShowSignupPassword] = useState(false);
-  const [showAdminPassword, setShowAdminPassword] = useState(false);
-  const [showAgencyPassword, setShowAgencyPassword] = useState(false);
   const { toast } = useToast();
+  
+  const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
+  const [loginRole, setLoginRole] = useState<'dealer' | 'admin' | 'agency'>('dealer');
+  
+  const [showPassword, setShowPassword] = useState(false);
+  const [showSignupPassword, setShowSignupPassword] = useState(false);
 
   const loginForm = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -84,348 +72,158 @@ export default function AuthPage() {
     defaultValues: { name: "", email: "", mobile: "", password: "", terms: false },
   });
 
-  const adminLoginForm = useForm<z.infer<typeof adminLoginSchema>>({
-    resolver: zodResolver(adminLoginSchema),
-    defaultValues: { email: "", password: "" },
-  });
-  
-  const agencyLoginForm = useForm<z.infer<typeof agencyLoginSchema>>({
-    resolver: zodResolver(agencyLoginSchema),
-    defaultValues: { email: "", password: "" },
-  });
-
-  const onLogin = (values: z.infer<typeof loginSchema>) => {
-    console.log("Login attempt with:", values.email);
-    router.push("/dashboard");
+  const onLoginSubmit = (values: z.infer<typeof loginSchema>) => {
+    switch (loginRole) {
+      case 'dealer':
+        console.log("Dealer login attempt with:", values.email);
+        router.push("/dashboard");
+        break;
+      case 'admin':
+        if (values.email.trim() === 'admin@yunex.com' && values.password.trim() === 'admin') {
+          router.push('/admin/dashboard');
+        } else {
+          toast({
+            variant: "destructive",
+            title: "Login Failed",
+            description: "Invalid admin credentials.",
+          });
+        }
+        break;
+      case 'agency':
+        console.log("Agency login attempt with:", values.email);
+        toast({
+            title: "Coming Soon",
+            description: "The agency dashboard is not yet implemented.",
+        });
+        break;
+    }
   };
 
   const onSignup = (values: z.infer<typeof signupSchema>) => {
     console.log("Signup attempt with:", values.email);
     router.push(`/dashboard?name=${encodeURIComponent(values.name)}`);
   };
+  
+  const handleRoleSelect = (role: 'dealer' | 'admin' | 'agency') => {
+    loginForm.reset();
+    setLoginRole(role);
+    setAuthMode('login');
+  };
 
-  const onAdminLogin = (values: z.infer<typeof adminLoginSchema>) => {
-    if (values.email.trim() === 'admin@yunex.com' && values.password.trim() === 'admin') {
-      router.push('/admin/dashboard');
-    } else {
-      toast({
-        variant: "destructive",
-        title: "Login Failed",
-        description: "Invalid admin credentials.",
-      });
+  const roleConfig = {
+    dealer: {
+      title: "Dealer Login",
+      description: "Access your YUNEX wallet.",
+      emailLabel: "Email",
+      emailPlaceholder: "you@example.com",
+      passwordLabel: "Password",
+      buttonText: "Login"
+    },
+    admin: {
+      title: "Admin Login",
+      description: "Access the admin dashboard.",
+      emailLabel: "Admin Email",
+      emailPlaceholder: "admin@yunex.com",
+      passwordLabel: "Admin Password",
+      buttonText: "Login as Admin"
+    },
+    agency: {
+      title: "Agency Login",
+      description: "Access the agency dashboard.",
+      emailLabel: "Agency Email",
+      emailPlaceholder: "agency@example.com",
+      passwordLabel: "Agency Password",
+      buttonText: "Login as Agency"
     }
-  };
-
-  const onAgencyLogin = (values: z.infer<typeof agencyLoginSchema>) => {
-    console.log("Agency login attempt with:", values.email);
-    toast({
-        title: "Coming Soon",
-        description: "The agency dashboard is not yet implemented.",
-    });
-  };
+  }
+  const currentRoleConfig = roleConfig[loginRole];
 
   return (
     <main className="relative flex min-h-screen flex-col items-center justify-center p-4">
-       <div className="absolute top-4 right-4 z-10">
+      <div className="absolute top-4 right-4 z-10">
         <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <Button variant="outline">
-                    <User className="mr-2 h-4 w-4" />
-                    <span>Login As</span>
-                </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Select Role</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onSelect={() => setActiveTab('login')}>Dealer Login</DropdownMenuItem>
-                <DropdownMenuItem onSelect={() => setActiveTab('agency')}>Agency Login</DropdownMenuItem>
-                <DropdownMenuItem onSelect={() => setActiveTab('admin')}>Admin Login</DropdownMenuItem>
-            </DropdownMenuContent>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline">
+              <User className="mr-2 h-4 w-4" />
+              <span>Login As</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Select Role</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onSelect={() => handleRoleSelect('dealer')}>Dealer Login</DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => handleRoleSelect('agency')}>Agency Login</DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => handleRoleSelect('admin')}>Admin Login</DropdownMenuItem>
+          </DropdownMenuContent>
         </DropdownMenu>
       </div>
       <div className="absolute inset-0 -z-10 bg-background" />
       <div className="flex items-center gap-4 mb-8">
         <YunexLogo className="h-16 w-16" />
-        <h1 className="text-4xl font-headline font-bold text-foreground">
-          YUNEX
-        </h1>
+        <h1 className="text-4xl font-headline font-bold text-foreground">YUNEX</h1>
       </div>
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full max-w-md">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="login">Dealer</TabsTrigger>
-          <TabsTrigger value="signup">Sign Up</TabsTrigger>
-          <TabsTrigger value="agency">Agency</TabsTrigger>
-          <TabsTrigger value="admin">Admin</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="login">
-          <Card>
+      
+      <Card className="w-full max-w-md overflow-hidden">
+        <div className="grid w-full grid-cols-2 bg-[#326cd1]">
+          <button
+            onClick={() => setAuthMode('login')}
+            className={cn(
+              "py-3 text-base transition-colors",
+              authMode === 'login' ? 'bg-background text-primary' : 'text-primary-foreground hover:bg-primary/90'
+            )}
+          >
+            Login
+          </button>
+          <button
+            onClick={() => setAuthMode('signup')}
+            className={cn(
+              "py-3 text-base transition-colors",
+              authMode === 'signup' ? 'bg-background text-primary' : 'text-primary-foreground hover:bg-primary/90'
+            )}
+          >
+            Sign Up
+          </button>
+        </div>
+        
+        {authMode === 'login' && (
+          <>
             <CardHeader>
-              <CardTitle className="font-headline">Dealer Login</CardTitle>
-              <CardDescription>
-                Access your YUNEX wallet.
-              </CardDescription>
+              <CardTitle className="font-headline">{currentRoleConfig.title}</CardTitle>
+              <CardDescription>{currentRoleConfig.description}</CardDescription>
             </CardHeader>
             <CardContent>
               <Form {...loginForm}>
-                <form onSubmit={loginForm.handleSubmit(onLogin)} className="space-y-6">
-                  <FormField
-                    control={loginForm.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email</FormLabel>
-                        <FormControl>
-                          <Input placeholder="you@example.com" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={loginForm.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Password</FormLabel>
-                        <FormControl>
-                          <div className="relative">
-                            <Input type={showLoginPassword ? "text" : "password"} placeholder="••••••••" {...field} />
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon"
-                              className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground"
-                              onClick={() => setShowLoginPassword(!showLoginPassword)}
-                            >
-                              {showLoginPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                            </Button>
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Button type="submit" className="w-full">Login</Button>
+                <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-6">
+                  <FormField control={loginForm.control} name="email" render={({ field }) => ( <FormItem> <FormLabel>{currentRoleConfig.emailLabel}</FormLabel> <FormControl><Input placeholder={currentRoleConfig.emailPlaceholder} {...field} /></FormControl> <FormMessage /> </FormItem> )} />
+                  <FormField control={loginForm.control} name="password" render={({ field }) => ( <FormItem> <FormLabel>{currentRoleConfig.passwordLabel}</FormLabel> <FormControl> <div className="relative"> <Input type={showPassword ? "text" : "password"} placeholder="••••••••" {...field} /> <Button type="button" variant="ghost" size="icon" className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground" onClick={() => setShowPassword(!showPassword)} > {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />} </Button> </div> </FormControl> <FormMessage /> </FormItem> )} />
+                  <Button type="submit" className="w-full">{currentRoleConfig.buttonText}</Button>
                 </form>
               </Form>
             </CardContent>
-          </Card>
-        </TabsContent>
+          </>
+        )}
 
-        <TabsContent value="signup">
-          <Card>
+        {authMode === 'signup' && (
+          <>
             <CardHeader>
               <CardTitle className="font-headline">Sign Up</CardTitle>
-              <CardDescription>
-                Create your new YUNEX wallet.
-              </CardDescription>
+              <CardDescription>Create your new YUNEX wallet.</CardDescription>
             </CardHeader>
             <CardContent>
               <Form {...signupForm}>
                 <form onSubmit={signupForm.handleSubmit(onSignup)} className="space-y-6">
-                  <FormField
-                    control={signupForm.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Full Name</FormLabel>
-                        <FormControl>
-                          <Input placeholder="John Doe" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={signupForm.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email</FormLabel>
-                        <FormControl>
-                          <Input placeholder="you@example.com" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={signupForm.control}
-                    name="mobile"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Mobile No.</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Your mobile number" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                   <FormField
-                    control={signupForm.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Password</FormLabel>
-                        <FormControl>
-                          <div className="relative">
-                            <Input type={showSignupPassword ? "text" : "password"} placeholder="••••••••" {...field} />
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon"
-                              className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground"
-                              onClick={() => setShowSignupPassword(!showSignupPassword)}
-                            >
-                              {showSignupPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                            </Button>
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={signupForm.control}
-                    name="terms"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                        <FormControl>
-                          <Checkbox
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
-                        <div className="space-y-1 leading-none">
-                          <FormLabel>
-                            I agree to the terms and conditions.
-                          </FormLabel>
-                           <FormMessage />
-                        </div>
-                      </FormItem>
-                    )}
-                  />
+                  <FormField control={signupForm.control} name="name" render={({ field }) => ( <FormItem> <FormLabel>Full Name</FormLabel> <FormControl><Input placeholder="John Doe" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
+                  <FormField control={signupForm.control} name="email" render={({ field }) => ( <FormItem> <FormLabel>Email</FormLabel> <FormControl><Input placeholder="you@example.com" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
+                  <FormField control={signupForm.control} name="mobile" render={({ field }) => ( <FormItem> <FormLabel>Mobile No.</FormLabel> <FormControl><Input placeholder="Your mobile number" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
+                  <FormField control={signupForm.control} name="password" render={({ field }) => ( <FormItem> <FormLabel>Password</FormLabel> <FormControl> <div className="relative"> <Input type={showSignupPassword ? "text" : "password"} placeholder="••••••••" {...field} /> <Button type="button" variant="ghost" size="icon" className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground" onClick={() => setShowSignupPassword(!showSignupPassword)} > {showSignupPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />} </Button> </div> </FormControl> <FormMessage /> </FormItem> )} />
+                  <FormField control={signupForm.control} name="terms" render={({ field }) => ( <FormItem className="flex flex-row items-start space-x-3 space-y-0"> <FormControl> <Checkbox checked={field.value} onCheckedChange={field.onChange} /> </FormControl> <div className="space-y-1 leading-none"> <FormLabel>I agree to the terms and conditions.</FormLabel> <FormMessage /> </div> </FormItem> )} />
                   <Button type="submit" className="w-full">Create Account</Button>
                 </form>
               </Form>
             </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="agency">
-          <Card>
-            <CardHeader>
-              <CardTitle className="font-headline">Agency Login</CardTitle>
-              <CardDescription>
-                Access the agency dashboard.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Form {...agencyLoginForm}>
-                <form onSubmit={agencyLoginForm.handleSubmit(onAgencyLogin)} className="space-y-6">
-                  <FormField
-                    control={agencyLoginForm.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Agency Email</FormLabel>
-                        <FormControl>
-                          <Input placeholder="agency@example.com" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={agencyLoginForm.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Agency Password</FormLabel>
-                        <FormControl>
-                          <div className="relative">
-                            <Input type={showAgencyPassword ? "text" : "password"} placeholder="••••••••" {...field} />
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon"
-                              className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground"
-                              onClick={() => setShowAgencyPassword(!showAgencyPassword)}
-                            >
-                              {showAgencyPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                            </Button>
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Button type="submit" className="w-full">Login as Agency</Button>
-                </form>
-              </Form>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="admin">
-          <Card>
-            <CardHeader>
-              <CardTitle className="font-headline">Admin Login</CardTitle>
-              <CardDescription>
-                Access the admin dashboard.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Form {...adminLoginForm}>
-                <form onSubmit={adminLoginForm.handleSubmit(onAdminLogin)} className="space-y-6">
-                  <FormField
-                    control={adminLoginForm.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Admin Email</FormLabel>
-                        <FormControl>
-                          <Input placeholder="admin@yunex.com" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={adminLoginForm.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Admin Password</FormLabel>
-                        <FormControl>
-                          <div className="relative">
-                            <Input type={showAdminPassword ? "text" : "password"} placeholder="••••••••" {...field} />
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon"
-                              className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground"
-                              onClick={() => setShowAdminPassword(!showAdminPassword)}
-                            >
-                              {showAdminPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                            </Button>
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Button type="submit" className="w-full">Login as Admin</Button>
-                </form>
-              </Form>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+          </>
+        )}
+      </Card>
     </main>
   );
 }
-
-    
