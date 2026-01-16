@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -58,9 +59,6 @@ export default function TeamPage() {
     { level: 10, totalMember: 59049, myTeam: "", remarks: "" },
   ];
 
-  const heroImage = placeholderImages.placeholderImages.find(p => p.id === 'electric-scooter-hero-1');
-
-
   return (
     <div className="flex min-h-screen w-full flex-col relative bg-background">
        <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b px-4 md:px-8 bg-[#326cd1]">
@@ -84,17 +82,6 @@ export default function TeamPage() {
         </div>
       </header>
       <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
-        {heroImage && (
-          <div className="relative w-full h-48 md:h-64 rounded-lg overflow-hidden shadow-lg mb-4">
-            <Image
-              src={heroImage.imageUrl}
-              alt={heroImage.description}
-              fill
-              style={{ objectFit: 'cover' }}
-              data-ai-hint={heroImage.imageHint}
-            />
-          </div>
-        )}
         <div className="flex items-center gap-4">
           <Button variant="outline" size="icon" onClick={() => router.back()}>
             <ArrowLeft className="h-4 w-4" />

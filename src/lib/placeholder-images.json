@@ -25,12 +25,6 @@
       "imageHint": "galaxy space"
     },
     {
-      "id": "electric-scooter-hero-1",
-      "description": "Hero image of Yunex electric scooters",
-      "imageUrl": "https://storage.googleapis.com/aip-dev-product-326615.appspot.com/326615/5938d82d-1b77-441f-8898-335359a35a75.jpg",
-      "imageHint": "electric scooter"
-    },
-    {
       "id": "qr-code-placeholder",
       "description": "A placeholder QR code",
       "imageUrl": "https://storage.googleapis.com/aip-dev-product-326615.appspot.com/326615/341071d7-234b-4654-86a0-62184914b18c.png",

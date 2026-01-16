@@ -2,7 +2,6 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import {
@@ -27,7 +26,6 @@ const stockData = [
 
 export default function VehicleStockPage() {
   const router = useRouter();
-  const heroImage = placeholderImages.placeholderImages.find(p => p.id === 'electric-scooter-hero-1');
 
   return (
     <div className="flex min-h-screen w-full flex-col relative bg-background">

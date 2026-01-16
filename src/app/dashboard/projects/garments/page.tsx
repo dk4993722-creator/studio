@@ -26,7 +26,6 @@ const priceData = [
 
 export default function GarmentsProjectPage() {
   const router = useRouter();
-  const scooterImage = placeholderImages.placeholderImages.find(p => p.id === 'electric-scooter-hero-1');
 
   return (
     <div className="flex min-h-screen w-full flex-col relative bg-background">
@@ -62,18 +61,6 @@ export default function GarmentsProjectPage() {
           <h2 className="text-3xl font-bold tracking-tight font-headline">Garments Project</h2>
         </div>
 
-        {scooterImage && (
-          <div className="relative w-full h-48 md:h-64 rounded-lg overflow-hidden shadow-lg mb-4">
-            <Image
-              src={scooterImage.imageUrl}
-              alt={scooterImage.description}
-              fill
-              style={{ objectFit: 'cover' }}
-              data-ai-hint={scooterImage.imageHint}
-            />
-          </div>
-        )}
-        
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             <Card>
                 <CardHeader>
@@ -120,5 +107,3 @@ export default function GarmentsProjectPage() {
     </div>
   );
 }
-
-    
