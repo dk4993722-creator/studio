@@ -141,10 +141,6 @@ export default function WalletPage() {
               {feature.dialog}
             </Dialog>
           ))}
-          <Card onClick={() => router.push('/dashboard/profile')} className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center p-4 h-full">
-              <User className="h-10 w-10 text-primary" />
-              <p className="mt-2 font-semibold text-sm">Profile</p>
-          </Card>
         </div>
       </main>
     </div>
