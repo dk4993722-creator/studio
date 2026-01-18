@@ -30,7 +30,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
@@ -103,11 +103,27 @@ export default function SparePartsStockPage() {
     },
   });
 
-  const { watch } = form;
+  const { watch, setValue } = form;
+  const watchedBranchCode = watch("branchCode");
+  const watchedSparePart = watch("sparePart");
   const openingStock = watch("openingStock");
   const sales = watch("sales");
   const closingStock = openingStock - sales;
   const currentDate = new Date().toISOString().split('T')[0];
+
+  useEffect(() => {
+    if (watchedBranchCode && watchedSparePart) {
+      const latestEntry = stockData
+        .filter(item => item.branchCode === watchedBranchCode && item.sparePart.toLowerCase() === watchedSparePart.toLowerCase())
+        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+
+      if (latestEntry) {
+        setValue("openingStock", latestEntry.closingStock);
+      } else {
+        setValue("openingStock", 0);
+      }
+    }
+  }, [watchedBranchCode, watchedSparePart, stockData, setValue]);
 
   function onSubmit(values: z.infer<typeof reportSchema>) {
     const newEntry: StockItem = {
@@ -121,7 +137,12 @@ export default function SparePartsStockPage() {
       title: "Report Submitted",
       description: "The daily spare parts stock transaction has been updated.",
     });
-    form.reset();
+    form.reset({
+      branchCode: "",
+      sparePart: "",
+      openingStock: 0,
+      sales: 0,
+    });
   }
   
   const generatePDF = (item: StockItem) => {
@@ -322,7 +343,7 @@ export default function SparePartsStockPage() {
                       render={({ field }) => (
                         <FormItem className="lg:col-span-1">
                           <FormLabel>Branch Code</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <Select onValueChange={field.onChange} value={field.value}>
                             <FormControl>
                               <SelectTrigger>
                                 <SelectValue placeholder="Select Branch" />
@@ -355,7 +376,7 @@ export default function SparePartsStockPage() {
                       render={({ field }) => (
                         <FormItem className="lg:col-span-1">
                           <FormLabel>Opening Stock</FormLabel>
-                          <FormControl><Input type="number" {...field} /></FormControl>
+                          <FormControl><Input type="number" {...field} disabled /></FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
