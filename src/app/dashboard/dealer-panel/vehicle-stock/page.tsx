@@ -159,6 +159,46 @@ export default function VehicleStockPage() {
           </Button>
           <h2 className="text-3xl font-bold tracking-tight font-headline">Vehicle Stock</h2>
         </div>
+        
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                    <Warehouse className="h-6 w-6" />
+                    <span>Daily Vehicle Stock Transactions</span>
+                </CardTitle>
+                 <CardDescription>
+                  A daily summary of your vehicle inventory transactions, including opening stock, sales, and closing stock.
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>S. No.</TableHead>
+                      <TableHead>Branch Code</TableHead>
+                      <TableHead>E. Vehicle</TableHead>
+                      <TableHead className="text-right">Opening Stock</TableHead>
+                      <TableHead className="text-right">Sales</TableHead>
+                      <TableHead className="text-right">Closing Stock</TableHead>
+                      <TableHead>Date</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {stockData.map((item) => (
+                      <TableRow key={item.sNo}>
+                        <TableCell>{item.sNo}</TableCell>
+                        <TableCell>{item.branchCode}</TableCell>
+                        <TableCell className="font-medium">{item.eVehicle}</TableCell>
+                        <TableCell className="text-right">{item.openingStock}</TableCell>
+                        <TableCell className="text-right">{item.sales}</TableCell>
+                        <TableCell className="text-right">{item.closingStock}</TableCell>
+                        <TableCell>{item.date}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+            </CardContent>
+        </Card>
 
         <Card>
           <CardHeader>
@@ -243,45 +283,6 @@ export default function VehicleStockPage() {
           </CardContent>
         </Card>
 
-        <Card>
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                    <Warehouse className="h-6 w-6" />
-                    <span>Daily Vehicle Stock Transactions</span>
-                </CardTitle>
-                 <CardDescription>
-                  A daily summary of your vehicle inventory transactions, including opening stock, sales, and closing stock.
-                </CardDescription>
-            </CardHeader>
-            <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>S. No.</TableHead>
-                      <TableHead>Branch Code</TableHead>
-                      <TableHead>E. Vehicle</TableHead>
-                      <TableHead className="text-right">Opening Stock</TableHead>
-                      <TableHead className="text-right">Sales</TableHead>
-                      <TableHead className="text-right">Closing Stock</TableHead>
-                      <TableHead>Date</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {stockData.map((item) => (
-                      <TableRow key={item.sNo}>
-                        <TableCell>{item.sNo}</TableCell>
-                        <TableCell>{item.branchCode}</TableCell>
-                        <TableCell className="font-medium">{item.eVehicle}</TableCell>
-                        <TableCell className="text-right">{item.openingStock}</TableCell>
-                        <TableCell className="text-right">{item.sales}</TableCell>
-                        <TableCell className="text-right">{item.closingStock}</TableCell>
-                        <TableCell>{item.date}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-            </CardContent>
-        </Card>
       </main>
     </div>
   );
