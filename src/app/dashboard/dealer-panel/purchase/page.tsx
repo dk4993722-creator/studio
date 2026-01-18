@@ -4,16 +4,18 @@
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { ArrowLeft, Phone, LogOut, Download } from "lucide-react";
+import { ArrowLeft, Phone, LogOut, Download, Eye } from "lucide-react";
 import { YunexLogo } from "@/components/yunex-logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import placeholderImages from "@/lib/placeholder-images.json";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 type Purchase = {
-  id: string; // Changed to string to match invoice ID
+  id: string; 
   product: string;
   quantity: number;
   rate: number;
@@ -21,31 +23,240 @@ type Purchase = {
   date: Date;
 };
 
+type Invoice = {
+  id: string;
+  date: Date;
+  total: number;
+  branchName: string;
+  branchCode: string;
+  branchGstNo?: string;
+  branchContact: string;
+  branchAddress: string;
+  branchCity: string;
+  branchDistrict: string;
+  branchState: string;
+  branchPinCode: string;
+  model?: string;
+  noOfSeat?: string;
+  chassisNo?: string;
+  motorNo?: string;
+  controllerNo?: string;
+  chargerNo1?: string;
+  chargerNo2?: string;
+  batteryMaker?: string;
+  batteryNo1?: string;
+  batteryNo2?: string;
+  batteryNo3?: string;
+  batteryNo4?: string;
+  batteryNo5?: string;
+  batteryNo6?: string;
+  quantity: number;
+  rate: number;
+};
+
+const ones = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
+const tens = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
+
+const toWords = (num: number): string => {
+    if (num === 0) return 'Zero';
+    const numStr = Math.floor(num).toString();
+    const [, major] = numStr.match(/^(\d+)/) || [];
+    if (!major) return '';
+
+    const numberToWords = (n: number): string => {
+        if (n < 20) return ones[n];
+        const digit = n % 10;
+        if (n < 100) return tens[Math.floor(n / 10)] + (digit ? ' ' + ones[digit] : '');
+        if (n < 1000) return ones[Math.floor(n / 100)] + ' hundred' + (n % 100 !== 0 ? ' ' + numberToWords(n % 100) : '');
+        if (n < 100000) return numberToWords(Math.floor(n / 1000)) + ' thousand' + (n % 1000 !== 0 ? ' ' + numberToWords(n % 1000) : '');
+        if (n < 10000000) return numberToWords(Math.floor(n / 100000)) + ' lakh' + (n % 100000 !== 0 ? ' ' + numberToWords(n % 100000) : '');
+        return numberToWords(Math.floor(n / 10000000)) + ' crore' + (n % 10000000 !== 0 ? ' ' + numberToWords(n % 10000000) : '');
+    };
+    return numberToWords(parseInt(major));
+};
+
 export default function PurchasePanelPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [purchases, setPurchases] = useState<Purchase[]>([]);
+  const [allInvoices, setAllInvoices] = useState<Invoice[]>([]);
 
   useEffect(() => {
     try {
       const storedPurchases = JSON.parse(localStorage.getItem('yunex-purchases') || '[]');
-      // Convert date string back to Date object
       const formattedPurchases = storedPurchases.map((p: any) => ({
         ...p,
         date: new Date(p.date),
       }));
       setPurchases(formattedPurchases);
+
+      const storedInvoices = JSON.parse(localStorage.getItem('yunex-invoices') || '[]');
+      const formattedInvoices = storedInvoices.map((inv: any) => ({
+        ...inv,
+        date: new Date(inv.date),
+      }));
+      setAllInvoices(formattedInvoices);
     } catch (error) {
-      console.error("Failed to load purchases from localStorage", error);
+      console.error("Failed to load data from localStorage", error);
       toast({
         variant: "destructive",
         title: "Error",
         description: "Could not load purchase history.",
       });
     }
-  }, []);
+  }, [toast]);
 
-  const handleDownload = () => {
+  const generatePDF = (invoiceData: Invoice) => {
+    const doc = new jsPDF();
+    const pageHeight = doc.internal.pageSize.height || doc.internal.pageSize.getHeight();
+    const pageWidth = doc.internal.pageSize.width || doc.internal.pageSize.getWidth();
+
+    const primaryColor = '#326cd1';
+    const mutedColor = '#6c757d';
+    
+    const logoX = 14;
+    const logoY = 15;
+    const logoSize = 25;
+    doc.setFillColor(primaryColor);
+    doc.circle(logoX + logoSize / 2, logoY + logoSize / 2, logoSize / 2, 'F');
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(12);
+    doc.setTextColor('#FFFFFF');
+    doc.text('YU', logoX + logoSize / 2, logoY + logoSize / 2 + 4, { align: 'center' });
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(28);
+    doc.setTextColor(primaryColor);
+    doc.text('YUNEX', logoX + logoSize + 3, 30);
+    
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(22);
+    doc.setTextColor('#000000');
+    doc.text('TAX INVOICE', pageWidth - 14, 25, { align: 'right' });
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.setTextColor(mutedColor);
+    doc.text(`Invoice No: ${invoiceData.id}`, pageWidth - 14, 32, { align: 'right' });
+    doc.text(`Date: ${invoiceData.date.toLocaleDateString('en-IN')}`, pageWidth - 14, 37, { align: 'right' });
+
+    doc.setDrawColor(200);
+    doc.line(14, 45, pageWidth - 14, 45);
+
+    autoTable(doc, {
+        startY: 50,
+        theme: 'plain',
+        body: [
+            [{ content: 'Billed By:', styles: { fontStyle: 'bold', textColor: primaryColor } }],
+            [`${invoiceData.branchName}\nBranch Code: ${invoiceData.branchCode}\n${invoiceData.branchAddress}, ${invoiceData.branchCity}, ${invoiceData.branchDistrict}, ${invoiceData.branchState} - ${invoiceData.branchPinCode}\nGSTIN: ${invoiceData.branchGstNo || 'N/A'}\nContact: ${invoiceData.branchContact}`],
+        ],
+        styles: { fontSize: 9, cellPadding: 1 },
+    });
+
+    const tableColumn = ["S. No.", "Description", "Particular", "Qty", "Rate", "Amount"];
+    const tableRows: any[][] = [];
+
+    const productRow = ['', { content: invoiceData.model || 'Yunex - E.Bike', styles: { fontStyle: 'bold' } }, '', invoiceData.quantity.toString(), `₹${invoiceData.rate.toFixed(2)}`, `₹${invoiceData.total.toFixed(2)}`];
+    tableRows.push(productRow);
+
+    const specs = [
+        { desc: 'Model', value: invoiceData.model },
+        { desc: 'No of seat', value: invoiceData.noOfSeat },
+        { desc: 'Chassis No', value: invoiceData.chassisNo },
+        { desc: 'Motor No', value: invoiceData.motorNo },
+        { desc: 'Controller No', value: invoiceData.controllerNo },
+        { desc: 'Charger No - 1', value: invoiceData.chargerNo1 },
+        { desc: 'Charger No - 2', value: invoiceData.chargerNo2 },
+        { desc: 'Battery Maker', value: invoiceData.batteryMaker },
+        ...[1, 2, 3, 4, 5, 6].map(i => ({ desc: `Battery No-${i}`, value: (invoiceData as any)[`batteryNo${i}`] }))
+    ];
+
+    let specIndex = 1;
+    specs.forEach((spec) => {
+        if (spec.value) {
+            tableRows.push([String(specIndex++), spec.desc, String(spec.value), '', '', '']);
+        }
+    });
+
+    autoTable(doc, {
+        startY: (doc as any).lastAutoTable.finalY + 10,
+        head: [tableColumn],
+        body: tableRows,
+        theme: 'grid',
+        headStyles: { fillColor: [50, 108, 209], textColor: [255, 255, 255], fontStyle: 'bold' },
+        columnStyles: { 0: { halign: 'center', cellWidth: 15 }, 2: { cellWidth: 'auto' }, 3: { halign: 'right', cellWidth: 20 }, 4: { halign: 'right', cellWidth: 30 }, 5: { halign: 'right', cellWidth: 30 } },
+    });
+    
+    let finalY = (doc as any).lastAutoTable.finalY;
+    const totalInWords = toWords(invoiceData.total).trim().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ') + ' Only';
+
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Total In Words:', 14, finalY + 10);
+    doc.setFont('helvetica', 'normal');
+    doc.text(totalInWords, 14, finalY + 15, { maxWidth: pageWidth / 2 });
+    
+    autoTable(doc, {
+      startY: finalY + 5,
+      body: [['Total Invoice Value', `₹${invoiceData.total.toFixed(2)}`]],
+      theme: 'plain',
+      tableWidth: 80,
+      margin: { left: pageWidth - 80 - 14 },
+      styles: { halign: 'right' },
+      bodyStyles: { fontStyle: 'bold', fontSize: 12, cellPadding: { top: 5, right: 0 } },
+    });
+
+    finalY = (doc as any).lastAutoTable.finalY;
+    let signatureY = finalY > pageHeight - 70 ? pageHeight - 60 : finalY + 30;
+    
+    const footerY = pageHeight - 20;
+    doc.setDrawColor(220);
+    doc.line(14, footerY - 5, pageWidth - 14, footerY - 5);
+    
+    doc.setFontSize(8);
+    doc.setTextColor(mutedColor);
+    doc.text(`Office address: Near D.C. Office, Satyam Nagar, Dhanbad, Jharkhand, INDIA. 826004.`, 14, footerY);
+    doc.text(`www.yunex.com | E-mail: info@yunex.com`, 14, footerY + 4);
+
+    doc.setFontSize(10);
+    doc.setTextColor('#000000');
+    doc.text('For YUNEX', pageWidth - 14, signatureY, { align: 'right' });
+    doc.text('Authorised Signatory', pageWidth - 14, signatureY + 20, { align: 'right' });
+
+    return doc;
+  };
+
+  const handleDownloadPdf = (purchaseId: string) => {
+    const invoice = allInvoices.find(inv => inv.id === purchaseId);
+    if (!invoice) {
+        toast({ variant: "destructive", title: "Error", description: "Could not find invoice details for this purchase." });
+        return;
+    }
+    try {
+        const doc = generatePDF(invoice);
+        doc.save(`invoice-${invoice.id}.pdf`);
+        toast({ title: "Success", description: "PDF downloaded successfully." });
+    } catch(e) {
+        console.error("PDF Download Error:", e);
+        toast({ variant: "destructive", title: "Error", description: "Failed to generate PDF for download." });
+    }
+  };
+  
+  const handleView = (purchaseId: string) => {
+    const invoice = allInvoices.find(inv => inv.id === purchaseId);
+    if (!invoice) {
+        toast({ variant: "destructive", title: "Error", description: "Could not find invoice details for this purchase." });
+        return;
+    }
+     try {
+        const doc = generatePDF(invoice);
+        window.open(doc.output('bloburl'), '_blank');
+    } catch(e) {
+        console.error("PDF View Error:", e);
+        toast({ variant: "destructive", title: "Error", description: "Failed to generate PDF for viewing." });
+    }
+  };
+
+  const handleDownloadCsv = () => {
     if (purchases.length === 0) {
       toast({
         variant: "destructive",
@@ -60,7 +271,7 @@ export default function PurchasePanelPage() {
       headers.join(","),
       ...purchases.map((p, index) => [
         purchases.length - index,
-        `"${p.product.replace(/"/g, '""')}"`, // Handle quotes in product name
+        `"${p.product.replace(/"/g, '""')}"`,
         p.date.toLocaleDateString(),
         p.quantity,
         p.rate.toFixed(2),
@@ -123,9 +334,9 @@ export default function PurchasePanelPage() {
             <CardHeader className="flex-row items-center justify-between">
                 <div>
                     <CardTitle>Purchase History</CardTitle>
-                    <CardDescription>This is a read-only view of all recorded purchases from the sales panel.</CardDescription>
+                    <CardDescription>View and download invoices or export the entire history as a CSV file.</CardDescription>
                 </div>
-                <Button onClick={handleDownload} variant="outline">
+                <Button onClick={handleDownloadCsv} variant="outline">
                     <Download className="mr-2 h-4 w-4" />
                     Download CSV
                 </Button>
@@ -140,6 +351,7 @@ export default function PurchasePanelPage() {
                             <TableHead className="text-right">Qty</TableHead>
                             <TableHead className="text-right">Rate</TableHead>
                             <TableHead className="text-right">Amount</TableHead>
+                            <TableHead className="text-center">Actions</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -152,11 +364,19 @@ export default function PurchasePanelPage() {
                                     <TableCell className="text-right">{purchase.quantity}</TableCell>
                                     <TableCell className="text-right">₹{purchase.rate.toFixed(2)}</TableCell>
                                     <TableCell className="text-right">₹{purchase.amount.toFixed(2)}</TableCell>
+                                    <TableCell className="flex justify-center items-center gap-2">
+                                        <Button variant="outline" size="icon" onClick={() => handleView(purchase.id)}>
+                                            <Eye className="h-4 w-4" />
+                                        </Button>
+                                        <Button variant="outline" size="icon" onClick={() => handleDownloadPdf(purchase.id)}>
+                                            <Download className="h-4 w-4" />
+                                        </Button>
+                                    </TableCell>
                                 </TableRow>
                             ))
                         ) : (
                             <TableRow>
-                                <TableCell colSpan={6} className="text-center">No purchases recorded yet.</TableCell>
+                                <TableCell colSpan={7} className="text-center">No purchases recorded yet.</TableCell>
                             </TableRow>
                         )}
                     </TableBody>
