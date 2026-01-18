@@ -157,6 +157,19 @@ export default function SalesPanelPage() {
   const rate = watch("rate");
 
   useEffect(() => {
+    try {
+      const storedInvoices = JSON.parse(localStorage.getItem('yunex-invoices') || '[]');
+      const formattedInvoices = storedInvoices.map((inv: any) => ({
+        ...inv,
+        date: new Date(inv.date),
+      }));
+      setInvoices(formattedInvoices);
+    } catch (error) {
+      console.error("Failed to load invoices from localStorage", error);
+    }
+  }, []);
+
+  useEffect(() => {
     const amount = (quantity || 0) * (rate || 0);
     setTotalAmount(amount);
   }, [quantity, rate]);
@@ -226,7 +239,7 @@ export default function SalesPanelPage() {
     let specIndex = 1;
     specs.forEach((spec) => {
         if (spec.value) {
-            const row = [(specIndex++).toString(), spec.desc, spec.value, '', '', ''];
+            const row = [(specIndex++).toString(), spec.desc, String(spec.value), '', '', ''];
             tableRows.push(row);
         }
     });
@@ -316,7 +329,16 @@ export default function SalesPanelPage() {
       date: new Date(),
       total: data.quantity * data.rate,
     };
-    setInvoices(prev => [newInvoice, ...prev]);
+    
+    const updatedInvoices = [newInvoice, ...invoices];
+    setInvoices(updatedInvoices);
+
+    try {
+        const invoicesForStorage = updatedInvoices.map(inv => ({...inv, date: inv.date.toISOString()}));
+        localStorage.setItem('yunex-invoices', JSON.stringify(invoicesForStorage));
+    } catch (error) {
+        console.error("Failed to save invoices to localStorage", error);
+    }
     
     // Create purchase entry and save to localStorage
     const newPurchase = {
@@ -337,6 +359,7 @@ export default function SalesPanelPage() {
     }
     
     form.reset();
+    setTotalAmount(0);
     toast({
       title: "Invoice Generated!",
       description: "The new invoice has been added to history and purchase panel.",
