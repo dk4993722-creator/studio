@@ -55,6 +55,10 @@ const branches = [
 ];
 
 const invoiceSchema = z.object({
+  // User Details
+  userId: z.string().min(1, "User ID is required"),
+  userName: z.string().min(1, "User name is required"),
+
   // Branch Details
   branchName: z.string().min(1, "Branch name is required"),
   branchCode: z.string().min(1, "Branch code is required"),
@@ -124,6 +128,8 @@ export default function SalesPanelPage() {
   const form = useForm<z.infer<typeof invoiceSchema>>({
     resolver: zodResolver(invoiceSchema),
     defaultValues: {
+      userId: "",
+      userName: "",
       branchName: "",
       branchCode: "",
       branchGstNo: "",
@@ -217,10 +223,10 @@ export default function SalesPanelPage() {
         theme: 'plain',
         body: [
             [
-                { content: 'Billed By:', styles: { fontStyle: 'bold', textColor: primaryColor } },
+                { content: 'Billed To:', styles: { fontStyle: 'bold', textColor: primaryColor } },
             ],
             [
-                `${invoiceData.branchName}\nBranch Code: ${invoiceData.branchCode}\n${invoiceData.branchAddress}, ${invoiceData.branchCity}, ${invoiceData.branchDistrict}, ${invoiceData.branchState} - ${invoiceData.branchPinCode}\nGSTIN: ${invoiceData.branchGstNo || 'N/A'}\nContact: ${invoiceData.branchContact}`,
+                `Branch: ${invoiceData.branchName} (${invoiceData.branchCode})\nUser: ${invoiceData.userName} (${invoiceData.userId})\n${invoiceData.branchAddress}, ${invoiceData.branchCity}, ${invoiceData.branchDistrict}, ${invoiceData.branchState} - ${invoiceData.branchPinCode}\nGSTIN: ${invoiceData.branchGstNo || 'N/A'}\nContact: ${invoiceData.branchContact}`,
             ],
         ],
         styles: { fontSize: 9, cellPadding: 1 },
@@ -351,7 +357,7 @@ export default function SalesPanelPage() {
     // Create purchase entry and save to localStorage
     const newPurchase = {
       id: newInvoice.id,
-      product: newInvoice.model || "Yunex E.Bike",
+      product: `${newInvoice.model || "Yunex E.Bike"} for ${newInvoice.userName}`,
       quantity: newInvoice.quantity,
       rate: newInvoice.rate,
       amount: newInvoice.total,
@@ -411,6 +417,16 @@ export default function SalesPanelPage() {
         <FormProvider {...form}>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              <Card>
+                <CardHeader>
+                  <CardTitle>User Details</CardTitle>
+                </CardHeader>
+                <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <FormField control={form.control} name="userId" render={({ field }) => ( <FormItem> <FormLabel>User ID</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )} />
+                  <FormField control={form.control} name="userName" render={({ field }) => ( <FormItem> <FormLabel>User Name</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )} />
+                </CardContent>
+              </Card>
+
               <Card>
                 <CardHeader>
                   <CardTitle>Branch Details</CardTitle>
