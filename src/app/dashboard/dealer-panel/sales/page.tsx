@@ -169,7 +169,7 @@ export default function SalesPanelPage() {
     const primaryColor = '#326cd1';
     const mutedColor = '#6c757d';
 
-    const logoSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100"><circle cx="50" cy="50" r="48" fill="${primaryColor}" /><text x="50%" y="50%" text-anchor="middle" dy=".3em" fill="white" font-size="48" font-family="Helvetica, sans-serif" font-weight="bold">YU</text></svg>`;
+    const logoSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100"><circle cx="50" cy="50" r="48" fill="${primaryColor}" /><text x="50%" y="50%" text-anchor="middle" dy=".3em" fill="white" font-size="48" font-family="Helvetica" font-weight="bold">YU</text></svg>`;
     const logoDataUri = 'data:image/svg+xml;base64,' + btoa(logoSvg);
     
     doc.addImage(logoDataUri, 'SVG', 14, 15, 25, 25);
@@ -208,7 +208,7 @@ export default function SalesPanelPage() {
     const tableColumn = ["S. No.", "Description", "Particular", "Qty", "Rate", "Amount"];
     const tableRows: any[][] = [];
 
-    const productRow = ['', { content: invoiceData.model || 'Yunex - E.Bike', styles: { fontStyle: 'bold' } }, '', invoiceData.quantity, `₹${invoiceData.rate.toFixed(2)}`, `₹${invoiceData.total.toFixed(2)}`];
+    const productRow = ['', { content: invoiceData.model || 'Yunex - E.Bike', styles: { fontStyle: 'bold' } }, '', invoiceData.quantity.toString(), `₹${invoiceData.rate.toFixed(2)}`, `₹${invoiceData.total.toFixed(2)}`];
     tableRows.push(productRow);
 
     const specs = [
@@ -226,7 +226,7 @@ export default function SalesPanelPage() {
     let specIndex = 1;
     specs.forEach((spec) => {
         if (spec.value) {
-            const row = [specIndex++, spec.desc, spec.value, '', '', ''];
+            const row = [(specIndex++).toString(), spec.desc, spec.value, '', '', ''];
             tableRows.push(row);
         }
     });
@@ -294,7 +294,8 @@ export default function SalesPanelPage() {
         doc.save(`invoice-${invoice.id}.pdf`);
         toast({ title: "Success", description: "PDF downloaded successfully." });
     } catch(e) {
-        toast({ variant: "destructive", title: "Error", description: "Failed to generate PDF." });
+        console.error("PDF Download Error:", e);
+        toast({ variant: "destructive", title: "Error", description: "Failed to generate PDF for download." });
     }
   };
 
@@ -303,7 +304,8 @@ export default function SalesPanelPage() {
         const doc = generatePDF(invoice);
         window.open(doc.output('bloburl'), '_blank');
     } catch(e) {
-        toast({ variant: "destructive", title: "Error", description: "Failed to generate PDF." });
+        console.error("PDF View Error:", e);
+        toast({ variant: "destructive", title: "Error", description: "Failed to generate PDF for viewing." });
     }
   };
 
