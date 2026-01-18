@@ -181,15 +181,23 @@ export default function SalesPanelPage() {
 
     const primaryColor = '#326cd1';
     const mutedColor = '#6c757d';
-
-    const logoSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100"><circle cx="50" cy="50" r="48" fill="${primaryColor}" /><text x="50%" y="50%" text-anchor="middle" dy=".3em" fill="white" font-size="48" font-family="Helvetica" font-weight="bold">YU</text></svg>`;
-    const logoDataUri = 'data:image/svg+xml;base64,' + btoa(logoSvg);
     
-    doc.addImage(logoDataUri, 'SVG', 14, 15, 25, 25);
+    // Draw Logo
+    const logoX = 14;
+    const logoY = 15;
+    const logoSize = 25;
+    doc.setFillColor(primaryColor);
+    doc.circle(logoX + logoSize / 2, logoY + logoSize / 2, logoSize / 2, 'F');
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(12);
+    doc.setTextColor('#FFFFFF');
+    doc.text('YU', logoX + logoSize / 2, logoY + logoSize / 2 + 4, { align: 'center' });
+
+    // Reset font for title
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(28);
     doc.setTextColor(primaryColor);
-    doc.text('YUNEX', 42, 30);
+    doc.text('YUNEX', logoX + logoSize + 3, 30);
     
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(22);
@@ -239,7 +247,7 @@ export default function SalesPanelPage() {
     let specIndex = 1;
     specs.forEach((spec) => {
         if (spec.value) {
-            const row = [(specIndex++).toString(), spec.desc, String(spec.value), '', '', ''];
+            const row = [String(specIndex++), spec.desc, String(spec.value), '', '', ''];
             tableRows.push(row);
         }
     });
