@@ -18,10 +18,21 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import placeholderImages from "@/lib/placeholder-images.json";
 
 const stockData = [
-  { sNo: 1, branchCode: 'Yunex202601', eVehicle: 'Yunex-X1', openingStock: 50, closingStock: 45, date: '2024-07-29' },
-  { sNo: 2, branchCode: 'Yunex202602', eVehicle: 'Yunex-S1', openingStock: 30, closingStock: 20, date: '2024-07-29' },
-  { sNo: 3, branchCode: 'Yunex202601', eVehicle: 'Yunex-X2', openingStock: 40, closingStock: 40, date: '2024-07-29' },
-  { sNo: 4, branchCode: 'Yunex202603', eVehicle: 'Yunex-X3', openingStock: 25, closingStock: 22, date: '2024-07-29' },
+  // Day 1: 2024-07-29
+  { sNo: 1, branchCode: 'Yunex202601', eVehicle: 'Yunex-X1', openingStock: 50, sales: 5, closingStock: 45, date: '2024-07-29' },
+  { sNo: 2, branchCode: 'Yunex202602', eVehicle: 'Yunex-S1', openingStock: 30, sales: 10, closingStock: 20, date: '2024-07-29' },
+  { sNo: 3, branchCode: 'Yunex202601', eVehicle: 'Yunex-X2', openingStock: 40, sales: 0, closingStock: 40, date: '2024-07-29' },
+  { sNo: 4, branchCode: 'Yunex202603', eVehicle: 'Yunex-X3', openingStock: 25, sales: 3, closingStock: 22, date: '2024-07-29' },
+
+  // Day 2: 2024-07-30
+  { sNo: 5, branchCode: 'Yunex202601', eVehicle: 'Yunex-X1', openingStock: 45, sales: 2, closingStock: 43, date: '2024-07-30' },
+  { sNo: 6, branchCode: 'Yunex202602', eVehicle: 'Yunex-S1', openingStock: 20, sales: 5, closingStock: 15, date: '2024-07-30' },
+  { sNo: 7, branchCode: 'Yunex202601', eVehicle: 'Yunex-X2', openingStock: 40, sales: 1, closingStock: 39, date: '2024-07-30' },
+
+  // Day 3: 2024-07-31
+  { sNo: 8, branchCode: 'Yunex202601', eVehicle: 'Yunex-X1', openingStock: 43, sales: 3, closingStock: 40, date: '2024-07-31' },
+  { sNo: 9, branchCode: 'Yunex202602', eVehicle: 'Yunex-S1', openingStock: 15, sales: 0, closingStock: 15, date: '2024-07-31' },
+  { sNo: 10, branchCode: 'Yunex202603', eVehicle: 'Yunex-X3', openingStock: 22, sales: 2, closingStock: 20, date: '2024-07-31' },
 ];
 
 export default function VehicleStockPage() {
@@ -65,10 +76,10 @@ export default function VehicleStockPage() {
             <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                     <Warehouse className="h-6 w-6" />
-                    <span>Vehicle Stock</span>
+                    <span>Daily Vehicle Stock Transactions</span>
                 </CardTitle>
                  <CardDescription>
-                  A summary of your vehicle inventory including opening and closing stock.
+                  A daily summary of your vehicle inventory transactions, including opening stock, sales, and closing stock.
                 </CardDescription>
             </CardHeader>
             <CardContent>
@@ -78,7 +89,8 @@ export default function VehicleStockPage() {
                       <TableHead>S. No.</TableHead>
                       <TableHead>Branch Code</TableHead>
                       <TableHead>E. Vehicle</TableHead>
-                      <TableHead className="text-right">Opening Stock Qty</TableHead>
+                      <TableHead className="text-right">Opening Stock</TableHead>
+                      <TableHead className="text-right">Sales</TableHead>
                       <TableHead className="text-right">Closing Stock</TableHead>
                       <TableHead>Date</TableHead>
                     </TableRow>
@@ -90,6 +102,7 @@ export default function VehicleStockPage() {
                         <TableCell>{item.branchCode}</TableCell>
                         <TableCell className="font-medium">{item.eVehicle}</TableCell>
                         <TableCell className="text-right">{item.openingStock}</TableCell>
+                        <TableCell className="text-right">{item.sales}</TableCell>
                         <TableCell className="text-right">{item.closingStock}</TableCell>
                         <TableCell>{item.date}</TableCell>
                       </TableRow>
