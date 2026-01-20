@@ -79,7 +79,6 @@ const reportSchema = z.object({
 });
 
 const addStockSchema = z.object({
-  branchCode: z.string().min(1, "Branch code is required."),
   sparePart: z.string().min(1, "Spare part name is required."),
   addQty: z.coerce.number().min(1, "Quantity must be at least 1."),
 });
@@ -113,7 +112,6 @@ export default function SparePartsStockPage() {
   const addStockForm = useForm<z.infer<typeof addStockSchema>>({
     resolver: zodResolver(addStockSchema),
     defaultValues: {
-      branchCode: "",
       sparePart: "",
       addQty: 0,
     },
@@ -162,7 +160,17 @@ export default function SparePartsStockPage() {
   }
   
   function onAddStockSubmit(values: z.infer<typeof addStockSchema>) {
-    const { branchCode, sparePart, addQty } = values;
+    const { sparePart, addQty } = values;
+    const branchCode = form.getValues("branchCode");
+
+    if (!branchCode) {
+      toast({
+        variant: "destructive",
+        title: "Branch Not Selected",
+        description: "Please select a branch from the 'Closing Daily Report' section first.",
+      });
+      return;
+    }
 
     const latestEntry = stockData
       .filter(item => item.branchCode === branchCode && item.sparePart.toLowerCase() === sparePart.toLowerCase())
@@ -188,7 +196,6 @@ export default function SparePartsStockPage() {
     });
     
     addStockForm.reset({
-      branchCode: "",
       sparePart: "",
       addQty: 0,
     });
@@ -381,33 +388,11 @@ export default function SparePartsStockPage() {
           <CardContent>
             <Form {...addStockForm}>
               <form onSubmit={addStockForm.handleSubmit(onAddStockSubmit)} className="space-y-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 items-end">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 items-end">
                   <div className="lg:col-span-1">
                       <FormLabel>S.No.</FormLabel>
                       <Input value={stockData.length + 1} disabled />
                   </div>
-                  <FormField
-                      control={addStockForm.control}
-                      name="branchCode"
-                      render={({ field }) => (
-                        <FormItem className="lg:col-span-1">
-                          <FormLabel>Branch Code</FormLabel>
-                          <Select onValueChange={field.onChange} value={field.value}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select Branch" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {branches.map(branch => (
-                                <SelectItem key={branch.id} value={branch.branchCode}>{branch.district}</SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
                     <FormField
                       control={addStockForm.control}
                       name="sparePart"
@@ -528,3 +513,5 @@ export default function SparePartsStockPage() {
     </div>
   );
 }
+
+    
