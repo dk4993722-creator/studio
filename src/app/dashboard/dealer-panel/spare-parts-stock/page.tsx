@@ -79,10 +79,9 @@ const addStockSchema = z.object({
 });
 
 const sparePartInvoiceSchema = z.object({
-  userId: z.string().optional(),
-  userName: z.string().min(1, "Customer name is required."),
-  userAddress: z.string().min(1, "Customer address is required."),
-  userContact: z.string().min(1, "Customer contact is required."),
+  customerName: z.string().min(1, "Customer name is required."),
+  customerAddress: z.string().min(1, "Customer address is required."),
+  contact: z.string().min(1, "Customer contact is required."),
   sparePart: z.string().min(1, "Please select a spare part."),
   quantity: z.coerce.number().min(1, "Quantity must be at least 1."),
 });
@@ -155,10 +154,9 @@ export default function SparePartsStockPage() {
   const invoiceForm = useForm<z.infer<typeof sparePartInvoiceSchema>>({
     resolver: zodResolver(sparePartInvoiceSchema),
     defaultValues: {
-      userId: "",
-      userName: "",
-      userAddress: "",
-      userContact: "",
+      customerName: "",
+      customerAddress: "",
+      contact: "",
       sparePart: "",
       quantity: 1,
     },
@@ -303,10 +301,9 @@ export default function SparePartsStockPage() {
     }
 
     invoiceForm.reset({
-        userId: "",
-        userName: "",
-        userAddress: "",
-        userContact: "",
+        customerName: "",
+        customerAddress: "",
+        contact: "",
         sparePart: "",
         quantity: 1,
     });
@@ -355,7 +352,7 @@ export default function SparePartsStockPage() {
         theme: 'plain',
         body: [
             [{ content: 'Billed By:', styles: { fontStyle: 'bold', textColor: primaryColor } }, { content: 'Billed To:', styles: { fontStyle: 'bold', textColor: primaryColor } }],
-            [`YUNEX - ${branch?.district || invoiceData.branchCode}`, `${invoiceData.userName}\n${invoiceData.userAddress}\nContact: ${invoiceData.userContact}${invoiceData.userId ? `\nUser ID: ${invoiceData.userId}`: ''}`],
+            [`YUNEX - ${branch?.district || invoiceData.branchCode}`, `${invoiceData.customerName}\n${invoiceData.customerAddress}\nContact: ${invoiceData.contact}`],
         ],
         styles: { fontSize: 9, cellPadding: 1 },
     });
@@ -719,10 +716,9 @@ export default function SparePartsStockPage() {
                 <h3 className="text-lg font-medium">Customer Details</h3>
                 <Separator />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FormField control={invoiceForm.control} name="userName" render={({ field }) => ( <FormItem> <FormLabel>Customer Name</FormLabel> <FormControl><Input placeholder="Enter customer name" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
-                    <FormField control={invoiceForm.control} name="userContact" render={({ field }) => ( <FormItem> <FormLabel>Contact</FormLabel> <FormControl><Input placeholder="Enter contact number" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
-                    <FormField control={invoiceForm.control} name="userAddress" render={({ field }) => ( <FormItem className="md:col-span-2"> <FormLabel>Address</FormLabel> <FormControl><Textarea placeholder="Enter customer address" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
-                    <FormField control={invoiceForm.control} name="userId" render={({ field }) => ( <FormItem> <FormLabel>User ID (Optional)</FormLabel> <FormControl><Input placeholder="Enter user ID" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
+                    <FormField control={invoiceForm.control} name="customerName" render={({ field }) => ( <FormItem> <FormLabel>Customer Name</FormLabel> <FormControl><Input placeholder="Enter customer name" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
+                    <FormField control={invoiceForm.control} name="contact" render={({ field }) => ( <FormItem> <FormLabel>Contact</FormLabel> <FormControl><Input placeholder="Enter contact number" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
+                    <FormField control={invoiceForm.control} name="customerAddress" render={({ field }) => ( <FormItem className="md:col-span-2"> <FormLabel>Address</FormLabel> <FormControl><Textarea placeholder="Enter customer address" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
                 </div>
 
                 <h3 className="text-lg font-medium pt-4">Part Details</h3>
@@ -778,7 +774,7 @@ export default function SparePartsStockPage() {
                     <TableHeader>
                         <TableRow>
                             <TableHead>Invoice ID</TableHead>
-                            <TableHead>User</TableHead>
+                            <TableHead>Customer</TableHead>
                             <TableHead>Spare Part</TableHead>
                             <TableHead>Date</TableHead>
                             <TableHead className="text-right">Amount</TableHead>
@@ -790,7 +786,7 @@ export default function SparePartsStockPage() {
                             sparePartInvoices.map((invoice) => (
                                 <TableRow key={invoice.id}>
                                     <TableCell className="font-medium">{invoice.id}</TableCell>
-                                    <TableCell>{invoice.userName}</TableCell>
+                                    <TableCell>{invoice.customerName}</TableCell>
                                     <TableCell>{invoice.sparePart}</TableCell>
                                     <TableCell>{invoice.date.toLocaleDateString()}</TableCell>
                                     <TableCell className="text-right">₹{invoice.total.toFixed(2)}</TableCell>
