@@ -34,6 +34,7 @@ import { useState, useEffect } from "react";
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { Separator } from "@/components/ui/separator";
+import { Textarea } from "@/components/ui/textarea";
 
 const initialStockData = [
   { sNo: 1, branchCode: 'Yunex202601', sparePart: 'Brake Pad', partCode: 'BP-001', hsnCode: '8708', price: 550, openingStock: 200, sales: 20, closingStock: 180, date: '2024-07-30' },
@@ -78,11 +79,14 @@ const addStockSchema = z.object({
 });
 
 const sparePartInvoiceSchema = z.object({
-  userId: z.string().min(1, "User ID is required."),
-  userName: z.string().min(1, "User name is required."),
+  userId: z.string().optional(),
+  userName: z.string().min(1, "Customer name is required."),
+  userAddress: z.string().min(1, "Customer address is required."),
+  userContact: z.string().min(1, "Customer contact is required."),
   sparePart: z.string().min(1, "Please select a spare part."),
   quantity: z.coerce.number().min(1, "Quantity must be at least 1."),
 });
+
 
 type StockItem = {
   sNo: number;
@@ -135,7 +139,7 @@ export default function SparePartsStockPage() {
   const [stockData, setStockData] = useState<StockItem[]>(initialStockData);
   const [currentBranch, setCurrentBranch] = useState("");
   const [sparePartInvoices, setSparePartInvoices] = useState<SparePartInvoice[]>([]);
-  const [selectedPartPrice, setSelectedPartPrice] = useState(0);
+  const [selectedPart, setSelectedPart] = useState<{ price: number; partCode: string; hsnCode: string; } | null>(null);
   
   const addStockForm = useForm<z.infer<typeof addStockSchema>>({
     resolver: zodResolver(addStockSchema),
@@ -153,6 +157,8 @@ export default function SparePartsStockPage() {
     defaultValues: {
       userId: "",
       userName: "",
+      userAddress: "",
+      userContact: "",
       sparePart: "",
       quantity: 1,
     },
@@ -160,7 +166,7 @@ export default function SparePartsStockPage() {
 
   const watchedInvoiceSparePart = invoiceForm.watch("sparePart");
   const watchedInvoiceQuantity = invoiceForm.watch("quantity");
-  const totalInvoiceAmount = selectedPartPrice * watchedInvoiceQuantity;
+  const totalInvoiceAmount = (selectedPart?.price || 0) * watchedInvoiceQuantity;
 
   const currentDate = new Date().toISOString().split('T')[0];
 
@@ -183,9 +189,17 @@ export default function SparePartsStockPage() {
         .filter(item => item.branchCode === currentBranch && item.sparePart.toLowerCase() === watchedInvoiceSparePart.toLowerCase())
         .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
       
-      setSelectedPartPrice(latestEntry?.price || 0);
+        if (latestEntry) {
+            setSelectedPart({
+                price: latestEntry.price || 0,
+                partCode: latestEntry.partCode || 'N/A',
+                hsnCode: latestEntry.hsnCode || 'N/A',
+            });
+        } else {
+            setSelectedPart(null);
+        }
     } else {
-      setSelectedPartPrice(0);
+        setSelectedPart(null);
     }
 }, [currentBranch, watchedInvoiceSparePart, stockData]);
 
@@ -288,7 +302,14 @@ export default function SparePartsStockPage() {
         console.error("Failed to save spare part invoices to localStorage", error);
     }
 
-    invoiceForm.reset();
+    invoiceForm.reset({
+        userId: "",
+        userName: "",
+        userAddress: "",
+        userContact: "",
+        sparePart: "",
+        quantity: 1,
+    });
     toast({ title: "Invoice Generated", description: "Stock has been updated." });
   };
 
@@ -334,7 +355,7 @@ export default function SparePartsStockPage() {
         theme: 'plain',
         body: [
             [{ content: 'Billed By:', styles: { fontStyle: 'bold', textColor: primaryColor } }, { content: 'Billed To:', styles: { fontStyle: 'bold', textColor: primaryColor } }],
-            [`YUNEX - ${branch?.district || invoiceData.branchCode}`, `${invoiceData.userName}\nUser ID: ${invoiceData.userId}`],
+            [`YUNEX - ${branch?.district || invoiceData.branchCode}`, `${invoiceData.userName}\n${invoiceData.userAddress}\nContact: ${invoiceData.userContact}${invoiceData.userId ? `\nUser ID: ${invoiceData.userId}`: ''}`],
         ],
         styles: { fontSize: 9, cellPadding: 1 },
     });
@@ -623,7 +644,7 @@ export default function SparePartsStockPage() {
           <CardContent>
             <Form {...addStockForm}>
               <form onSubmit={addStockForm.handleSubmit(onAddStockSubmit)} className="space-y-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 items-end">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 items-end">
                     <FormField
                       control={addStockForm.control}
                       name="sparePart"
@@ -679,10 +700,6 @@ export default function SparePartsStockPage() {
                         </FormItem>
                       )}
                     />
-                    <div>
-                        <FormLabel>Date</FormLabel>
-                        <Input value={currentDate} disabled />
-                    </div>
                 </div>
                 <Button type="submit" className="w-full md:w-auto">Add Stock</Button>
               </form>
@@ -698,18 +715,26 @@ export default function SparePartsStockPage() {
           <CardContent>
             <Form {...invoiceForm}>
               <form onSubmit={invoiceForm.handleSubmit(onInvoiceSubmit)} className="space-y-6">
+                
+                <h3 className="text-lg font-medium">Customer Details</h3>
+                <Separator />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <FormField control={invoiceForm.control} name="userId" render={({ field }) => ( <FormItem> <FormLabel>User ID</FormLabel> <FormControl><Input placeholder="Enter user ID" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
-                  <FormField control={invoiceForm.control} name="userName" render={({ field }) => ( <FormItem> <FormLabel>User Name</FormLabel> <FormControl><Input placeholder="Enter user name" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
+                    <FormField control={invoiceForm.control} name="userName" render={({ field }) => ( <FormItem> <FormLabel>Customer Name</FormLabel> <FormControl><Input placeholder="Enter customer name" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
+                    <FormField control={invoiceForm.control} name="userContact" render={({ field }) => ( <FormItem> <FormLabel>Contact</FormLabel> <FormControl><Input placeholder="Enter contact number" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
+                    <FormField control={invoiceForm.control} name="userAddress" render={({ field }) => ( <FormItem className="md:col-span-2"> <FormLabel>Address</FormLabel> <FormControl><Textarea placeholder="Enter customer address" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
+                    <FormField control={invoiceForm.control} name="userId" render={({ field }) => ( <FormItem> <FormLabel>User ID (Optional)</FormLabel> <FormControl><Input placeholder="Enter user ID" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-end">
+
+                <h3 className="text-lg font-medium pt-4">Part Details</h3>
+                <Separator />
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 items-end">
                     <FormField
                         control={invoiceForm.control}
                         name="sparePart"
                         render={({ field }) => (
                             <FormItem className="lg:col-span-2">
                             <FormLabel>Spare Part</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value} disabled={!currentBranch}>
+                            <Select onValueChange={field.onChange} value={field.value} disabled={!currentBranch}>
                                 <FormControl>
                                 <SelectTrigger>
                                     <SelectValue placeholder={!currentBranch ? "Select a branch first" : "Select a spare part"} />
@@ -725,13 +750,21 @@ export default function SparePartsStockPage() {
                             </FormItem>
                         )}
                     />
-                     <FormField control={invoiceForm.control} name="quantity" render={({ field }) => ( <FormItem> <FormLabel>Quantity</FormLabel> <FormControl><Input type="number" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
+                    <FormField control={invoiceForm.control} name="quantity" render={({ field }) => ( <FormItem> <FormLabel>Quantity</FormLabel> <FormControl><Input type="number" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
                     <div>
-                        <FormLabel>Rate</FormLabel>
-                        <Input value={selectedPartPrice > 0 ? `₹${selectedPartPrice.toFixed(2)}` : 'N/A'} disabled />
+                        <FormLabel>Part Code</FormLabel>
+                        <Input value={selectedPart?.partCode || 'N/A'} disabled />
+                    </div>
+                     <div>
+                        <FormLabel>HSN Code</FormLabel>
+                        <Input value={selectedPart?.hsnCode || 'N/A'} disabled />
+                    </div>
+                    <div>
+                        <FormLabel>Price</FormLabel>
+                        <Input value={selectedPart ? `₹${selectedPart.price.toFixed(2)}` : 'N/A'} disabled />
                     </div>
                 </div>
-                 <div className="flex justify-between items-center rounded-md bg-muted p-4">
+                 <div className="flex justify-between items-center rounded-md bg-muted p-4 mt-6">
                     <span className="text-muted-foreground font-medium">Total Invoice Value</span>
                     <span className="text-2xl font-bold">₹{totalInvoiceAmount.toFixed(2)}</span>
                 </div>
