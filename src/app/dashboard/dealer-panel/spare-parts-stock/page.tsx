@@ -33,6 +33,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { Separator } from "@/components/ui/separator";
 
 const initialStockData = [
   { sNo: 1, branchCode: 'Yunex202601', sparePart: 'Brake Pad', partCode: 'BP-001', hsnCode: '8708', price: 550, openingStock: 200, sales: 20, closingStock: 180, date: '2024-07-30' },
@@ -68,15 +69,6 @@ const branches = [
   { id: '24', district: 'Khunti', branchCode: 'Yunex202624' },
 ];
 
-const reportSchema = z.object({
-  sparePart: z.string().min(1, "Spare part name is required."),
-  openingStock: z.coerce.number().min(0, "Opening stock cannot be negative."),
-  sales: z.coerce.number().min(0, "Sales cannot be negative."),
-}).refine(data => data.sales <= data.openingStock, {
-  message: "Sales cannot be greater than opening stock.",
-  path: ["sales"],
-});
-
 const addStockSchema = z.object({
   sparePart: z.string().min(1, "Spare part name is required."),
   partCode: z.string().min(1, "Part code is required."),
@@ -85,6 +77,12 @@ const addStockSchema = z.object({
   addQty: z.coerce.number().min(1, "Quantity must be at least 1."),
 });
 
+const sparePartInvoiceSchema = z.object({
+  userId: z.string().min(1, "User ID is required."),
+  userName: z.string().min(1, "User name is required."),
+  sparePart: z.string().min(1, "Please select a spare part."),
+  quantity: z.coerce.number().min(1, "Quantity must be at least 1."),
+});
 
 type StockItem = {
   sNo: number;
@@ -99,20 +97,45 @@ type StockItem = {
   date: string;
 };
 
+type SparePartInvoice = z.infer<typeof sparePartInvoiceSchema> & {
+    id: string;
+    date: Date;
+    total: number;
+    partCode: string;
+    hsnCode: string;
+    rate: number;
+    branchCode: string;
+};
+
+const ones = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
+const tens = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
+
+const toWords = (num: number): string => {
+    if (num === 0) return 'Zero';
+    const numStr = Math.floor(num).toString();
+    const [, major] = numStr.match(/^(\d+)/) || [];
+    if (!major) return '';
+
+    const numberToWords = (n: number): string => {
+        if (n < 20) return ones[n];
+        const digit = n % 10;
+        if (n < 100) return tens[Math.floor(n / 10)] + (digit ? ' ' + ones[digit] : '');
+        if (n < 1000) return ones[Math.floor(n / 100)] + ' hundred' + (n % 100 !== 0 ? ' ' + numberToWords(n % 100) : '');
+        if (n < 100000) return numberToWords(Math.floor(n / 1000)) + ' thousand' + (n % 1000 !== 0 ? ' ' + numberToWords(n % 1000) : '');
+        if (n < 10000000) return numberToWords(Math.floor(n / 100000)) + ' lakh' + (n % 100000 !== 0 ? ' ' + numberToWords(n % 100000) : '');
+        return numberToWords(Math.floor(n / 10000000)) + ' crore' + (n % 10000000 !== 0 ? ' ' + numberToWords(n % 10000000) : '');
+    };
+    return numberToWords(parseInt(major));
+};
+
+
 export default function SparePartsStockPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [stockData, setStockData] = useState<StockItem[]>(initialStockData);
   const [currentBranch, setCurrentBranch] = useState("");
-
-  const form = useForm<z.infer<typeof reportSchema>>({
-    resolver: zodResolver(reportSchema),
-    defaultValues: {
-      sparePart: "",
-      openingStock: 0,
-      sales: 0,
-    },
-  });
+  const [sparePartInvoices, setSparePartInvoices] = useState<SparePartInvoice[]>([]);
+  const [selectedPartPrice, setSelectedPartPrice] = useState(0);
   
   const addStockForm = useForm<z.infer<typeof addStockSchema>>({
     resolver: zodResolver(addStockSchema),
@@ -125,74 +148,47 @@ export default function SparePartsStockPage() {
     },
   });
 
-  const { watch, setValue } = form;
-  const watchedSparePart = watch("sparePart");
-  const openingStock = watch("openingStock");
-  const sales = watch("sales");
-  const closingStock = openingStock - sales;
+  const invoiceForm = useForm<z.infer<typeof sparePartInvoiceSchema>>({
+    resolver: zodResolver(sparePartInvoiceSchema),
+    defaultValues: {
+      userId: "",
+      userName: "",
+      sparePart: "",
+      quantity: 1,
+    },
+  });
+
+  const watchedInvoiceSparePart = invoiceForm.watch("sparePart");
+  const watchedInvoiceQuantity = invoiceForm.watch("quantity");
+  const totalInvoiceAmount = selectedPartPrice * watchedInvoiceQuantity;
+
   const currentDate = new Date().toISOString().split('T')[0];
-  
-  const [partCode, setPartCode] = useState("");
-  const [hsnCode, setHsnCode] = useState("");
-  const [price, setPrice] = useState(0);
 
   useEffect(() => {
-    if (currentBranch && watchedSparePart) {
-      const latestEntry = stockData
-        .filter(item => item.branchCode === currentBranch && item.sparePart.toLowerCase() === watchedSparePart.toLowerCase())
-        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
-
-      if (latestEntry) {
-        setValue("openingStock", latestEntry.closingStock);
-        setPartCode(latestEntry.partCode || "");
-        setHsnCode(latestEntry.hsnCode || "");
-        setPrice(latestEntry.price || 0);
-      } else {
-        setValue("openingStock", 0);
-        setPartCode("");
-        setHsnCode("");
-        setPrice(0);
-      }
-    } else {
-        setValue("openingStock", 0);
-        setPartCode("");
-        setHsnCode("");
-        setPrice(0);
+    try {
+      const storedInvoices = JSON.parse(localStorage.getItem('yunex-spare-part-invoices') || '[]');
+      const formattedInvoices = storedInvoices.map((inv: any) => ({
+        ...inv,
+        date: new Date(inv.date),
+      }));
+      setSparePartInvoices(formattedInvoices);
+    } catch (error) {
+      console.error("Failed to load spare part invoices from localStorage", error);
     }
-  }, [currentBranch, watchedSparePart, stockData, setValue]);
-
-  function onSubmit(values: z.infer<typeof reportSchema>) {
-    if (!currentBranch) {
-        toast({
-            variant: "destructive",
-            title: "Branch Not Selected",
-            description: "Please select a branch before submitting a report.",
-        });
-        return;
-    }
-    
-    const newEntry: StockItem = {
-      sNo: stockData.length + 1,
-      ...values,
-      branchCode: currentBranch,
-      closingStock: values.openingStock - values.sales,
-      date: new Date().toISOString().split('T')[0],
-      partCode: partCode,
-      hsnCode: hsnCode,
-      price: price
-    };
-    setStockData(prev => [newEntry, ...prev]);
-    toast({
-      title: "Report Submitted",
-      description: "The daily spare parts stock transaction has been updated.",
-    });
-    form.reset({
-      sparePart: "",
-      openingStock: 0,
-      sales: 0,
-    });
-  }
+  }, []);
   
+  useEffect(() => {
+    if (currentBranch && watchedInvoiceSparePart) {
+      const latestEntry = stockData
+        .filter(item => item.branchCode === currentBranch && item.sparePart.toLowerCase() === watchedInvoiceSparePart.toLowerCase())
+        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+      
+      setSelectedPartPrice(latestEntry?.price || 0);
+    } else {
+      setSelectedPartPrice(0);
+    }
+}, [currentBranch, watchedInvoiceSparePart, stockData]);
+
   function onAddStockSubmit(values: z.infer<typeof addStockSchema>) {
     const { sparePart, addQty, partCode, hsnCode, price } = values;
     const branchCode = currentBranch;
@@ -241,6 +237,177 @@ export default function SparePartsStockPage() {
     });
   }
 
+  const onInvoiceSubmit = (values: z.infer<typeof sparePartInvoiceSchema>) => {
+    if (!currentBranch) {
+        toast({ variant: "destructive", title: "Branch Not Selected", description: "Please select a branch." });
+        return;
+    }
+
+    const latestEntry = stockData
+      .filter(item => item.branchCode === currentBranch && item.sparePart.toLowerCase() === values.sparePart.toLowerCase())
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+
+    if (!latestEntry || latestEntry.closingStock < values.quantity) {
+        toast({ variant: "destructive", title: "Out of Stock", description: "Not enough stock available for this sale." });
+        return;
+    }
+
+    // 1. Create new stock transaction for the sale
+    const newStockEntry: StockItem = {
+      sNo: stockData.length + 1,
+      branchCode: currentBranch,
+      sparePart: values.sparePart,
+      partCode: latestEntry.partCode,
+      hsnCode: latestEntry.hsnCode,
+      price: latestEntry.price,
+      openingStock: latestEntry.closingStock,
+      sales: values.quantity,
+      closingStock: latestEntry.closingStock - values.quantity,
+      date: new Date().toISOString().split('T')[0],
+    };
+    setStockData(prev => [newStockEntry, ...prev]);
+    
+    // 2. Create invoice
+    const newInvoice: SparePartInvoice = {
+        ...values,
+        id: `YUNEX-SP-${Math.floor(1000 + Math.random() * 9000)}`,
+        date: new Date(),
+        total: values.quantity * (latestEntry.price || 0),
+        partCode: latestEntry.partCode || 'N/A',
+        hsnCode: latestEntry.hsnCode || 'N/A',
+        rate: latestEntry.price || 0,
+        branchCode: currentBranch,
+    };
+    
+    const updatedInvoices = [newInvoice, ...sparePartInvoices];
+    setSparePartInvoices(updatedInvoices);
+
+    try {
+        localStorage.setItem('yunex-spare-part-invoices', JSON.stringify(updatedInvoices));
+    } catch (error) {
+        console.error("Failed to save spare part invoices to localStorage", error);
+    }
+
+    invoiceForm.reset();
+    toast({ title: "Invoice Generated", description: "Stock has been updated." });
+  };
+
+  const generateSparePartInvoicePDF = (invoiceData: SparePartInvoice) => {
+    const doc = new jsPDF();
+    const pageHeight = doc.internal.pageSize.height || doc.internal.pageSize.getHeight();
+    const pageWidth = doc.internal.pageSize.width || doc.internal.pageSize.getWidth();
+    const primaryColor = '#326cd1';
+    const mutedColor = '#6c757d';
+    
+    const logoX = 14;
+    const logoY = 15;
+    const logoSize = 25;
+    doc.setFillColor(primaryColor);
+    doc.circle(logoX + logoSize / 2, logoY + logoSize / 2, logoSize / 2, 'F');
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(12);
+    doc.setTextColor('#FFFFFF');
+    doc.text('YU', logoX + logoSize / 2, logoY + logoSize / 2 + 4, { align: 'center' });
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(28);
+    doc.setTextColor(primaryColor);
+    doc.text('YUNEX', logoX + logoSize + 3, 30);
+    
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(22);
+    doc.setTextColor('#000000');
+    doc.text('INVOICE', pageWidth - 14, 25, { align: 'right' });
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.setTextColor(mutedColor);
+    doc.text(`Invoice No: ${invoiceData.id}`, pageWidth - 14, 32, { align: 'right' });
+    doc.text(`Date: ${invoiceData.date.toLocaleDateString('en-IN')}`, pageWidth - 14, 37, { align: 'right' });
+
+    doc.setDrawColor(200);
+    doc.line(14, 45, pageWidth - 14, 45);
+
+    const branch = branches.find(b => b.branchCode === invoiceData.branchCode);
+    
+    autoTable(doc, {
+        startY: 50,
+        theme: 'plain',
+        body: [
+            [{ content: 'Billed By:', styles: { fontStyle: 'bold', textColor: primaryColor } }, { content: 'Billed To:', styles: { fontStyle: 'bold', textColor: primaryColor } }],
+            [`YUNEX - ${branch?.district || invoiceData.branchCode}`, `${invoiceData.userName}\nUser ID: ${invoiceData.userId}`],
+        ],
+        styles: { fontSize: 9, cellPadding: 1 },
+    });
+
+    autoTable(doc, {
+        startY: (doc as any).lastAutoTable.finalY + 10,
+        head: [['S.No.', 'Spare Part', 'Part Code', 'HSN Code', 'Qty', 'Rate', 'Amount']],
+        body: [
+            [
+                '1',
+                invoiceData.sparePart,
+                invoiceData.partCode,
+                invoiceData.hsnCode,
+                invoiceData.quantity,
+                `₹${invoiceData.rate.toFixed(2)}`,
+                `₹${invoiceData.total.toFixed(2)}`,
+            ]
+        ],
+        theme: 'grid',
+        headStyles: { fillColor: [50, 108, 209], textColor: [255, 255, 255], fontStyle: 'bold' },
+        columnStyles: { 0: { halign: 'center' }, 4: { halign: 'right' }, 5: { halign: 'right' }, 6: { halign: 'right' } },
+    });
+    
+    let finalY = (doc as any).lastAutoTable.finalY;
+    const totalInWords = toWords(invoiceData.total).trim().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ') + ' Only';
+
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Total In Words:', 14, finalY + 10);
+    doc.setFont('helvetica', 'normal');
+    doc.text(totalInWords, 14, finalY + 15, { maxWidth: pageWidth / 2 });
+    
+    autoTable(doc, {
+      startY: finalY + 5,
+      body: [['Total Invoice Value', `₹${invoiceData.total.toFixed(2)}`]],
+      theme: 'plain',
+      tableWidth: 80,
+      margin: { left: pageWidth - 80 - 14 },
+      styles: { halign: 'right' },
+      bodyStyles: { fontStyle: 'bold', fontSize: 12, cellPadding: { top: 5, right: 0 } },
+    });
+
+    finalY = (doc as any).lastAutoTable.finalY;
+    let signatureY = finalY > pageHeight - 70 ? pageHeight - 60 : finalY + 30;
+    
+    doc.setFontSize(10);
+    doc.setTextColor('#000000');
+    doc.text('For YUNEX', pageWidth - 14, signatureY, { align: 'right' });
+    doc.text('Authorised Signatory', pageWidth - 14, signatureY + 20, { align: 'right' });
+    return doc;
+  };
+
+  const handleViewInvoice = (invoice: SparePartInvoice) => {
+    try {
+        const doc = generateSparePartInvoicePDF(invoice);
+        window.open(doc.output('bloburl'), '_blank');
+    } catch(e) {
+        console.error("PDF View Error:", e);
+        toast({ variant: "destructive", title: "Error", description: "Failed to generate PDF for viewing." });
+    }
+  };
+
+  const handleDownloadInvoice = (invoice: SparePartInvoice) => {
+    try {
+        const doc = generateSparePartInvoicePDF(invoice);
+        doc.save(`spare-part-invoice-${invoice.id}.pdf`);
+        toast({ title: "Success", description: "PDF downloaded successfully." });
+    } catch(e) {
+        console.error("PDF Download Error:", e);
+        toast({ variant: "destructive", title: "Error", description: "Failed to generate PDF for download." });
+    }
+  };
+  
   const generatePDF = (item: StockItem) => {
     const doc = new jsPDF();
     
@@ -336,6 +503,7 @@ export default function SparePartsStockPage() {
     }
   };
 
+  const availableParts = [...new Set(stockData.filter(item => item.branchCode === currentBranch && item.closingStock > 0).map(item => item.sparePart))];
 
   return (
     <div className="flex min-h-screen w-full flex-col relative bg-background">
@@ -524,70 +692,93 @@ export default function SparePartsStockPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Closing Daily Report Submit</CardTitle>
-            <CardDescription>Fill out the form to submit the daily spare parts stock report.</CardDescription>
+            <CardTitle>Spare Parts Invoice</CardTitle>
+            <CardDescription>Generate an invoice for a spare part sale. This will update the stock automatically.</CardDescription>
           </CardHeader>
           <CardContent>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 items-end">
+            <Form {...invoiceForm}>
+              <form onSubmit={invoiceForm.handleSubmit(onInvoiceSubmit)} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <FormField control={invoiceForm.control} name="userId" render={({ field }) => ( <FormItem> <FormLabel>User ID</FormLabel> <FormControl><Input placeholder="Enter user ID" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
+                  <FormField control={invoiceForm.control} name="userName" render={({ field }) => ( <FormItem> <FormLabel>User Name</FormLabel> <FormControl><Input placeholder="Enter user name" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-end">
                     <FormField
-                      control={form.control}
-                      name="sparePart"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Spare Part</FormLabel>
-                          <FormControl><Input {...field} /></FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
+                        control={invoiceForm.control}
+                        name="sparePart"
+                        render={({ field }) => (
+                            <FormItem className="lg:col-span-2">
+                            <FormLabel>Spare Part</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value} disabled={!currentBranch}>
+                                <FormControl>
+                                <SelectTrigger>
+                                    <SelectValue placeholder={!currentBranch ? "Select a branch first" : "Select a spare part"} />
+                                </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                {availableParts.map(part => (
+                                    <SelectItem key={part} value={part}>{part}</SelectItem>
+                                ))}
+                                </SelectContent>
+                            </Select>
+                            <FormMessage />
+                            </FormItem>
+                        )}
                     />
-                     <div>
-                        <FormLabel>Part Code</FormLabel>
-                        <Input value={partCode} disabled />
-                    </div>
+                     <FormField control={invoiceForm.control} name="quantity" render={({ field }) => ( <FormItem> <FormLabel>Quantity</FormLabel> <FormControl><Input type="number" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
                     <div>
-                        <FormLabel>HSN Code</FormLabel>
-                        <Input value={hsnCode} disabled />
-                    </div>
-                     <FormField
-                      control={form.control}
-                      name="openingStock"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Opening Stock</FormLabel>
-                          <FormControl><Input type="number" {...field} disabled /></FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                     <FormField
-                      control={form.control}
-                      name="sales"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Sales</FormLabel>
-                          <FormControl><Input type="number" {...field} /></FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <div>
-                        <FormLabel>Closing Stock</FormLabel>
-                        <Input value={closingStock >= 0 ? closingStock : ''} disabled />
-                    </div>
-                    <div>
-                        <FormLabel>Price</FormLabel>
-                        <Input value={price > 0 ? `₹${price.toFixed(2)}` : ''} disabled />
-                    </div>
-                    <div>
-                        <FormLabel>Date</FormLabel>
-                        <Input value={currentDate} disabled />
+                        <FormLabel>Rate</FormLabel>
+                        <Input value={selectedPartPrice > 0 ? `₹${selectedPartPrice.toFixed(2)}` : 'N/A'} disabled />
                     </div>
                 </div>
-                 <Button type="submit" className="w-full md:w-auto">Submit Report</Button>
+                 <div className="flex justify-between items-center rounded-md bg-muted p-4">
+                    <span className="text-muted-foreground font-medium">Total Invoice Value</span>
+                    <span className="text-2xl font-bold">₹{totalInvoiceAmount.toFixed(2)}</span>
+                </div>
+                <Button type="submit" className="w-full md:w-auto">Generate Invoice</Button>
               </form>
             </Form>
+            <Separator className="my-8" />
+            <div>
+                <h3 className="text-lg font-medium mb-4">Spare Part Invoice History</h3>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>Invoice ID</TableHead>
+                            <TableHead>User</TableHead>
+                            <TableHead>Spare Part</TableHead>
+                            <TableHead>Date</TableHead>
+                            <TableHead className="text-right">Amount</TableHead>
+                            <TableHead className="text-center">Actions</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {sparePartInvoices.length > 0 ? (
+                            sparePartInvoices.map((invoice) => (
+                                <TableRow key={invoice.id}>
+                                    <TableCell className="font-medium">{invoice.id}</TableCell>
+                                    <TableCell>{invoice.userName}</TableCell>
+                                    <TableCell>{invoice.sparePart}</TableCell>
+                                    <TableCell>{invoice.date.toLocaleDateString()}</TableCell>
+                                    <TableCell className="text-right">₹{invoice.total.toFixed(2)}</TableCell>
+                                    <TableCell className="flex justify-center items-center gap-2">
+                                        <Button variant="outline" size="icon" onClick={() => handleViewInvoice(invoice)}>
+                                            <Eye className="h-4 w-4" />
+                                        </Button>
+                                        <Button variant="outline" size="icon" onClick={() => handleDownloadInvoice(invoice)}>
+                                            <Download className="h-4 w-4" />
+                                        </Button>
+                                    </TableCell>
+                                </TableRow>
+                            ))
+                        ) : (
+                            <TableRow>
+                                <TableCell colSpan={6} className="text-center">No spare part invoices generated yet.</TableCell>
+                            </TableRow>
+                        )}
+                    </TableBody>
+                </Table>
+            </div>
           </CardContent>
         </Card>
 
