@@ -397,7 +397,7 @@ export default function SparePartsStockPage() {
           <CardContent>
             <Form {...addStockForm}>
               <form onSubmit={addStockForm.handleSubmit(onAddStockSubmit)} className="space-y-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 items-start">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 items-end">
                     <FormField
                       control={addStockForm.control}
                       name="sparePart"
@@ -433,22 +433,22 @@ export default function SparePartsStockPage() {
                     />
                     <FormField
                       control={addStockForm.control}
-                      name="price"
+                      name="addQty"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Price</FormLabel>
-                          <FormControl><Input type="number" {...field} placeholder="0.00" /></FormControl>
+                          <FormLabel>Add Quantity</FormLabel>
+                          <FormControl><Input type="number" {...field} /></FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
                     <FormField
                       control={addStockForm.control}
-                      name="addQty"
+                      name="price"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Add Quantity</FormLabel>
-                          <FormControl><Input type="number" {...field} /></FormControl>
+                          <FormLabel>Price</FormLabel>
+                          <FormControl><Input type="number" {...field} placeholder="0.00" /></FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
