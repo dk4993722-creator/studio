@@ -11,13 +11,49 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ArrowLeft, Phone, LogOut, Building, TrendingUp, ShoppingCart, Warehouse, Wrench, ClipboardList } from "lucide-react";
+import { ArrowLeft, Phone, LogOut, Building, TrendingUp, ShoppingCart, Warehouse, Wrench, ClipboardList, BadgeCheck } from "lucide-react";
 import { YunexLogo } from "@/components/yunex-logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import placeholderImages from "@/lib/placeholder-images.json";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
+
+const verificationSchema = z.object({
+  branchCode: z.string().min(1, "Branch/Dealer code is required."),
+  pin: z.string().length(6, "PIN must be 6 digits."),
+});
 
 export default function DealerPanelPage() {
   const router = useRouter();
+  const { toast } = useToast();
+
+  const verificationForm = useForm<z.infer<typeof verificationSchema>>({
+    resolver: zodResolver(verificationSchema),
+    defaultValues: {
+      branchCode: "",
+      pin: "",
+    },
+  });
+
+  const onVerificationSubmit = (values: z.infer<typeof verificationSchema>) => {
+    console.log("Verification submitted:", values);
+    toast({
+      title: "Verification Request Sent",
+      description: `Verification for ${values.branchCode} is being processed.`,
+    });
+    verificationForm.reset();
+  };
 
   const dealerFeatures = [
     { title: "Sales Panel", icon: <TrendingUp className="h-10 w-10 text-primary" />, onClick: () => router.push("/dashboard/dealer-panel/sales"), description: "View sales data and reports." },
@@ -74,6 +110,49 @@ export default function DealerPanelPage() {
             </Card>
           ))}
         </div>
+
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                    <BadgeCheck className="h-6 w-6" />
+                    <span>Branch/Dealer Verification</span>
+                </CardTitle>
+                <CardDescription>Verify a branch or dealer using their code and PIN.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <Form {...verificationForm}>
+                    <form onSubmit={verificationForm.handleSubmit(onVerificationSubmit)} className="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
+                        <FormField
+                            control={verificationForm.control}
+                            name="branchCode"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Branch/Dealer Code</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="Enter code" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={verificationForm.control}
+                            name="pin"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>6-Digit PIN</FormLabel>
+                                    <FormControl>
+                                        <Input type="password" placeholder="••••••" {...field} maxLength={6} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <Button type="submit">Verify</Button>
+                    </form>
+                </Form>
+            </CardContent>
+        </Card>
 
       </main>
     </div>
