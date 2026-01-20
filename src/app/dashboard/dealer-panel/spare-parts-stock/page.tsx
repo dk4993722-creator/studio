@@ -69,7 +69,6 @@ const branches = [
 ];
 
 const reportSchema = z.object({
-  branchCode: z.string().min(1, "Branch code is required."),
   sparePart: z.string().min(1, "Spare part name is required."),
   openingStock: z.coerce.number().min(0, "Opening stock cannot be negative."),
   sales: z.coerce.number().min(0, "Sales cannot be negative."),
@@ -101,11 +100,11 @@ export default function SparePartsStockPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [stockData, setStockData] = useState<StockItem[]>(initialStockData);
+  const [currentBranch, setCurrentBranch] = useState("");
 
   const form = useForm<z.infer<typeof reportSchema>>({
     resolver: zodResolver(reportSchema),
     defaultValues: {
-      branchCode: "",
       sparePart: "",
       openingStock: 0,
       sales: 0,
@@ -124,7 +123,6 @@ export default function SparePartsStockPage() {
   });
 
   const { watch, setValue } = form;
-  const watchedBranchCode = watch("branchCode");
   const watchedSparePart = watch("sparePart");
   const openingStock = watch("openingStock");
   const sales = watch("sales");
@@ -132,9 +130,9 @@ export default function SparePartsStockPage() {
   const currentDate = new Date().toISOString().split('T')[0];
 
   useEffect(() => {
-    if (watchedBranchCode && watchedSparePart) {
+    if (currentBranch && watchedSparePart) {
       const latestEntry = stockData
-        .filter(item => item.branchCode === watchedBranchCode && item.sparePart.toLowerCase() === watchedSparePart.toLowerCase())
+        .filter(item => item.branchCode === currentBranch && item.sparePart.toLowerCase() === watchedSparePart.toLowerCase())
         .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
 
       if (latestEntry) {
@@ -143,12 +141,22 @@ export default function SparePartsStockPage() {
         setValue("openingStock", 0);
       }
     }
-  }, [watchedBranchCode, watchedSparePart, stockData, setValue]);
+  }, [currentBranch, watchedSparePart, stockData, setValue]);
 
   function onSubmit(values: z.infer<typeof reportSchema>) {
+    if (!currentBranch) {
+        toast({
+            variant: "destructive",
+            title: "Branch Not Selected",
+            description: "Please select a branch before submitting a report.",
+        });
+        return;
+    }
+    
     const newEntry: StockItem = {
       sNo: stockData.length + 1,
       ...values,
+      branchCode: currentBranch,
       closingStock: values.openingStock - values.sales,
       date: new Date().toISOString().split('T')[0],
     };
@@ -158,7 +166,6 @@ export default function SparePartsStockPage() {
       description: "The daily spare parts stock transaction has been updated.",
     });
     form.reset({
-      branchCode: "",
       sparePart: "",
       openingStock: 0,
       sales: 0,
@@ -167,13 +174,13 @@ export default function SparePartsStockPage() {
   
   function onAddStockSubmit(values: z.infer<typeof addStockSchema>) {
     const { sparePart, addQty } = values;
-    const branchCode = form.getValues("branchCode");
+    const branchCode = currentBranch;
 
     if (!branchCode) {
       toast({
         variant: "destructive",
         title: "Branch Not Selected",
-        description: "Please select a branch from the 'Closing Daily Report' section first.",
+        description: "Please select a branch from the top of the page first.",
       });
       return;
     }
@@ -335,6 +342,25 @@ export default function SparePartsStockPage() {
         </div>
 
         <Card>
+            <CardHeader>
+                <CardTitle>Select Branch</CardTitle>
+                <CardDescription>Choose a branch to manage its spare parts stock.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <Select onValueChange={setCurrentBranch} value={currentBranch}>
+                    <SelectTrigger className="w-full md:w-1/3">
+                        <SelectValue placeholder="Select a branch" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {branches.map(branch => (
+                            <SelectItem key={branch.id} value={branch.branchCode}>{branch.district}</SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+            </CardContent>
+        </Card>
+
+        <Card>
             <CardHeader className="flex-row items-center justify-between">
                 <div>
                     <CardTitle className="flex items-center gap-2">
@@ -472,33 +498,7 @@ export default function SparePartsStockPage() {
           <CardContent>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-4 items-end">
-                   <div className="lg:col-span-1">
-                      <FormLabel>S.No.</FormLabel>
-                      <Input value={stockData.length + 1} disabled />
-                   </div>
-                   <FormField
-                      control={form.control}
-                      name="branchCode"
-                      render={({ field }) => (
-                        <FormItem className="lg:col-span-1">
-                          <FormLabel>Branch Code</FormLabel>
-                          <Select onValueChange={field.onChange} value={field.value}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select Branch" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {branches.map(branch => (
-                                <SelectItem key={branch.id} value={branch.branchCode}>{branch.district}</SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 items-end">
                     <FormField
                       control={form.control}
                       name="sparePart"
