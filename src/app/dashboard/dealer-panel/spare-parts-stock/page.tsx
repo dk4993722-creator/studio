@@ -317,6 +317,7 @@ export default function SparePartsStockPage() {
     const primaryColor = '#326cd1';
     const mutedColor = '#6c757d';
     
+    // Logo and Header
     const logoX = 14;
     const logoY = 15;
     const logoSize = 25;
@@ -335,7 +336,7 @@ export default function SparePartsStockPage() {
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(22);
     doc.setTextColor('#000000');
-    doc.text('INVOICE', pageWidth - 14, 25, { align: 'right' });
+    doc.text('TAX INVOICE', pageWidth - 14, 25, { align: 'right' });
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(10);
     doc.setTextColor(mutedColor);
@@ -345,18 +346,22 @@ export default function SparePartsStockPage() {
     doc.setDrawColor(200);
     doc.line(14, 45, pageWidth - 14, 45);
 
+    // Billing details
     const branch = branches.find(b => b.branchCode === invoiceData.branchCode);
-    
+    const sellerDetails = `YUNEX - ${branch?.district || invoiceData.branchCode}\nNear D.C. Office, Satyam Nagar\nDhanbad, Jharkhand, INDIA. 826004.\nE-mail: info@yunex.com`;
+    const buyerDetails = `${invoiceData.customerName}\n${invoiceData.customerAddress}\nContact: ${invoiceData.contact}`;
+
     autoTable(doc, {
         startY: 50,
         theme: 'plain',
         body: [
             [{ content: 'Billed By:', styles: { fontStyle: 'bold', textColor: primaryColor } }, { content: 'Billed To:', styles: { fontStyle: 'bold', textColor: primaryColor } }],
-            [`YUNEX - ${branch?.district || invoiceData.branchCode}`, `${invoiceData.customerName}\n${invoiceData.customerAddress}\nContact: ${invoiceData.contact}`],
+            [sellerDetails, buyerDetails],
         ],
-        styles: { fontSize: 9, cellPadding: 1 },
+        styles: { fontSize: 9, cellPadding: {top: 1, right: 2, bottom: 1, left: 0}, valign: 'top' },
     });
-
+    
+    // Items table
     autoTable(doc, {
         startY: (doc as any).lastAutoTable.finalY + 10,
         head: [['S.No.', 'Spare Part', 'Part Code', 'HSN Code', 'Qty', 'Rate', 'Amount']],
@@ -376,6 +381,7 @@ export default function SparePartsStockPage() {
         columnStyles: { 0: { halign: 'center' }, 4: { halign: 'right' }, 5: { halign: 'right' }, 6: { halign: 'right' } },
     });
     
+    // Totals
     let finalY = (doc as any).lastAutoTable.finalY;
     const totalInWords = toWords(invoiceData.total).trim().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ') + ' Only';
 
@@ -398,10 +404,22 @@ export default function SparePartsStockPage() {
     finalY = (doc as any).lastAutoTable.finalY;
     let signatureY = finalY > pageHeight - 70 ? pageHeight - 60 : finalY + 30;
     
+    // Footer
+    const footerY = pageHeight - 20;
+    doc.setDrawColor(220);
+    doc.line(14, footerY - 5, pageWidth - 14, footerY - 5);
+    
+    doc.setFontSize(8);
+    doc.setTextColor(mutedColor);
+    doc.text(`Office address: Near D.C. Office, Satyam Nagar, Dhanbad, Jharkhand, INDIA. 826004.`, 14, footerY);
+    doc.text(`www.yunex.com | E-mail: info@yunex.com`, 14, footerY + 4);
+    
+    // Signature
     doc.setFontSize(10);
     doc.setTextColor('#000000');
     doc.text('For YUNEX', pageWidth - 14, signatureY, { align: 'right' });
     doc.text('Authorised Signatory', pageWidth - 14, signatureY + 20, { align: 'right' });
+    
     return doc;
   };
 
