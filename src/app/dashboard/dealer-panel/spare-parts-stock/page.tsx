@@ -33,7 +33,6 @@ import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { FileUpload } from "@/components/ui/file-upload";
 
 const initialStockData = [
   { sNo: 1, branchCode: 'Yunex202601', sparePart: 'Brake Pad', openingStock: 200, sales: 20, closingStock: 180, date: '2024-07-30' },
@@ -85,7 +84,6 @@ const addStockSchema = z.object({
   hsnCode: z.string().min(1, "HSN code is required."),
   price: z.coerce.number().min(0, "Price cannot be negative."),
   addQty: z.coerce.number().min(1, "Quantity must be at least 1."),
-  partPicture: z.any().refine((files) => files?.length == 1, "Part picture is required."),
 });
 
 
@@ -209,7 +207,6 @@ export default function SparePartsStockPage() {
       partCode: "",
       hsnCode: "",
       price: 0,
-      partPicture: null,
     });
   }
 
@@ -460,13 +457,6 @@ export default function SparePartsStockPage() {
                         <FormLabel>Date</FormLabel>
                         <Input value={currentDate} disabled />
                     </div>
-                    <div className="md:col-span-2">
-                      <FormField
-                          control={addStockForm.control}
-                          name="partPicture"
-                          render={({ field }) => <FileUpload field={field} label="Part Picture" />}
-                      />
-                    </div>
                 </div>
                 <Button type="submit" className="w-full md:w-auto">Add Stock</Button>
               </form>
@@ -561,3 +551,5 @@ export default function SparePartsStockPage() {
     </div>
   );
 }
+
+    
