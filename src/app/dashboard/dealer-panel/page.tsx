@@ -96,21 +96,7 @@ export default function DealerPanelPage() {
           </Button>
           <h2 className="text-3xl font-bold tracking-tight font-headline">Dealer Panel</h2>
         </div>
-
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
-          {dealerFeatures.map(feature => (
-            <Card key={feature.title} onClick={feature.onClick} className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
-              <CardHeader className="flex flex-col items-center justify-center text-center p-6 flex-grow">
-                {feature.icon}
-                <CardTitle className="mt-4 font-headline">{feature.title}</CardTitle>
-              </CardHeader>
-              <CardContent className="text-center text-sm text-muted-foreground pt-0 pb-6">
-                {feature.description}
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
+        
         <Card>
             <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -153,6 +139,20 @@ export default function DealerPanelPage() {
                 </Form>
             </CardContent>
         </Card>
+
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+          {dealerFeatures.map(feature => (
+            <Card key={feature.title} onClick={feature.onClick} className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
+              <CardHeader className="flex flex-col items-center justify-center text-center p-6 flex-grow">
+                {feature.icon}
+                <CardTitle className="mt-4 font-headline">{feature.title}</CardTitle>
+              </CardHeader>
+              <CardContent className="text-center text-sm text-muted-foreground pt-0 pb-6">
+                {feature.description}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
 
       </main>
     </div>
