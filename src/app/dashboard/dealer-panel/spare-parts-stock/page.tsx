@@ -413,6 +413,7 @@ export default function SparePartsStockPage() {
                       <TableHead>S. No.</TableHead>
                       <TableHead>Branch Code</TableHead>
                       <TableHead>Spare Part</TableHead>
+                      <TableHead>HSN Code</TableHead>
                       <TableHead className="text-right">Opening Stock</TableHead>
                       <TableHead className="text-right">Sales</TableHead>
                       <TableHead className="text-right">Closing Stock</TableHead>
@@ -426,6 +427,7 @@ export default function SparePartsStockPage() {
                         <TableCell>{item.sNo}</TableCell>
                         <TableCell>{item.branchCode}</TableCell>
                         <TableCell className="font-medium">{item.sparePart}</TableCell>
+                        <TableCell>{item.hsnCode || 'N/A'}</TableCell>
                         <TableCell className="text-right">{item.openingStock}</TableCell>
                         <TableCell className="text-right">{item.sales}</TableCell>
                         <TableCell className="text-right">{item.closingStock}</TableCell>
