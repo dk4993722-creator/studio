@@ -35,10 +35,10 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
 const initialStockData = [
-  { sNo: 1, branchCode: 'Yunex202601', sparePart: 'Brake Pad', openingStock: 200, sales: 20, closingStock: 180, date: '2024-07-30' },
-  { sNo: 2, branchCode: 'Yunex202602', sparePart: 'Headlight', openingStock: 100, sales: 5, closingStock: 95, date: '2024-07-30' },
-  { sNo: 3, branchCode: 'Yunex202601', sparePart: 'Battery 48V', openingStock: 50, sales: 2, closingStock: 48, date: '2024-07-30' },
-  { sNo: 4, branchCode: 'Yunex202603', sparePart: 'Tyre 10-inch', openingStock: 150, sales: 10, closingStock: 140, date: '2024-07-30' },
+  { sNo: 1, branchCode: 'Yunex202601', sparePart: 'Brake Pad', partCode: 'BP-001', hsnCode: '8708', price: 550, openingStock: 200, sales: 20, closingStock: 180, date: '2024-07-30' },
+  { sNo: 2, branchCode: 'Yunex202602', sparePart: 'Headlight', partCode: 'HL-001', hsnCode: '8512', price: 1200, openingStock: 100, sales: 5, closingStock: 95, date: '2024-07-30' },
+  { sNo: 3, branchCode: 'Yunex202601', sparePart: 'Battery 48V', partCode: 'BT-48V', hsnCode: '8507', price: 15000, openingStock: 50, sales: 2, closingStock: 48, date: '2024-07-30' },
+  { sNo: 4, branchCode: 'Yunex202603', sparePart: 'Tyre 10-inch', partCode: 'TY-10', hsnCode: '4011', price: 2500, openingStock: 150, sales: 10, closingStock: 140, date: '2024-07-30' },
 ];
 
 const branches = [
@@ -90,6 +90,9 @@ type StockItem = {
   sNo: number;
   branchCode: string;
   sparePart: string;
+  partCode?: string;
+  hsnCode?: string;
+  price?: number;
   openingStock: number;
   sales: number;
   closingStock: number;
@@ -128,6 +131,10 @@ export default function SparePartsStockPage() {
   const sales = watch("sales");
   const closingStock = openingStock - sales;
   const currentDate = new Date().toISOString().split('T')[0];
+  
+  const [partCode, setPartCode] = useState("");
+  const [hsnCode, setHsnCode] = useState("");
+  const [price, setPrice] = useState(0);
 
   useEffect(() => {
     if (currentBranch && watchedSparePart) {
@@ -137,9 +144,20 @@ export default function SparePartsStockPage() {
 
       if (latestEntry) {
         setValue("openingStock", latestEntry.closingStock);
+        setPartCode(latestEntry.partCode || "");
+        setHsnCode(latestEntry.hsnCode || "");
+        setPrice(latestEntry.price || 0);
       } else {
         setValue("openingStock", 0);
+        setPartCode("");
+        setHsnCode("");
+        setPrice(0);
       }
+    } else {
+        setValue("openingStock", 0);
+        setPartCode("");
+        setHsnCode("");
+        setPrice(0);
     }
   }, [currentBranch, watchedSparePart, stockData, setValue]);
 
@@ -159,6 +177,9 @@ export default function SparePartsStockPage() {
       branchCode: currentBranch,
       closingStock: values.openingStock - values.sales,
       date: new Date().toISOString().split('T')[0],
+      partCode: partCode,
+      hsnCode: hsnCode,
+      price: price
     };
     setStockData(prev => [newEntry, ...prev]);
     toast({
@@ -173,7 +194,7 @@ export default function SparePartsStockPage() {
   }
   
   function onAddStockSubmit(values: z.infer<typeof addStockSchema>) {
-    const { sparePart, addQty } = values;
+    const { sparePart, addQty, partCode, hsnCode, price } = values;
     const branchCode = currentBranch;
 
     if (!branchCode) {
@@ -195,6 +216,9 @@ export default function SparePartsStockPage() {
       sNo: stockData.length + 1,
       branchCode: branchCode,
       sparePart: sparePart,
+      partCode: partCode,
+      hsnCode: hsnCode,
+      price: price,
       openingStock: openingStockForAddition,
       sales: 0, // No sales for a stock addition
       closingStock: openingStockForAddition + addQty,
@@ -232,6 +256,9 @@ export default function SparePartsStockPage() {
             ['S. No.', item.sNo.toString()],
             ['Branch Code', item.branchCode],
             ['Spare Part', item.sparePart],
+            ['Part Code', item.partCode || 'N/A'],
+            ['HSN Code', item.hsnCode || 'N/A'],
+            ['Price', item.price ? `₹${item.price.toFixed(2)}` : 'N/A'],
             ['Report Date', item.date],
             ['Opening Stock', item.openingStock.toString()],
             ['Sales', item.sales.toString()],
@@ -275,13 +302,16 @@ export default function SparePartsStockPage() {
       return;
     }
 
-    const headers = ["S. No.", "Branch Code", "Spare Part", "Date", "Opening Stock", "Sales", "Closing Stock"];
+    const headers = ["S. No.", "Branch Code", "Spare Part", "Part Code", "HSN Code", "Price", "Date", "Opening Stock", "Sales", "Closing Stock"];
     const csvContent = [
       headers.join(","),
       ...stockData.map(item => [
         item.sNo,
         item.branchCode,
         `"${item.sparePart.replace(/"/g, '""')}"`,
+        item.partCode || '',
+        item.hsnCode || '',
+        item.price || 0,
         item.date,
         item.openingStock,
         item.sales,
@@ -498,23 +528,31 @@ export default function SparePartsStockPage() {
           <CardContent>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 items-end">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 items-end">
                     <FormField
                       control={form.control}
                       name="sparePart"
                       render={({ field }) => (
-                        <FormItem className="lg:col-span-1">
+                        <FormItem>
                           <FormLabel>Spare Part</FormLabel>
                           <FormControl><Input {...field} /></FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                    <FormField
+                     <div>
+                        <FormLabel>Part Code</FormLabel>
+                        <Input value={partCode} disabled />
+                    </div>
+                    <div>
+                        <FormLabel>HSN Code</FormLabel>
+                        <Input value={hsnCode} disabled />
+                    </div>
+                     <FormField
                       control={form.control}
                       name="openingStock"
                       render={({ field }) => (
-                        <FormItem className="lg:col-span-1">
+                        <FormItem>
                           <FormLabel>Opening Stock</FormLabel>
                           <FormControl><Input type="number" {...field} disabled /></FormControl>
                           <FormMessage />
@@ -525,18 +563,22 @@ export default function SparePartsStockPage() {
                       control={form.control}
                       name="sales"
                       render={({ field }) => (
-                        <FormItem className="lg:col-span-1">
+                        <FormItem>
                           <FormLabel>Sales</FormLabel>
                           <FormControl><Input type="number" {...field} /></FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                    <div className="lg:col-span-1">
-                        <FormLabel>Closing</FormLabel>
+                    <div>
+                        <FormLabel>Closing Stock</FormLabel>
                         <Input value={closingStock >= 0 ? closingStock : ''} disabled />
                     </div>
-                    <div className="lg:col-span-1">
+                    <div>
+                        <FormLabel>Price</FormLabel>
+                        <Input value={price > 0 ? `₹${price.toFixed(2)}` : ''} disabled />
+                    </div>
+                    <div>
                         <FormLabel>Date</FormLabel>
                         <Input value={currentDate} disabled />
                     </div>
@@ -551,5 +593,3 @@ export default function SparePartsStockPage() {
     </div>
   );
 }
-
-    
