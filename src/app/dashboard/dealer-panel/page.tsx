@@ -11,7 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ArrowLeft, Phone, LogOut, Building, TrendingUp, ShoppingCart, Warehouse, Wrench } from "lucide-react";
+import { ArrowLeft, Phone, LogOut, Building, TrendingUp, ShoppingCart, Warehouse, Wrench, ClipboardList } from "lucide-react";
 import { YunexLogo } from "@/components/yunex-logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import placeholderImages from "@/lib/placeholder-images.json";
@@ -24,6 +24,7 @@ export default function DealerPanelPage() {
     { title: "Purchase Panel", icon: <ShoppingCart className="h-10 w-10 text-primary" />, onClick: () => router.push("/dashboard/dealer-panel/purchase"), description: "Manage purchases and orders." },
     { title: "Vehicle Stock", icon: <Warehouse className="h-10 w-10 text-primary" />, onClick: () => router.push("/dashboard/dealer-panel/vehicle-stock"), description: "Check vehicle inventory." },
     { title: "Spare Parts Stock", icon: <Wrench className="h-10 w-10 text-primary" />, onClick: () => router.push("/dashboard/dealer-panel/spare-parts-stock"), description: "Manage spare parts inventory." },
+    { title: "Account Section", icon: <ClipboardList className="h-10 w-10 text-primary" />, onClick: () => router.push("/dashboard/dealer-panel/accounts"), description: "Manage account details." }
   ];
 
   return (
@@ -60,7 +61,7 @@ export default function DealerPanelPage() {
           <h2 className="text-3xl font-bold tracking-tight font-headline">Dealer Panel</h2>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
           {dealerFeatures.map(feature => (
             <Card key={feature.title} onClick={feature.onClick} className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
               <CardHeader className="flex flex-col items-center justify-center text-center p-6 flex-grow">
