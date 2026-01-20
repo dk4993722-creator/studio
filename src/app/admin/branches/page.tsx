@@ -42,35 +42,36 @@ import {
 import { Input } from "@/components/ui/input";
 
 const initialBranches = [
-  { id: '01', district: 'Deoghar', branchCode: 'Yunex202601' },
-  { id: '02', district: 'Dumka', branchCode: 'Yunex202602' },
-  { id: '03', district: 'Bokaro', branchCode: 'Yunex202603' },
-  { id: '04', district: 'Giridih', branchCode: 'Yunex202604' },
-  { id: '05', district: 'Koderma', branchCode: 'Yunex202605' },
-  { id: '06', district: 'Godda', branchCode: 'Yunex202606' },
-  { id: '07', district: 'Chatra', branchCode: 'Yunex202607' },
-  { id: '08', district: 'Dhanbad', branchCode: 'Yunex202608' },
-  { id: '09', district: 'Garhwa', branchCode: 'Yunex202609' },
-  { id: '10', district: 'East-Singhbhum', branchCode: 'Yunex202610' },
-  { id: '11', district: 'Jamtara', branchCode: 'Yunex202611' },
-  { id: '12', district: 'Saraikela-Kharsawan', branchCode: 'Yunex202612' },
-  { id: '13', district: 'Ranchi', branchCode: 'Yunex202613' },
-  { id: '14', district: 'Pakur', branchCode: 'Yunex202614' },
-  { id: '15', district: 'Latehar', branchCode: 'Yunex202615' },
-  { id: '16', district: 'Hazaribagh', branchCode: 'Yunex202616' },
-  { id: '17', district: 'Lohardaga', branchCode: 'Yunex202617' },
-  { id: '18', district: 'Palamu', branchCode: 'Yunex202618' },
-  { id: '19', district: 'Ramghar', branchCode: 'Yunex202619' },
-  { id: '20', district: 'Simdega', branchCode: 'Yunex202620' },
-  { id: '21', district: 'West-Singhbhum', branchCode: 'Yunex202621' },
-  { id: '22', district: 'Sahebganj', branchCode: 'Yunex202622' },
-  { id: '23', district: 'Gumla', branchCode: 'Yunex202623' },
-  { id: '24', district: 'Khunti', branchCode: 'Yunex202624' },
+  { id: '01', district: 'Deoghar', branchCode: 'Yunex202601', pin: '123456' },
+  { id: '02', district: 'Dumka', branchCode: 'Yunex202602', pin: '234567' },
+  { id: '03', district: 'Bokaro', branchCode: 'Yunex202603', pin: '345678' },
+  { id: '04', district: 'Giridih', branchCode: 'Yunex202604', pin: '456789' },
+  { id: '05', district: 'Koderma', branchCode: 'Yunex202605', pin: '567890' },
+  { id: '06', district: 'Godda', branchCode: 'Yunex202606', pin: '678901' },
+  { id: '07', district: 'Chatra', branchCode: 'Yunex202607', pin: '789012' },
+  { id: '08', district: 'Dhanbad', branchCode: 'Yunex202608', pin: '890123' },
+  { id: '09', district: 'Garhwa', branchCode: 'Yunex202609', pin: '901234' },
+  { id: '10', district: 'East-Singhbhum', branchCode: 'Yunex202610', pin: '012345' },
+  { id: '11', district: 'Jamtara', branchCode: 'Yunex202611', pin: '112233' },
+  { id: '12', district: 'Saraikela-Kharsawan', branchCode: 'Yunex202612', pin: '223344' },
+  { id: '13', district: 'Ranchi', branchCode: 'Yunex202613', pin: '334455' },
+  { id: '14', district: 'Pakur', branchCode: 'Yunex202614', pin: '445566' },
+  { id: '15', district: 'Latehar', branchCode: 'Yunex202615', pin: '556677' },
+  { id: '16', district: 'Hazaribagh', branchCode: 'Yunex202616', pin: '667788' },
+  { id: '17', district: 'Lohardaga', branchCode: 'Yunex202617', pin: '778899' },
+  { id: '18', district: 'Palamu', branchCode: 'Yunex202618', pin: '889900' },
+  { id: '19', district: 'Ramghar', branchCode: 'Yunex202619', pin: '990011' },
+  { id: '20', district: 'Simdega', branchCode: 'Yunex202620', pin: '001122' },
+  { id: '21', district: 'West-Singhbhum', branchCode: 'Yunex202621', pin: '112233' },
+  { id: '22', district: 'Sahebganj', branchCode: 'Yunex202622', pin: '223344' },
+  { id: '23', district: 'Gumla', branchCode: 'Yunex202623', pin: '334455' },
+  { id: '24', district: 'Khunti', branchCode: 'Yunex202624', pin: '445566' },
 ];
 
 const branchSchema = z.object({
   district: z.string().min(1, "District is required."),
   branchCode: z.string().min(1, "Branch code is required."),
+  pin: z.string().length(6, "PIN must be 6 digits."),
 });
 
 export default function BranchDetailsPage() {
@@ -84,6 +85,7 @@ export default function BranchDetailsPage() {
     defaultValues: {
       district: "",
       branchCode: "",
+      pin: "",
     },
   });
 
@@ -179,6 +181,19 @@ export default function BranchDetailsPage() {
                                 </FormItem>
                               )}
                             />
+                            <FormField
+                              control={form.control}
+                              name="pin"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>6-Digit Pin</FormLabel>
+                                  <FormControl>
+                                    <Input type="password" placeholder="••••••" {...field} maxLength={6} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
                             <DialogFooter>
                               <Button type="button" variant="secondary" onClick={() => setIsAddDialogOpen(false)}>
                                 Cancel
@@ -197,6 +212,7 @@ export default function BranchDetailsPage() {
                       <TableHead className="w-[80px]">S. No.</TableHead>
                       <TableHead>District (Branch)</TableHead>
                       <TableHead>Branch Code</TableHead>
+                      <TableHead>6-Digit Pin</TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -206,6 +222,7 @@ export default function BranchDetailsPage() {
                         <TableCell>{branch.id}</TableCell>
                         <TableCell className="font-medium">{branch.district}</TableCell>
                         <TableCell>{branch.branchCode}</TableCell>
+                        <TableCell>{branch.pin}</TableCell>
                         <TableCell className="text-right">
                           <Dialog>
                             <DialogTrigger asChild>
