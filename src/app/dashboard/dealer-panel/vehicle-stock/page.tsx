@@ -92,6 +92,25 @@ export default function VehicleStockPage() {
   const [stockData, setStockData] = useState(initialStockData);
   const [currentBranch, setCurrentBranch] = useState("");
 
+  useEffect(() => {
+    try {
+      const storedStock = localStorage.getItem('yunex-vehicle-stock');
+      if (storedStock) {
+        setStockData(JSON.parse(storedStock));
+      } else {
+        // If no data in local storage, use initial data and set it
+        localStorage.setItem('yunex-vehicle-stock', JSON.stringify(initialStockData));
+      }
+    } catch (error) {
+      console.error("Failed to load data from localStorage", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Could not load stock history.",
+      });
+    }
+  }, [toast]);
+
   const form = useForm<z.infer<typeof reportSchema>>({
     resolver: zodResolver(reportSchema),
     defaultValues: {
@@ -117,7 +136,7 @@ export default function VehicleStockPage() {
       return;
     }
     const newEntry = {
-      sNo: stockData.length + 1,
+      sNo: stockData.length > 0 ? Math.max(...stockData.map(item => item.sNo)) + 1 : 1,
       branchCode: currentBranch,
       eVehicle: values.eVehicle,
       openingStock: values.openingStock,
@@ -125,12 +144,26 @@ export default function VehicleStockPage() {
       closingStock: values.openingStock - values.sales,
       date: new Date().toISOString().split('T')[0],
     };
-    setStockData(prev => [newEntry, ...prev]);
+    
+    const updatedStock = [newEntry, ...stockData];
+    setStockData(updatedStock);
+    
+    try {
+      localStorage.setItem('yunex-vehicle-stock', JSON.stringify(updatedStock));
+    } catch (error) {
+       console.error("Failed to save stock to localStorage", error);
+       toast({
+        variant: "destructive",
+        title: "Save Error",
+        description: "Could not save the new stock entry.",
+      });
+    }
+
     toast({
       title: "Report Submitted",
       description: "The daily vehicle stock transaction has been updated.",
     });
-    form.reset();
+    form.reset({ eVehicle: "", openingStock: 0, sales: 0 });
   }
 
   return (
@@ -268,7 +301,7 @@ export default function VehicleStockPage() {
                     />
                     <div className="lg:col-span-1">
                         <FormLabel>Closing</FormLabel>
-                        <Input value={closingStock} disabled />
+                        <Input value={closingStock < 0 ? 0 : closingStock} disabled />
                     </div>
                     <div className="lg:col-span-1">
                         <FormLabel>Date</FormLabel>
