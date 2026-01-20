@@ -78,6 +78,13 @@ const reportSchema = z.object({
   path: ["sales"],
 });
 
+const addStockSchema = z.object({
+  branchCode: z.string().min(1, "Branch code is required."),
+  sparePart: z.string().min(1, "Spare part name is required."),
+  addQty: z.coerce.number().min(1, "Quantity must be at least 1."),
+});
+
+
 type StockItem = {
   sNo: number;
   branchCode: string;
@@ -100,6 +107,15 @@ export default function SparePartsStockPage() {
       sparePart: "",
       openingStock: 0,
       sales: 0,
+    },
+  });
+  
+  const addStockForm = useForm<z.infer<typeof addStockSchema>>({
+    resolver: zodResolver(addStockSchema),
+    defaultValues: {
+      branchCode: "",
+      sparePart: "",
+      addQty: 0,
     },
   });
 
@@ -145,6 +161,39 @@ export default function SparePartsStockPage() {
     });
   }
   
+  function onAddStockSubmit(values: z.infer<typeof addStockSchema>) {
+    const { branchCode, sparePart, addQty } = values;
+
+    const latestEntry = stockData
+      .filter(item => item.branchCode === branchCode && item.sparePart.toLowerCase() === sparePart.toLowerCase())
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+
+    const openingStockForAddition = latestEntry ? latestEntry.closingStock : 0;
+
+    const newEntry: StockItem = {
+      sNo: stockData.length + 1,
+      branchCode: branchCode,
+      sparePart: sparePart,
+      openingStock: openingStockForAddition,
+      sales: 0, // No sales for a stock addition
+      closingStock: openingStockForAddition + addQty,
+      date: new Date().toISOString().split('T')[0],
+    };
+
+    setStockData(prev => [newEntry, ...prev]);
+    
+    toast({
+      title: "Stock Added",
+      description: `${addQty} unit(s) of ${sparePart} added to branch ${branchCode}.`,
+    });
+    
+    addStockForm.reset({
+      branchCode: "",
+      sparePart: "",
+      addQty: 0,
+    });
+  }
+
   const generatePDF = (item: StockItem) => {
     const doc = new jsPDF();
     
@@ -324,6 +373,74 @@ export default function SparePartsStockPage() {
             </CardContent>
         </Card>
         
+        <Card>
+          <CardHeader>
+            <CardTitle>Add Spare Parts</CardTitle>
+            <CardDescription>Add new stock for a spare part. This will create a new transaction record.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Form {...addStockForm}>
+              <form onSubmit={addStockForm.handleSubmit(onAddStockSubmit)} className="space-y-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 items-end">
+                  <div className="lg:col-span-1">
+                      <FormLabel>S.No.</FormLabel>
+                      <Input value={stockData.length + 1} disabled />
+                  </div>
+                  <FormField
+                      control={addStockForm.control}
+                      name="branchCode"
+                      render={({ field }) => (
+                        <FormItem className="lg:col-span-1">
+                          <FormLabel>Branch Code</FormLabel>
+                          <Select onValueChange={field.onChange} value={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select Branch" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {branches.map(branch => (
+                                <SelectItem key={branch.id} value={branch.branchCode}>{branch.district}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={addStockForm.control}
+                      name="sparePart"
+                      render={({ field }) => (
+                        <FormItem className="lg:col-span-1">
+                          <FormLabel>Spare Part</FormLabel>
+                          <FormControl><Input {...field} placeholder="Enter part name" /></FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={addStockForm.control}
+                      name="addQty"
+                      render={({ field }) => (
+                        <FormItem className="lg:col-span-1">
+                          <FormLabel>Add Quantity</FormLabel>
+                          <FormControl><Input type="number" {...field} /></FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <div className="lg:col-span-1">
+                        <FormLabel>Date</FormLabel>
+                        <Input value={currentDate} disabled />
+                    </div>
+                </div>
+                <Button type="submit" className="w-full md:w-auto">Add Stock</Button>
+              </form>
+            </Form>
+          </CardContent>
+        </Card>
+
         <Card>
           <CardHeader>
             <CardTitle>Closing Daily Report Submit</CardTitle>
