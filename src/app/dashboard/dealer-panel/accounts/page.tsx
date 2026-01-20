@@ -10,6 +10,20 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import placeholderImages from "@/lib/placeholder-images.json";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { FileUpload } from "@/components/ui/file-upload";
+
 
 const accountData = [
   { date: "2024-07-31", particulars: "Sales - YUNEX-X1", debit: "", credit: "3500.00", balance: "3500.00 Cr" },
@@ -18,9 +32,30 @@ const accountData = [
   { date: "2024-07-28", particulars: "Opening Balance", debit: "", credit: "5500.00", balance: "5500.00 Cr" },
 ];
 
+const paymentSchema = z.object({
+  amount: z.coerce.number().positive({ message: "Amount must be positive." }),
+  utrNumber: z.string().min(1, { message: "UTR/Bank Reference is required." }),
+  screenshot: z.any().refine((files) => files?.length == 1, "Screenshot is required."),
+});
+
+
 export default function AccountsPage() {
   const router = useRouter();
   const { toast } = useToast();
+
+  const form = useForm<z.infer<typeof paymentSchema>>({
+    resolver: zodResolver(paymentSchema),
+    defaultValues: { amount: 0, utrNumber: "" },
+  });
+
+  const onPaymentSubmit = (values: z.infer<typeof paymentSchema>) => {
+      console.log("Payment details submitted:", values);
+      toast({
+        title: "Request Submitted!",
+        description: `Your payment of ₹${values.amount.toFixed(2)} is being processed. It will reflect in your account after verification.`,
+      });
+      form.reset();
+  };
 
   const handleDownload = () => {
     toast({
@@ -102,6 +137,52 @@ export default function AccountsPage() {
                 </Table>
             </CardContent>
         </Card>
+
+        <Card>
+            <CardHeader>
+                <CardTitle>Pay Section</CardTitle>
+                <CardDescription>Submit your payment details for verification.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onPaymentSubmit)} className="space-y-6">
+                        <FormField
+                            control={form.control}
+                            name="amount"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Amounts (₹)</FormLabel>
+                                    <FormControl>
+                                        <Input type="number" placeholder="0.00" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="utrNumber"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>UTR Number / Bank Reference</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="Enter transaction reference number" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="screenshot"
+                            render={({ field }) => <FileUpload field={field} label="Upload Screenshot" />}
+                        />
+                        <Button type="submit" className="w-full">Submit Payment</Button>
+                    </form>
+                </Form>
+            </CardContent>
+        </Card>
+
       </main>
     </div>
   );
