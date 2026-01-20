@@ -78,7 +78,6 @@ const branches = [
 ];
 
 const reportSchema = z.object({
-  branchCode: z.string().min(1, "Branch code is required."),
   eVehicle: z.string().min(1, "E. Vehicle name is required."),
   openingStock: z.coerce.number().min(0, "Opening stock cannot be negative."),
   sales: z.coerce.number().min(0, "Sales cannot be negative."),
@@ -91,11 +90,11 @@ export default function VehicleStockPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [stockData, setStockData] = useState(initialStockData);
+  const [currentBranch, setCurrentBranch] = useState("");
 
   const form = useForm<z.infer<typeof reportSchema>>({
     resolver: zodResolver(reportSchema),
     defaultValues: {
-      branchCode: "",
       eVehicle: "",
       openingStock: 0,
       sales: 0,
@@ -109,9 +108,17 @@ export default function VehicleStockPage() {
   const currentDate = new Date().toISOString().split('T')[0];
 
   function onSubmit(values: z.infer<typeof reportSchema>) {
+    if (!currentBranch) {
+      toast({
+        variant: "destructive",
+        title: "Branch Not Selected",
+        description: "Please select a branch from the top of the page first.",
+      });
+      return;
+    }
     const newEntry = {
       sNo: stockData.length + 1,
-      branchCode: values.branchCode,
+      branchCode: currentBranch,
       eVehicle: values.eVehicle,
       openingStock: values.openingStock,
       sales: values.sales,
@@ -162,6 +169,25 @@ export default function VehicleStockPage() {
         
         <Card>
             <CardHeader>
+                <CardTitle>Select Branch</CardTitle>
+                <CardDescription>Choose a branch to manage its vehicle stock.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <Select onValueChange={setCurrentBranch} value={currentBranch}>
+                    <SelectTrigger className="w-full md:w-1/3">
+                        <SelectValue placeholder="Select a branch" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {branches.map(branch => (
+                            <SelectItem key={branch.id} value={branch.branchCode}>{branch.district}</SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+            </CardContent>
+        </Card>
+
+        <Card>
+            <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                     <Warehouse className="h-6 w-6" />
                     <span>Daily Vehicle Stock Transactions</span>
@@ -206,33 +232,7 @@ export default function VehicleStockPage() {
           <CardContent>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-4 items-end">
-                   <div className="lg:col-span-1">
-                      <FormLabel>S.No.</FormLabel>
-                      <Input value={stockData.length + 1} disabled />
-                   </div>
-                   <FormField
-                      control={form.control}
-                      name="branchCode"
-                      render={({ field }) => (
-                        <FormItem className="lg:col-span-1">
-                          <FormLabel>Branch Code</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select Branch" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {branches.map(branch => (
-                                <SelectItem key={branch.id} value={branch.branchCode}>{branch.district}</SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 items-end">
                     <FormField
                       control={form.control}
                       name="eVehicle"
@@ -285,5 +285,3 @@ export default function VehicleStockPage() {
     </div>
   );
 }
-
-    
