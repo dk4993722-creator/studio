@@ -628,25 +628,6 @@ export default function SparePartsStockPage() {
         </div>
 
         <Card>
-            <CardHeader>
-                <CardTitle>Select Branch</CardTitle>
-                <CardDescription>Choose a branch to manage its spare parts stock.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <Select onValueChange={setCurrentBranch} value={currentBranch}>
-                    <SelectTrigger className="w-full md:w-1/3">
-                        <SelectValue placeholder="Select a branch" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {branches.map(branch => (
-                            <SelectItem key={branch.id} value={branch.branchCode}>{branch.district} ({branch.branchCode})</SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-            </CardContent>
-        </Card>
-
-        <Card>
             <CardHeader className="flex-row items-center justify-between">
                 <div>
                     <CardTitle className="flex items-center gap-2">
