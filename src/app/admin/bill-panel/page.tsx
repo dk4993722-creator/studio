@@ -20,6 +20,21 @@ import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { useForm, FormProvider } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+
 
 // Types for invoices
 type VehicleInvoice = {
@@ -39,6 +54,9 @@ type Transaction = {
   type: 'E-Vehicle' | 'Spare Part';
   rawData: VehicleInvoice | SparePartInvoice;
 };
+
+type VehicleStockItem = { sNo: number; branchCode: string; eVehicle: string; price: number; openingStock: number; sales: number; closingStock: number; date: string; };
+type SparePartStockItem = { sNo: number; branchCode: string; sparePart: string; partCode?: string; hsnCode?: string; price?: number; openingStock: number; sales: number; closingStock: number; date: string; };
 
 const branches = [
   { id: '01', district: 'Deoghar', branchCode: 'Yunex202601' }, { id: '02', district: 'Dumka', branchCode: 'Yunex202602' }, { id: '03', district: 'Bokaro', branchCode: 'Yunex202603' }, { id: '04', district: 'Giridih', branchCode: 'Yunex202604' }, { id: '05', district: 'Koderma', branchCode: 'Yunex202605' }, { id: '06', district: 'Godda', branchCode: 'Yunex202606' }, { id: '07', district: 'Chatra', branchCode: 'Yunex202607' }, { id: '08', district: 'Dhanbad', branchCode: 'Yunex202608' }, { id: '09', district: 'Garhwa', branchCode: 'Yunex202609' }, { id: '10', district: 'East-Singhbhum', branchCode: 'Yunex202610' }, { id: '11', district: 'Jamtara', branchCode: 'Yunex202611' }, { id: '12', district: 'Saraikela-Kharsawan', branchCode: 'Yunex202612' }, { id: '13', district: 'Ranchi', branchCode: 'Yunex202613' }, { id: '14', district: 'Pakur', branchCode: 'Yunex202614' }, { id: '15', district: 'Latehar', branchCode: 'Yunex202615' }, { id: '16', district: 'Hazaribagh', branchCode: 'Yunex202616' }, { id: '17', district: 'Lohardaga', branchCode: 'Yunex202617' }, { id: '18', district: 'Palamu', branchCode: 'Yunex202618' }, { id: '19', district: 'Ramghar', branchCode: 'Yunex202619' }, { id: '20', district: 'Simdega', branchCode: 'Yunex202620' }, { id: '21', district: 'West-Singhbhum', branchCode: 'Yunex202621' }, { id: '22', district: 'Sahebganj', branchCode: 'Yunex202622' }, { id: '23', district: 'Gumla', branchCode: 'Yunex202623' }, { id: '24', district: 'Khunti', branchCode: 'Yunex202624' },
@@ -65,44 +83,62 @@ const toWords = (num: number): string => {
     return numberToWords(parseInt(major));
 };
 
+const vehicleInvoiceSchema = z.object({
+  branchName: z.string().min(1), branchCode: z.string().min(1), branchGstNo: z.string().optional(), branchContact: z.string().min(1), branchAddress: z.string().min(1), branchCity: z.string().min(1), branchDistrict: z.string().min(1), branchState: z.string().min(1), branchPinCode: z.string().min(1),
+  model: z.string().min(1, "Model is required"), noOfSeat: z.string().optional(), chassisNo: z.string().optional(), motorNo: z.string().optional(), controllerNo: z.string().optional(), chargerNo1: z.string().optional(), chargerNo2: z.string().optional(), batteryMaker: z.string().optional(), batteryNo1: z.string().optional(), batteryNo2: z.string().optional(), batteryNo3: z.string().optional(), batteryNo4: z.string().optional(), batteryNo5: z.string().optional(), batteryNo6: z.string().optional(),
+  quantity: z.coerce.number().min(1).default(1), rate: z.coerce.number().min(0),
+});
+
+const sparePartInvoiceSchema = z.object({
+  sourceBranchCode: z.string().min(1, "Source branch is required"),
+  branchName: z.string().min(1), branchCode: z.string().min(1), branchGstNo: z.string().optional(), branchContact: z.string().min(1), branchAddress: z.string().min(1), branchCity: z.string().min(1), branchDistrict: z.string().min(1), branchState: z.string().min(1), branchPinCode: z.string().min(1),
+  sparePart: z.string().min(1, "Please select a spare part."), quantity: z.coerce.number().min(1),
+});
 
 export default function BillPanelPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [allTransactions, setAllTransactions] = useState<Transaction[]>([]);
+  const [allVehicleStock, setAllVehicleStock] = useState<VehicleStockItem[]>([]);
+  const [allSparePartStock, setAllSparePartStock] = useState<SparePartStockItem[]>([]);
+
+  const vehicleInvoiceFormMethods = useForm<z.infer<typeof vehicleInvoiceSchema>>({ resolver: zodResolver(vehicleInvoiceSchema), defaultValues: { quantity: 1 } });
+  const sparePartInvoiceFormMethods = useForm<z.infer<typeof sparePartInvoiceSchema>>({ resolver: zodResolver(sparePartInvoiceSchema), defaultValues: { quantity: 1 } });
+
+  const watchedVehicleBranch = vehicleInvoiceFormMethods.watch("branchCode");
+  const watchedVehicleModel = vehicleInvoiceFormMethods.watch("model");
+
+  const watchedSparePartSourceBranch = sparePartInvoiceFormMethods.watch("sourceBranchCode");
+  const watchedSparePart = sparePartInvoiceFormMethods.watch("sparePart");
+
+  const availableVehicleModels = allVehicleStock.filter(item => item.branchCode === watchedVehicleBranch && item.closingStock > 0).map(item => item.eVehicle);
+  const selectedVehicleStock = allVehicleStock.find(item => item.branchCode === watchedVehicleBranch && item.eVehicle === watchedVehicleModel);
+
+  const availableSpareParts = allSparePartStock.filter(item => item.branchCode === watchedSparePartSourceBranch && item.closingStock > 0).map(item => item.sparePart);
+  const selectedSparePartStock = allSparePartStock.find(item => item.branchCode === watchedSparePartSourceBranch && item.sparePart === watchedSparePart);
 
   useEffect(() => {
     try {
       const storedVehicleInvoices: VehicleInvoice[] = JSON.parse(localStorage.getItem('yunex-invoices') || '[]').map((inv: any) => ({ ...inv, date: new Date(inv.date) }));
       const storedSparePartInvoices: SparePartInvoice[] = JSON.parse(localStorage.getItem('yunex-spare-part-invoices') || '[]').map((inv: any) => ({ ...inv, date: new Date(inv.date) }));
+      setAllVehicleStock(JSON.parse(localStorage.getItem('yunex-vehicle-stock') || '[]'));
+      setAllSparePartStock(JSON.parse(localStorage.getItem('yunex-spareparts-stock') || '[]'));
 
-      const vehicleTransactions: Transaction[] = storedVehicleInvoices.map(inv => ({
-        id: inv.id,
-        date: inv.date,
-        total: inv.total,
-        branchName: inv.branchName,
-        description: inv.model || 'E-Vehicle',
-        type: 'E-Vehicle',
-        rawData: inv,
-      }));
-
-      const sparePartTransactions: Transaction[] = storedSparePartInvoices.map(inv => ({
-        id: inv.id,
-        date: inv.date,
-        total: inv.total,
-        branchName: inv.branchName,
-        description: inv.sparePart,
-        type: 'Spare Part',
-        rawData: inv,
-      }));
+      const vehicleTransactions: Transaction[] = storedVehicleInvoices.map(inv => ({ id: inv.id, date: inv.date, total: inv.total, branchName: inv.branchName, description: inv.model || 'E-Vehicle', type: 'E-Vehicle', rawData: inv, }));
+      const sparePartTransactions: Transaction[] = storedSparePartInvoices.map(inv => ({ id: inv.id, date: inv.date, total: inv.total, branchName: inv.branchName, description: inv.sparePart, type: 'Spare Part', rawData: inv, }));
       
       setAllTransactions([...vehicleTransactions, ...sparePartTransactions].sort((a, b) => b.date.getTime() - a.date.getTime()));
-
     } catch (error) {
       console.error("Failed to load invoice data from localStorage", error);
       toast({ variant: "destructive", title: "Error", description: "Could not load invoice data." });
     }
   }, [toast]);
+  
+  useEffect(() => {
+    if (selectedVehicleStock) {
+        vehicleInvoiceFormMethods.setValue("rate", selectedVehicleStock.price);
+    }
+  }, [selectedVehicleStock, vehicleInvoiceFormMethods]);
 
   const generateVehicleInvoicePDF = (invoiceData: VehicleInvoice) => {
     const doc = new jsPDF();
@@ -182,6 +218,73 @@ export default function BillPanelPage() {
     return doc;
   };
 
+  const handleVehicleInvoiceSubmit = (data: z.infer<typeof vehicleInvoiceSchema>) => {
+    const latestEntry = allVehicleStock
+      .filter(item => item.branchCode === data.branchCode && item.eVehicle.toLowerCase() === (data.model || '').toLowerCase())
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+
+    if (!latestEntry || latestEntry.closingStock < data.quantity) {
+      toast({ variant: "destructive", title: "Out of Stock", description: `Not enough stock for ${data.model} at branch ${data.branchCode}.` });
+      return;
+    }
+
+    const newInvoice: VehicleInvoice = { ...data, id: `YUNEX-V-${Math.floor(1000 + Math.random() * 9000)}`, date: new Date(), total: data.quantity * data.rate };
+    const newTransaction: Transaction = { id: newInvoice.id, date: newInvoice.date, total: newInvoice.total, branchName: newInvoice.branchName, description: newInvoice.model || 'E-Vehicle', type: 'E-Vehicle', rawData: newInvoice };
+
+    const newStockEntry: VehicleStockItem = {
+        sNo: allVehicleStock.length > 0 ? Math.max(...allVehicleStock.map(item => item.sNo)) + 1 : 1,
+        branchCode: data.branchCode, eVehicle: data.model || 'Unknown Model', price: data.rate,
+        openingStock: latestEntry.closingStock, sales: data.quantity, closingStock: latestEntry.closingStock - data.quantity, date: new Date().toISOString().split('T')[0],
+    };
+
+    const updatedStock = [newStockEntry, ...allVehicleStock];
+    const currentInvoices = JSON.parse(localStorage.getItem('yunex-invoices') || '[]');
+    const updatedInvoices = [newInvoice, ...currentInvoices];
+
+    localStorage.setItem('yunex-vehicle-stock', JSON.stringify(updatedStock));
+    localStorage.setItem('yunex-invoices', JSON.stringify(updatedInvoices));
+    setAllVehicleStock(updatedStock);
+    setAllTransactions(prev => [newTransaction, ...prev].sort((a, b) => b.date.getTime() - a.date.getTime()));
+
+    toast({ title: "Invoice Generated", description: `Invoice for ${data.branchName} created and stock updated.` });
+    vehicleInvoiceFormMethods.reset({ quantity: 1 });
+  };
+
+  const handleSparePartInvoiceSubmit = (data: z.infer<typeof sparePartInvoiceSchema>) => {
+    const latestEntry = allSparePartStock
+      .filter(item => item.branchCode === data.sourceBranchCode && item.sparePart.toLowerCase() === data.sparePart.toLowerCase())
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+    
+    if (!latestEntry || !latestEntry.price || latestEntry.closingStock < data.quantity) {
+      toast({ variant: "destructive", title: "Out of Stock", description: "Not enough stock available for this sale." });
+      return;
+    }
+    
+    const rate = latestEntry.price;
+    const total = data.quantity * rate;
+    const newInvoice: SparePartInvoice = { ...data, id: `YUNEX-SP-${Math.floor(1000 + Math.random() * 9000)}`, date: new Date(), total, rate, partCode: latestEntry.partCode || 'N/A', hsnCode: latestEntry.hsnCode || 'N/A' };
+    const newTransaction: Transaction = { id: newInvoice.id, date: newInvoice.date, total: newInvoice.total, branchName: newInvoice.branchName, description: newInvoice.sparePart, type: 'Spare Part', rawData: newInvoice };
+
+    const newStockEntry: SparePartStockItem = {
+      sNo: allSparePartStock.length > 0 ? Math.max(...allSparePartStock.map(item => item.sNo)) + 1 : 1,
+      branchCode: data.sourceBranchCode, sparePart: data.sparePart, partCode: latestEntry.partCode, hsnCode: latestEntry.hsnCode, price: latestEntry.price,
+      openingStock: latestEntry.closingStock, sales: data.quantity, closingStock: latestEntry.closingStock - data.quantity, date: new Date().toISOString().split('T')[0],
+    };
+
+    const updatedStock = [newStockEntry, ...allSparePartStock];
+    const currentInvoices = JSON.parse(localStorage.getItem('yunex-spare-part-invoices') || '[]');
+    const updatedInvoices = [newInvoice, ...currentInvoices];
+
+    localStorage.setItem('yunex-spareparts-stock', JSON.stringify(updatedStock));
+    localStorage.setItem('yunex-spare-part-invoices', JSON.stringify(updatedInvoices));
+    setAllSparePartStock(updatedStock);
+    setAllTransactions(prev => [newTransaction, ...prev].sort((a, b) => b.date.getTime() - a.date.getTime()));
+
+    toast({ title: "Invoice Generated", description: "Stock has been updated." });
+    sparePartInvoiceFormMethods.reset({ quantity: 1 });
+  };
+
+
   const handleAction = (action: 'view' | 'download', transaction: Transaction) => {
     try {
       const doc = transaction.type === 'E-Vehicle'
@@ -204,13 +307,7 @@ export default function BillPanelPage() {
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Invoice ID</TableHead>
-          <TableHead>Date</TableHead>
-          <TableHead>Type</TableHead>
-          <TableHead>Branch</TableHead>
-          <TableHead>Description</TableHead>
-          <TableHead className="text-right">Amount</TableHead>
-          <TableHead className="text-center">Actions</TableHead>
+          <TableHead>Invoice ID</TableHead> <TableHead>Date</TableHead> <TableHead>Type</TableHead> <TableHead>Branch</TableHead> <TableHead>Description</TableHead> <TableHead className="text-right">Amount</TableHead> <TableHead className="text-center">Actions</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -221,27 +318,20 @@ export default function BillPanelPage() {
               <TableCell>{t.date.toLocaleDateString()}</TableCell>
               <TableCell>
                 <span className={`flex items-center gap-2 ${t.type === 'E-Vehicle' ? 'text-blue-600' : 'text-orange-600'}`}>
-                    {t.type === 'E-Vehicle' ? <Car className="h-4 w-4" /> : <Wrench className="h-4 w-4" />}
-                    {t.type}
+                    {t.type === 'E-Vehicle' ? <Car className="h-4 w-4" /> : <Wrench className="h-4 w-4" />} {t.type}
                 </span>
               </TableCell>
               <TableCell>{t.branchName}</TableCell>
               <TableCell>{t.description}</TableCell>
               <TableCell className="text-right">₹{t.total.toFixed(2)}</TableCell>
               <TableCell className="flex justify-center items-center gap-2">
-                <Button variant="outline" size="icon" onClick={() => handleAction('view', t)}>
-                  <Eye className="h-4 w-4" />
-                </Button>
-                <Button variant="outline" size="icon" onClick={() => handleAction('download', t)}>
-                  <Download className="h-4 w-4" />
-                </Button>
+                <Button variant="outline" size="icon" onClick={() => handleAction('view', t)}> <Eye className="h-4 w-4" /> </Button>
+                <Button variant="outline" size="icon" onClick={() => handleAction('download', t)}> <Download className="h-4 w-4" /> </Button>
               </TableCell>
             </TableRow>
           ))
         ) : (
-          <TableRow>
-            <TableCell colSpan={7} className="text-center">No transactions found.</TableCell>
-          </TableRow>
+          <TableRow> <TableCell colSpan={7} className="text-center">No transactions found.</TableCell> </TableRow>
         )}
       </TableBody>
     </Table>
@@ -255,31 +345,20 @@ export default function BillPanelPage() {
           <h1 className="text-xl font-bold text-primary-foreground font-headline">YUNEX - Admin</h1>
         </div>
         <div className="ml-auto flex items-center gap-4">
-          <Avatar>
-            <AvatarImage
-              src={placeholderImages.placeholderImages[0].imageUrl}
-              alt="Admin avatar"
-              data-ai-hint={placeholderImages.placeholderImages[0].imageHint}
-            />
-            <AvatarFallback>A</AvatarFallback>
-          </Avatar>
-          <Button variant="ghost" size="icon" onClick={() => router.push("/")} aria-label="Log Out">
-            <LogOut className="h-5 w-5 text-muted-foreground" />
-          </Button>
+          <Avatar> <AvatarImage src={placeholderImages.placeholderImages[0].imageUrl} alt="Admin avatar" data-ai-hint={placeholderImages.placeholderImages[0].imageHint} /> <AvatarFallback>A</AvatarFallback> </Avatar>
+          <Button variant="ghost" size="icon" onClick={() => router.push("/")} aria-label="Log Out"> <LogOut className="h-5 w-5 text-muted-foreground" /> </Button>
         </div>
       </header>
       <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
         <div className="flex items-center gap-4">
-          <Button variant="outline" size="icon" onClick={() => router.back()}>
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
+          <Button variant="outline" size="icon" onClick={() => router.back()}> <ArrowLeft className="h-4 w-4" /> </Button>
           <h2 className="text-3xl font-bold tracking-tight font-headline">Bill Panel</h2>
         </div>
         
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2"><Receipt className="h-6 w-6" />Bill Management</CardTitle>
-            <CardDescription>View, manage, and download all company invoices.</CardDescription>
+            <CardDescription>View, manage, and generate all company invoices.</CardDescription>
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="all">
@@ -289,28 +368,56 @@ export default function BillPanelPage() {
                 <TabsTrigger value="spare-part">Spare Parts Invoices</TabsTrigger>
               </TabsList>
               <TabsContent value="all" className="mt-4">
+                <Card><CardHeader><CardTitle>All Invoice Transactions</CardTitle></CardHeader><CardContent>{renderTable(allTransactions)}</CardContent></Card>
+              </TabsContent>
+              <TabsContent value="e-vehicle" className="mt-4 space-y-6">
                 <Card>
-                  <CardHeader>
-                      <CardTitle>All Invoice Transactions</CardTitle>
-                  </CardHeader>
-                  <CardContent>{renderTable(allTransactions)}</CardContent>
+                  <CardHeader><CardTitle>Generate E. Vehicle Invoice</CardTitle><CardDescription>Create a new sales invoice for an E-Vehicle.</CardDescription></CardHeader>
+                  <CardContent>
+                    <FormProvider {...vehicleInvoiceFormMethods}>
+                      <form onSubmit={vehicleInvoiceFormMethods.handleSubmit(handleVehicleInvoiceSubmit)} className="space-y-6">
+                         <h3 className="text-lg font-medium">Branch Details</h3> <Separator />
+                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                           <FormField control={vehicleInvoiceFormMethods.control} name="branchCode" render={({ field }) => ( <FormItem> <FormLabel>Branch</FormLabel> <Select onValueChange={(value) => { field.onChange(value); const b = branches.find(br => br.branchCode === value); if(b) { vehicleInvoiceFormMethods.setValue("branchName", b.district); vehicleInvoiceFormMethods.setValue("branchDistrict", b.district); vehicleInvoiceFormMethods.setValue("branchCity", b.district); } }} value={field.value}> <FormControl> <SelectTrigger> <SelectValue placeholder="Select a branch" /> </SelectTrigger> </FormControl> <SelectContent> {branches.map((branch) => ( <SelectItem key={branch.id} value={branch.branchCode}>{branch.district} ({branch.branchCode})</SelectItem> ))} </SelectContent> </Select> <FormMessage /> </FormItem> )} />
+                           <FormField control={vehicleInvoiceFormMethods.control} name="branchGstNo" render={({ field }) => ( <FormItem> <FormLabel>GST No.</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )} />
+                           <FormField control={vehicleInvoiceFormMethods.control} name="branchContact" render={({ field }) => ( <FormItem> <FormLabel>Contact</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )} />
+                           <FormField control={vehicleInvoiceFormMethods.control} name="branchAddress" render={({ field }) => ( <FormItem className="md:col-span-2"> <FormLabel>Address</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )} />
+                         </div>
+                         <h3 className="text-lg font-medium pt-4">Vehicle & Billing</h3> <Separator />
+                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                             <FormField control={vehicleInvoiceFormMethods.control} name="model" render={({ field }) => ( <FormItem> <FormLabel>Model</FormLabel> <Select onValueChange={field.onChange} value={field.value} disabled={!watchedVehicleBranch}> <FormControl><SelectTrigger><SelectValue placeholder="Select vehicle model" /></SelectTrigger></FormControl> <SelectContent>{[...new Set(availableVehicleModels)].map(model => <SelectItem key={model} value={model}>{model}</SelectItem>)}</SelectContent> </Select> <FormMessage /> </FormItem> )} />
+                             <FormField control={vehicleInvoiceFormMethods.control} name="quantity" render={({ field }) => ( <FormItem> <FormLabel>Quantity</FormLabel> <FormControl><Input type="number" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
+                             <FormField control={vehicleInvoiceFormMethods.control} name="rate" render={({ field }) => ( <FormItem> <FormLabel>Rate</FormLabel> <FormControl><Input type="number" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
+                         </div>
+                         <Button type="submit" className="w-full md:w-auto">Generate E. Vehicle Invoice</Button>
+                      </form>
+                    </FormProvider>
+                  </CardContent>
                 </Card>
+                <Card><CardHeader><CardTitle>E. Vehicle Invoice History</CardTitle></CardHeader><CardContent>{renderTable(allTransactions.filter(t => t.type === 'E-Vehicle'))}</CardContent></Card>
               </TabsContent>
-              <TabsContent value="e-vehicle" className="mt-4">
-                 <Card>
-                  <CardHeader>
-                      <CardTitle>E. Vehicle Invoices</CardTitle>
-                  </CardHeader>
-                  <CardContent>{renderTable(allTransactions.filter(t => t.type === 'E-Vehicle'))}</CardContent>
+              <TabsContent value="spare-part" className="mt-4 space-y-6">
+                <Card>
+                  <CardHeader><CardTitle>Generate Spare Part Invoice</CardTitle><CardDescription>Create a new sales invoice for a spare part.</CardDescription></CardHeader>
+                  <CardContent>
+                    <FormProvider {...sparePartInvoiceFormMethods}>
+                      <form onSubmit={sparePartInvoiceFormMethods.handleSubmit(handleSparePartInvoiceSubmit)} className="space-y-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <FormField control={sparePartInvoiceFormMethods.control} name="sourceBranchCode" render={({ field }) => ( <FormItem> <FormLabel>Source Branch (Billed By)</FormLabel> <Select onValueChange={field.onChange} value={field.value}> <FormControl><SelectTrigger><SelectValue placeholder="Select source branch" /></SelectTrigger></FormControl> <SelectContent>{branches.map((b) => <SelectItem key={b.id} value={b.branchCode}>{b.district}</SelectItem>)}</SelectContent> </Select> <FormMessage /> </FormItem>)} />
+                          <FormField control={sparePartInvoiceFormMethods.control} name="branchCode" render={({ field }) => ( <FormItem> <FormLabel>Destination Branch (Billed To)</FormLabel> <Select onValueChange={(value) => { field.onChange(value); const b = branches.find(br => br.branchCode === value); if(b) { sparePartInvoiceFormMethods.setValue("branchName", b.district); sparePartInvoiceFormMethods.setValue("branchDistrict", b.district); sparePartInvoiceFormMethods.setValue("branchCity", b.district); } }} value={field.value}> <FormControl><SelectTrigger><SelectValue placeholder="Select destination branch" /></SelectTrigger></FormControl> <SelectContent>{branches.map((b) => <SelectItem key={b.id} value={b.branchCode}>{b.district}</SelectItem>)}</SelectContent> </Select> <FormMessage /> </FormItem>)} />
+                        </div>
+                         <h3 className="text-lg font-medium pt-4">Part & Billing</h3> <Separator />
+                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <FormField control={sparePartInvoiceFormMethods.control} name="sparePart" render={({ field }) => ( <FormItem> <FormLabel>Spare Part</FormLabel> <Select onValueChange={field.onChange} value={field.value} disabled={!watchedSparePartSourceBranch}> <FormControl><SelectTrigger><SelectValue placeholder="Select spare part" /></SelectTrigger></FormControl> <SelectContent>{[...new Set(availableSpareParts)].map(part => <SelectItem key={part} value={part}>{part}</SelectItem>)}</SelectContent> </Select> <FormMessage /> </FormItem> )} />
+                            <FormField control={sparePartInvoiceFormMethods.control} name="quantity" render={({ field }) => ( <FormItem> <FormLabel>Quantity</FormLabel> <FormControl><Input type="number" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
+                            <div><FormLabel>Rate</FormLabel><Input value={selectedSparePartStock?.price ? `₹${selectedSparePartStock.price.toFixed(2)}` : 'N/A'} disabled /></div>
+                         </div>
+                         <Button type="submit" className="w-full md:w-auto">Generate Spare Part Invoice</Button>
+                      </form>
+                    </FormProvider>
+                  </CardContent>
                 </Card>
-              </TabsContent>
-              <TabsContent value="spare-part" className="mt-4">
-                 <Card>
-                  <CardHeader>
-                      <CardTitle>Spare Parts Invoices</CardTitle>
-                  </CardHeader>
-                  <CardContent>{renderTable(allTransactions.filter(t => t.type === 'Spare Part'))}</CardContent>
-                </Card>
+                <Card><CardHeader><CardTitle>Spare Parts Invoice History</CardTitle></CardHeader><CardContent>{renderTable(allTransactions.filter(t => t.type === 'Spare Part'))}</CardContent></Card>
               </TabsContent>
             </Tabs>
           </CardContent>
@@ -319,3 +426,5 @@ export default function BillPanelPage() {
     </div>
   );
 }
+
+    
