@@ -163,12 +163,6 @@ export default function VehicleStockPage() {
     form.reset({ eVehicle: "", openingStock: 0, sales: 0 });
   }
 
-  const filteredCompanyStock = stockData.filter(item => {
-    const eVehicleMatch = eVehicleFilter ? item.eVehicle.toLowerCase().includes(eVehicleFilter.toLowerCase()) : true;
-    const dateMatch = dateFilter ? item.date === dateFilter : true;
-    return eVehicleMatch && dateMatch;
-  });
-
   const filteredBranchStock = stockData.filter(item => {
     if (!selectedDistrict) return true;
 
@@ -213,68 +207,6 @@ export default function VehicleStockPage() {
           <h2 className="text-3xl font-bold tracking-tight font-headline">Vehicle Stock</h2>
         </div>
 
-        <Card>
-            <CardHeader className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                <div>
-                    <CardTitle className="flex items-center gap-2">
-                        <Warehouse className="h-6 w-6" />
-                        <span>Company Vehicle Stock</span>
-                    </CardTitle>
-                    <CardDescription>
-                    A log of all vehicle inventory transactions across all branches.
-                    </CardDescription>
-                </div>
-                <div className="flex w-full md:w-auto items-center gap-2">
-                    <Input 
-                        placeholder="Filter by E. Vehicle..."
-                        value={eVehicleFilter}
-                        onChange={(e) => setEVehicleFilter(e.target.value)}
-                        className="max-w-sm"
-                    />
-                    <Input 
-                        type="date"
-                        value={dateFilter}
-                        onChange={(e) => setDateFilter(e.target.value)}
-                        className="max-w-sm"
-                    />
-                </div>
-            </CardHeader>
-            <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>S. No.</TableHead>
-                      <TableHead>E. Vehicle</TableHead>
-                      <TableHead className="text-right">Opening Stock</TableHead>
-                      <TableHead className="text-right">Sales</TableHead>
-                      <TableHead className="text-right">Closing Stock</TableHead>
-                      <TableHead>Date</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredCompanyStock.length > 0 ? (
-                      filteredCompanyStock.map((item) => (
-                        <TableRow key={item.sNo}>
-                          <TableCell>{item.sNo}</TableCell>
-                          <TableCell className="font-medium">{item.eVehicle}</TableCell>
-                          <TableCell className="text-right">{item.openingStock}</TableCell>
-                          <TableCell className="text-right">{item.sales}</TableCell>
-                          <TableCell className="text-right">{item.closingStock}</TableCell>
-                          <TableCell>{item.date}</TableCell>
-                        </TableRow>
-                      ))
-                    ) : (
-                      <TableRow>
-                        <TableCell colSpan={6} className="text-center">
-                          No stock data found for the current filter.
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-            </CardContent>
-        </Card>
-        
         <Card>
           <CardHeader>
             <CardTitle>Closing Daily Report Submit</CardTitle>
