@@ -11,7 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ArrowLeft, Phone, LogOut, Receipt, ClipboardList, BadgeCheck, Warehouse, Wrench } from "lucide-react";
+import { ArrowLeft, Phone, LogOut, Receipt, ClipboardList, BadgeCheck, Warehouse, Wrench, Gift } from "lucide-react";
 import { YunexLogo } from "@/components/yunex-logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import placeholderImages from "@/lib/placeholder-images.json";
@@ -60,6 +60,7 @@ export default function DealerPanelPage() {
     { title: "Bill Panel", icon: <Receipt className="h-10 w-10 text-primary" />, onClick: () => router.push("/dashboard/dealer-panel/bill-panel"), description: "Generate customer invoices." },
     { title: "E. Vehicle Stock", icon: <Warehouse className="h-10 w-10 text-primary" />, onClick: () => router.push("/dashboard/dealer-panel/vehicle-stock"), description: "Manage vehicle inventory." },
     { title: "Spare Parts Stock", icon: <Wrench className="h-10 w-10 text-primary" />, onClick: () => router.push("/dashboard/dealer-panel/spare-parts-stock"), description: "Manage spare parts inventory." },
+    { title: "Special Offer", icon: <Gift className="h-10 w-10 text-primary" />, onClick: () => router.push("/dashboard/dealer-panel/special-offer"), description: "View company offers." },
   ];
 
   return (
@@ -139,7 +140,7 @@ export default function DealerPanelPage() {
             </CardContent>
         </Card>
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {dealerFeatures.map(feature => (
             <Card key={feature.title} onClick={feature.onClick} className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
               <CardHeader className="flex flex-col items-center justify-center text-center p-6 flex-grow">
