@@ -212,15 +212,17 @@ export default function VehicleStockPage() {
         </div>
 
         <Card>
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                    <Warehouse className="h-6 w-6" />
-                    <span>Company Vehicle Stock</span>
-                </CardTitle>
-                 <CardDescription>
-                  A log of all vehicle inventory transactions across all branches.
-                </CardDescription>
-                <div className="flex items-center gap-4 pt-4">
+            <CardHeader className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div>
+                    <CardTitle className="flex items-center gap-2">
+                        <Warehouse className="h-6 w-6" />
+                        <span>Company Vehicle Stock</span>
+                    </CardTitle>
+                    <CardDescription>
+                    A log of all vehicle inventory transactions across all branches.
+                    </CardDescription>
+                </div>
+                <div className="flex w-full md:w-auto items-center gap-2">
                     <Input 
                         placeholder="Filter by E. Vehicle..."
                         value={eVehicleFilter}
