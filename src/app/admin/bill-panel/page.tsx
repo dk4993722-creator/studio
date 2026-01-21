@@ -10,13 +10,28 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ArrowLeft, LogOut, Receipt } from "lucide-react";
+import { ArrowLeft, LogOut, Receipt, Car, Wrench } from "lucide-react";
 import { YunexLogo } from "@/components/yunex-logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import placeholderImages from "@/lib/placeholder-images.json";
 
 export default function BillPanelPage() {
   const router = useRouter();
+
+  const billFeatures = [
+    { 
+      title: "E. Vehicle Invoice", 
+      icon: <Car className="h-10 w-10 text-primary" />, 
+      onClick: () => router.push("/dashboard/dealer-panel/sales"), 
+      description: "Manage E. Vehicle invoices." 
+    },
+    { 
+      title: "Spare Parts Invoice", 
+      icon: <Wrench className="h-10 w-10 text-primary" />, 
+      onClick: () => router.push("/dashboard/dealer-panel/spare-parts-stock"), 
+      description: "Manage spare parts invoices." 
+    },
+  ];
 
   return (
     <div className="flex min-h-screen w-full flex-col relative bg-background">
@@ -47,15 +62,19 @@ export default function BillPanelPage() {
           <h2 className="text-3xl font-bold tracking-tight font-headline">Bill Panel</h2>
         </div>
         
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2"><Receipt className="h-6 w-6" />Manage Bills</CardTitle>
-            <CardDescription>This page is under construction. You will be able to manage bills and invoices from here.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p>Coming soon...</p>
-          </CardContent>
-        </Card>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {billFeatures.map(feature => (
+            <Card key={feature.title} onClick={feature.onClick} className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
+              <CardHeader className="flex flex-col items-center justify-center text-center p-6 flex-grow">
+                {feature.icon}
+                <CardTitle className="mt-4 font-headline">{feature.title}</CardTitle>
+              </CardHeader>
+              <CardContent className="text-center text-sm text-muted-foreground pt-0 pb-6">
+                {feature.description}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </main>
     </div>
   );
