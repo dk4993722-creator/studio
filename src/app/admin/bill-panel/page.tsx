@@ -307,7 +307,13 @@ export default function BillPanelPage() {
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Invoice ID</TableHead> <TableHead>Date</TableHead> <TableHead>Type</TableHead> <TableHead>Branch</TableHead> <TableHead>Description</TableHead> <TableHead className="text-right">Amount</TableHead> <TableHead className="text-center">Actions</TableHead>
+          <TableHead>Invoice ID</TableHead>
+          <TableHead>Date</TableHead>
+          <TableHead>Type</TableHead>
+          <TableHead>Branch</TableHead>
+          <TableHead>Description</TableHead>
+          <TableHead className="text-right">Amount</TableHead>
+          <TableHead className="text-center">Actions</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -325,13 +331,13 @@ export default function BillPanelPage() {
               <TableCell>{t.description}</TableCell>
               <TableCell className="text-right">₹{t.total.toFixed(2)}</TableCell>
               <TableCell className="flex justify-center items-center gap-2">
-                <Button variant="outline" size="icon" onClick={() => handleAction('view', t)}> <Eye className="h-4 w-4" /> </Button>
-                <Button variant="outline" size="icon" onClick={() => handleAction('download', t)}> <Download className="h-4 w-4" /> </Button>
+                <Button variant="outline" size="icon" onClick={() => handleAction('view', t)}><Eye className="h-4 w-4" /></Button>
+                <Button variant="outline" size="icon" onClick={() => handleAction('download', t)}><Download className="h-4 w-4" /></Button>
               </TableCell>
             </TableRow>
           ))
         ) : (
-          <TableRow> <TableCell colSpan={7} className="text-center">No transactions found.</TableCell> </TableRow>
+          <TableRow><TableCell colSpan={7} className="text-center">No transactions found.</TableCell></TableRow>
         )}
       </TableBody>
     </Table>
@@ -345,13 +351,13 @@ export default function BillPanelPage() {
           <h1 className="text-xl font-bold text-primary-foreground font-headline">YUNEX - Admin</h1>
         </div>
         <div className="ml-auto flex items-center gap-4">
-          <Avatar> <AvatarImage src={placeholderImages.placeholderImages[0].imageUrl} alt="Admin avatar" data-ai-hint={placeholderImages.placeholderImages[0].imageHint} /> <AvatarFallback>A</AvatarFallback> </Avatar>
-          <Button variant="ghost" size="icon" onClick={() => router.push("/")} aria-label="Log Out"> <LogOut className="h-5 w-5 text-muted-foreground" /> </Button>
+          <Avatar><AvatarImage src={placeholderImages.placeholderImages[0].imageUrl} alt="Admin avatar" data-ai-hint={placeholderImages.placeholderImages[0].imageHint} /><AvatarFallback>A</AvatarFallback></Avatar>
+          <Button variant="ghost" size="icon" onClick={() => router.push("/")} aria-label="Log Out"><LogOut className="h-5 w-5 text-muted-foreground" /></Button>
         </div>
       </header>
       <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
         <div className="flex items-center gap-4">
-          <Button variant="outline" size="icon" onClick={() => router.back()}> <ArrowLeft className="h-4 w-4" /> </Button>
+          <Button variant="outline" size="icon" onClick={() => router.back()}><ArrowLeft className="h-4 w-4" /></Button>
           <h2 className="text-3xl font-bold tracking-tight font-headline">Bill Panel</h2>
         </div>
         
@@ -376,18 +382,18 @@ export default function BillPanelPage() {
                   <CardContent>
                     <FormProvider {...vehicleInvoiceFormMethods}>
                       <form onSubmit={vehicleInvoiceFormMethods.handleSubmit(handleVehicleInvoiceSubmit)} className="space-y-6">
-                         <h3 className="text-lg font-medium">Branch Details</h3> <Separator />
+                         <h3 className="text-lg font-medium">Branch Details</h3><Separator />
                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                           <FormField control={vehicleInvoiceFormMethods.control} name="branchCode" render={({ field }) => ( <FormItem> <FormLabel>Branch</FormLabel> <Select onValueChange={(value) => { field.onChange(value); const b = branches.find(br => br.branchCode === value); if(b) { vehicleInvoiceFormMethods.setValue("branchName", b.district); vehicleInvoiceFormMethods.setValue("branchDistrict", b.district); vehicleInvoiceFormMethods.setValue("branchCity", b.district); } }} value={field.value}> <FormControl> <SelectTrigger> <SelectValue placeholder="Select a branch" /> </SelectTrigger> </FormControl> <SelectContent> {branches.map((branch) => ( <SelectItem key={branch.id} value={branch.branchCode}>{branch.district} ({branch.branchCode})</SelectItem> ))} </SelectContent> </Select> <FormMessage /> </FormItem> )} />
-                           <FormField control={vehicleInvoiceFormMethods.control} name="branchGstNo" render={({ field }) => ( <FormItem> <FormLabel>GST No.</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )} />
-                           <FormField control={vehicleInvoiceFormMethods.control} name="branchContact" render={({ field }) => ( <FormItem> <FormLabel>Contact</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )} />
-                           <FormField control={vehicleInvoiceFormMethods.control} name="branchAddress" render={({ field }) => ( <FormItem className="md:col-span-2"> <FormLabel>Address</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )} />
+                           <FormField control={vehicleInvoiceFormMethods.control} name="branchCode" render={({ field }) => (<FormItem><FormLabel>Branch</FormLabel><Select onValueChange={(value) => { field.onChange(value); const b = branches.find(br => br.branchCode === value); if(b) { vehicleInvoiceFormMethods.setValue("branchName", b.district); vehicleInvoiceFormMethods.setValue("branchDistrict", b.district); vehicleInvoiceFormMethods.setValue("branchCity", b.district); } }} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a branch" /></SelectTrigger></FormControl><SelectContent>{branches.map((branch) => (<SelectItem key={branch.id} value={branch.branchCode}>{branch.district} ({branch.branchCode})</SelectItem>))}</SelectContent></Select><FormMessage /></FormItem>)} />
+                           <FormField control={vehicleInvoiceFormMethods.control} name="branchGstNo" render={({ field }) => (<FormItem><FormLabel>GST No.</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                           <FormField control={vehicleInvoiceFormMethods.control} name="branchContact" render={({ field }) => (<FormItem><FormLabel>Contact</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                           <FormField control={vehicleInvoiceFormMethods.control} name="branchAddress" render={({ field }) => (<FormItem className="md:col-span-2"><FormLabel>Address</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                          </div>
-                         <h3 className="text-lg font-medium pt-4">Vehicle & Billing</h3> <Separator />
+                         <h3 className="text-lg font-medium pt-4">Vehicle & Billing</h3><Separator />
                          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                             <FormField control={vehicleInvoiceFormMethods.control} name="model" render={({ field }) => ( <FormItem> <FormLabel>Model</FormLabel> <Select onValueChange={field.onChange} value={field.value} disabled={!watchedVehicleBranch}> <FormControl><SelectTrigger><SelectValue placeholder="Select vehicle model" /></SelectTrigger></FormControl> <SelectContent>{[...new Set(availableVehicleModels)].map(model => <SelectItem key={model} value={model}>{model}</SelectItem>)}</SelectContent> </Select> <FormMessage /> </FormItem> )} />
-                             <FormField control={vehicleInvoiceFormMethods.control} name="quantity" render={({ field }) => ( <FormItem> <FormLabel>Quantity</FormLabel> <FormControl><Input type="number" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
-                             <FormField control={vehicleInvoiceFormMethods.control} name="rate" render={({ field }) => ( <FormItem> <FormLabel>Rate</FormLabel> <FormControl><Input type="number" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
+                             <FormField control={vehicleInvoiceFormMethods.control} name="model" render={({ field }) => (<FormItem><FormLabel>Model</FormLabel><Select onValueChange={field.onChange} value={field.value} disabled={!watchedVehicleBranch}><FormControl><SelectTrigger><SelectValue placeholder="Select vehicle model" /></SelectTrigger></FormControl><SelectContent>{[...new Set(availableVehicleModels)].map(model => <SelectItem key={model} value={model}>{model}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} />
+                             <FormField control={vehicleInvoiceFormMethods.control} name="quantity" render={({ field }) => (<FormItem><FormLabel>Quantity</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                             <FormField control={vehicleInvoiceFormMethods.control} name="rate" render={({ field }) => (<FormItem><FormLabel>Rate</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>)} />
                          </div>
                          <Button type="submit" className="w-full md:w-auto">Generate E. Vehicle Invoice</Button>
                       </form>
@@ -403,13 +409,13 @@ export default function BillPanelPage() {
                     <FormProvider {...sparePartInvoiceFormMethods}>
                       <form onSubmit={sparePartInvoiceFormMethods.handleSubmit(handleSparePartInvoiceSubmit)} className="space-y-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <FormField control={sparePartInvoiceFormMethods.control} name="sourceBranchCode" render={({ field }) => ( <FormItem> <FormLabel>Source Branch (Billed By)</FormLabel> <Select onValueChange={field.onChange} value={field.value}> <FormControl><SelectTrigger><SelectValue placeholder="Select source branch" /></SelectTrigger></FormControl> <SelectContent>{branches.map((b) => <SelectItem key={b.id} value={b.branchCode}>{b.district}</SelectItem>)}</SelectContent> </Select> <FormMessage /> </FormItem>)} />
-                          <FormField control={sparePartInvoiceFormMethods.control} name="branchCode" render={({ field }) => ( <FormItem> <FormLabel>Destination Branch (Billed To)</FormLabel> <Select onValueChange={(value) => { field.onChange(value); const b = branches.find(br => br.branchCode === value); if(b) { sparePartInvoiceFormMethods.setValue("branchName", b.district); sparePartInvoiceFormMethods.setValue("branchDistrict", b.district); sparePartInvoiceFormMethods.setValue("branchCity", b.district); } }} value={field.value}> <FormControl><SelectTrigger><SelectValue placeholder="Select destination branch" /></SelectTrigger></FormControl> <SelectContent>{branches.map((b) => <SelectItem key={b.id} value={b.branchCode}>{b.district}</SelectItem>)}</SelectContent> </Select> <FormMessage /> </FormItem>)} />
+                          <FormField control={sparePartInvoiceFormMethods.control} name="sourceBranchCode" render={({ field }) => (<FormItem><FormLabel>Source Branch (Billed By)</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select source branch" /></SelectTrigger></FormControl><SelectContent>{branches.map((b) => <SelectItem key={b.id} value={b.branchCode}>{b.district}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} />
+                          <FormField control={sparePartInvoiceFormMethods.control} name="branchCode" render={({ field }) => (<FormItem><FormLabel>Destination Branch (Billed To)</FormLabel><Select onValueChange={(value) => { field.onChange(value); const b = branches.find(br => br.branchCode === value); if(b) { sparePartInvoiceFormMethods.setValue("branchName", b.district); sparePartInvoiceFormMethods.setValue("branchDistrict", b.district); sparePartInvoiceFormMethods.setValue("branchCity", b.district); } }} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select destination branch" /></SelectTrigger></FormControl><SelectContent>{branches.map((b) => <SelectItem key={b.id} value={b.branchCode}>{b.district}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} />
                         </div>
-                         <h3 className="text-lg font-medium pt-4">Part & Billing</h3> <Separator />
+                         <h3 className="text-lg font-medium pt-4">Part & Billing</h3><Separator />
                          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <FormField control={sparePartInvoiceFormMethods.control} name="sparePart" render={({ field }) => ( <FormItem> <FormLabel>Spare Part</FormLabel> <Select onValueChange={field.onChange} value={field.value} disabled={!watchedSparePartSourceBranch}> <FormControl><SelectTrigger><SelectValue placeholder="Select spare part" /></SelectTrigger></FormControl> <SelectContent>{[...new Set(availableSpareParts)].map(part => <SelectItem key={part} value={part}>{part}</SelectItem>)}</SelectContent> </Select> <FormMessage /> </FormItem> )} />
-                            <FormField control={sparePartInvoiceFormMethods.control} name="quantity" render={({ field }) => ( <FormItem> <FormLabel>Quantity</FormLabel> <FormControl><Input type="number" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
+                            <FormField control={sparePartInvoiceFormMethods.control} name="sparePart" render={({ field }) => (<FormItem><FormLabel>Spare Part</FormLabel><Select onValueChange={field.onChange} value={field.value} disabled={!watchedSparePartSourceBranch}><FormControl><SelectTrigger><SelectValue placeholder="Select spare part" /></SelectTrigger></FormControl><SelectContent>{[...new Set(availableSpareParts)].map(part => <SelectItem key={part} value={part}>{part}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} />
+                            <FormField control={sparePartInvoiceFormMethods.control} name="quantity" render={({ field }) => (<FormItem><FormLabel>Quantity</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>)} />
                             <div><FormLabel>Rate</FormLabel><Input value={selectedSparePartStock?.price ? `₹${selectedSparePartStock.price.toFixed(2)}` : 'N/A'} disabled /></div>
                          </div>
                          <Button type="submit" className="w-full md:w-auto">Generate Spare Part Invoice</Button>
