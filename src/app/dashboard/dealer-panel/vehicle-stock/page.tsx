@@ -223,10 +223,10 @@ export default function VehicleStockPage() {
             <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                     <Warehouse className="h-6 w-6" />
-                    <span>Daily Vehicle Stock Transactions</span>
+                    <span>Company Vehicle Stock</span>
                 </CardTitle>
                  <CardDescription>
-                  A daily summary of your vehicle inventory transactions, including opening stock, sales, and closing stock.
+                  A log of all vehicle inventory transactions across all branches.
                 </CardDescription>
             </CardHeader>
             <CardContent>
