@@ -128,14 +128,6 @@ export default function VehicleStockPage() {
   const currentDate = new Date().toISOString().split('T')[0];
 
   function onSubmit(values: z.infer<typeof reportSchema>) {
-    if (!currentBranch) {
-      toast({
-        variant: "destructive",
-        title: "Branch Not Selected",
-        description: "Please select a branch from the top of the page first.",
-      });
-      return;
-    }
     const newEntry = {
       sNo: stockData.length > 0 ? Math.max(...stockData.map(item => item.sNo)) + 1 : 1,
       branchCode: currentBranch,
@@ -340,5 +332,4 @@ export default function VehicleStockPage() {
     </div>
   );
 }
-
     
