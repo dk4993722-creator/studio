@@ -90,7 +90,7 @@ export default function VehicleStockPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [stockData, setStockData] = useState(initialStockData);
-  const [currentBranch, setCurrentBranch] = useState(branches[0].branchCode);
+  const [currentBranch] = useState(branches[0].branchCode);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterKey, setFilterKey] = useState<"branchCode" | "district">("branchCode");
 
@@ -100,7 +100,6 @@ export default function VehicleStockPage() {
       if (storedStock) {
         setStockData(JSON.parse(storedStock));
       } else {
-        // If no data in local storage, use initial data and set it
         localStorage.setItem('yunex-vehicle-stock', JSON.stringify(initialStockData));
       }
     } catch (error) {
@@ -215,6 +214,46 @@ export default function VehicleStockPage() {
           </Button>
           <h2 className="text-3xl font-bold tracking-tight font-headline">Vehicle Stock</h2>
         </div>
+
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                    <Warehouse className="h-6 w-6" />
+                    <span>Company Vehicle Stock</span>
+                </CardTitle>
+                 <CardDescription>
+                  A log of all vehicle inventory transactions across all branches.
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>S. No.</TableHead>
+                      <TableHead>Branch Code</TableHead>
+                      <TableHead>E. Vehicle</TableHead>
+                      <TableHead className="text-right">Opening Stock</TableHead>
+                      <TableHead className="text-right">Sales</TableHead>
+                      <TableHead className="text-right">Closing Stock</TableHead>
+                      <TableHead>Date</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredStockData.map((item) => (
+                      <TableRow key={item.sNo}>
+                        <TableCell>{item.sNo}</TableCell>
+                        <TableCell>{item.branchCode}</TableCell>
+                        <TableCell className="font-medium">{item.eVehicle}</TableCell>
+                        <TableCell className="text-right">{item.openingStock}</TableCell>
+                        <TableCell className="text-right">{item.sales}</TableCell>
+                        <TableCell className="text-right">{item.closingStock}</TableCell>
+                        <TableCell>{item.date}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+            </CardContent>
+        </Card>
         
         <Card>
           <CardHeader>
@@ -294,46 +333,6 @@ export default function VehicleStockPage() {
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="w-full"
                 />
-            </CardContent>
-        </Card>
-
-        <Card>
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                    <Warehouse className="h-6 w-6" />
-                    <span>Company Vehicle Stock</span>
-                </CardTitle>
-                 <CardDescription>
-                  A log of all vehicle inventory transactions across all branches.
-                </CardDescription>
-            </CardHeader>
-            <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>S. No.</TableHead>
-                      <TableHead>Branch Code</TableHead>
-                      <TableHead>E. Vehicle</TableHead>
-                      <TableHead className="text-right">Opening Stock</TableHead>
-                      <TableHead className="text-right">Sales</TableHead>
-                      <TableHead className="text-right">Closing Stock</TableHead>
-                      <TableHead>Date</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredStockData.map((item) => (
-                      <TableRow key={item.sNo}>
-                        <TableCell>{item.sNo}</TableCell>
-                        <TableCell>{item.branchCode}</TableCell>
-                        <TableCell className="font-medium">{item.eVehicle}</TableCell>
-                        <TableCell className="text-right">{item.openingStock}</TableCell>
-                        <TableCell className="text-right">{item.sales}</TableCell>
-                        <TableCell className="text-right">{item.closingStock}</TableCell>
-                        <TableCell>{item.date}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
             </CardContent>
         </Card>
 
