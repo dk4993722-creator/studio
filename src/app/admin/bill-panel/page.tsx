@@ -10,7 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ArrowLeft, LogOut } from "lucide-react";
+import { ArrowLeft, LogOut, Receipt } from "lucide-react";
 import { YunexLogo } from "@/components/yunex-logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import placeholderImages from "@/lib/placeholder-images.json";
@@ -49,16 +49,11 @@ export default function BillPanelPage() {
         
         <Card>
           <CardHeader>
-            <CardTitle>Bill Management</CardTitle>
-            <CardDescription>Select an invoice type to manage.</CardDescription>
+            <CardTitle className="flex items-center gap-2"><Receipt className="h-6 w-6" />Bill Management</CardTitle>
+            <CardDescription>This section is under construction.</CardDescription>
           </CardHeader>
-          <CardContent className="flex flex-col gap-4">
-            <Button variant="outline" onClick={() => router.push("/dashboard/dealer-panel/sales")}>
-                E. Vehicle Invoice
-            </Button>
-            <Button variant="outline" onClick={() => router.push("/dashboard/dealer-panel/spare-parts-stock")}>
-                Spare Parts Invoice
-            </Button>
+          <CardContent>
+            <p>Content coming soon...</p>
           </CardContent>
         </Card>
       </main>
