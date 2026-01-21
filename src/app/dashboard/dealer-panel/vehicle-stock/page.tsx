@@ -31,6 +31,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
+import { Separator } from "@/components/ui/separator";
 
 const initialStockData = [
   // Day 1: 2024-07-29
@@ -208,70 +209,6 @@ export default function VehicleStockPage() {
         </div>
 
         <Card>
-            <CardHeader>
-                <CardTitle>Find Branch Stock</CardTitle>
-                <CardDescription>Filter vehicle stock by District or Branch Code.</CardDescription>
-            </CardHeader>
-            <CardContent className="flex items-center gap-4">
-                 <Select value={filterKey} onValueChange={(value) => setFilterKey(value as "branchCode" | "district")}>
-                    <SelectTrigger className="w-full md:w-[180px]">
-                        <SelectValue placeholder="Filter by..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="branchCode">Branch Code</SelectItem>
-                        <SelectItem value="district">District</SelectItem>
-                    </SelectContent>
-                </Select>
-                <Input
-                    placeholder={`Filter by ${filterKey === 'branchCode' ? 'Branch Code' : 'District'}...`}
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full"
-                />
-            </CardContent>
-        </Card>
-
-        <Card>
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                    <Warehouse className="h-6 w-6" />
-                    <span>Company Vehicle Stock</span>
-                </CardTitle>
-                 <CardDescription>
-                  A log of all vehicle inventory transactions across all branches.
-                </CardDescription>
-            </CardHeader>
-            <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>S. No.</TableHead>
-                      <TableHead>Branch Code</TableHead>
-                      <TableHead>E. Vehicle</TableHead>
-                      <TableHead className="text-right">Opening Stock</TableHead>
-                      <TableHead className="text-right">Sales</TableHead>
-                      <TableHead className="text-right">Closing Stock</TableHead>
-                      <TableHead>Date</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredStockData.map((item) => (
-                      <TableRow key={item.sNo}>
-                        <TableCell>{item.sNo}</TableCell>
-                        <TableCell>{item.branchCode}</TableCell>
-                        <TableCell className="font-medium">{item.eVehicle}</TableCell>
-                        <TableCell className="text-right">{item.openingStock}</TableCell>
-                        <TableCell className="text-right">{item.sales}</TableCell>
-                        <TableCell className="text-right">{item.closingStock}</TableCell>
-                        <TableCell>{item.date}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-            </CardContent>
-        </Card>
-        
-        <Card>
           <CardHeader>
             <CardTitle>Closing Daily Report Submit</CardTitle>
             <CardDescription>Fill out the form to submit the daily stock report.</CardDescription>
@@ -327,8 +264,73 @@ export default function VehicleStockPage() {
             </Form>
           </CardContent>
         </Card>
+
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                    <Warehouse className="h-6 w-6" />
+                    <span>Branch Vehicle Stock</span>
+                </CardTitle>
+                 <CardDescription>
+                  View and filter vehicle inventory transactions for all branches.
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div className="flex items-center gap-4 mb-4">
+                    <Select value={filterKey} onValueChange={(value) => setFilterKey(value as "branchCode" | "district")}>
+                        <SelectTrigger className="w-full md:w-[180px]">
+                            <SelectValue placeholder="Filter by..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="branchCode">Branch Code</SelectItem>
+                            <SelectItem value="district">District</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <Input
+                        placeholder={`Filter by ${filterKey === 'branchCode' ? 'Branch Code' : 'District'}...`}
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full"
+                    />
+                </div>
+                <Separator className="mb-4" />
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>S. No.</TableHead>
+                      <TableHead>Branch Code</TableHead>
+                      <TableHead>E. Vehicle</TableHead>
+                      <TableHead className="text-right">Opening Stock</TableHead>
+                      <TableHead className="text-right">Sales</TableHead>
+                      <TableHead className="text-right">Closing Stock</TableHead>
+                      <TableHead>Date</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredStockData.length > 0 ? (
+                      filteredStockData.map((item) => (
+                        <TableRow key={item.sNo}>
+                          <TableCell>{item.sNo}</TableCell>
+                          <TableCell>{item.branchCode}</TableCell>
+                          <TableCell className="font-medium">{item.eVehicle}</TableCell>
+                          <TableCell className="text-right">{item.openingStock}</TableCell>
+                          <TableCell className="text-right">{item.sales}</TableCell>
+                          <TableCell className="text-right">{item.closingStock}</TableCell>
+                          <TableCell>{item.date}</TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={7} className="text-center">
+                          No stock data found for the current filter.
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+            </CardContent>
+        </Card>
       </main>
     </div>
   );
 }
-    
