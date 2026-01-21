@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useRouter } from "next/navigation";
@@ -92,8 +91,9 @@ export default function VehicleStockPage() {
   const { toast } = useToast();
   const [stockData, setStockData] = useState(initialStockData);
   const [currentBranch] = useState(branches[0].branchCode);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filterKey, setFilterKey] = useState<"branchCode" | "district">("branchCode");
+  const [selectedDistrict, setSelectedDistrict] = useState("");
+
+  const districts = [...new Set(branches.map((b) => b.district))];
 
   useEffect(() => {
     try {
@@ -160,18 +160,14 @@ export default function VehicleStockPage() {
     form.reset({ eVehicle: "", openingStock: 0, sales: 0 });
   }
 
-  const branchMap = new Map(branches.map(b => [b.branchCode, b.district]));
-
   const filteredStockData = stockData.filter(item => {
-    if (!searchQuery) return true;
-    if (filterKey === 'branchCode') {
-        return item.branchCode.toLowerCase().includes(searchQuery.toLowerCase());
-    }
-    if (filterKey === 'district') {
-        const district = branchMap.get(item.branchCode) || '';
-        return district.toLowerCase().includes(searchQuery.toLowerCase());
-    }
-    return true;
+    if (!selectedDistrict) return true;
+
+    const branchCodesForDistrict = branches
+        .filter(branch => branch.district === selectedDistrict)
+        .map(branch => branch.branchCode);
+
+    return branchCodesForDistrict.includes(item.branchCode);
   });
 
   return (
@@ -277,21 +273,19 @@ export default function VehicleStockPage() {
             </CardHeader>
             <CardContent>
                 <div className="flex items-center gap-4 mb-4">
-                    <Select value={filterKey} onValueChange={(value) => setFilterKey(value as "branchCode" | "district")}>
-                        <SelectTrigger className="w-full md:w-[180px]">
-                            <SelectValue placeholder="Filter by..." />
+                    <Select value={selectedDistrict} onValueChange={(value) => setSelectedDistrict(value === "all" ? "" : value)}>
+                        <SelectTrigger className="w-full md:w-[280px]">
+                            <SelectValue placeholder="Filter by District..." />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="branchCode">Branch Code</SelectItem>
-                            <SelectItem value="district">District</SelectItem>
+                            <SelectItem value="all">All Districts</SelectItem>
+                            {districts.map((district) => (
+                                <SelectItem key={district} value={district}>
+                                    {district}
+                                </SelectItem>
+                            ))}
                         </SelectContent>
                     </Select>
-                    <Input
-                        placeholder={`Filter by ${filterKey === 'branchCode' ? 'Branch Code' : 'District'}...`}
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full"
-                    />
                 </div>
                 <Separator className="mb-4" />
                 <Table>
