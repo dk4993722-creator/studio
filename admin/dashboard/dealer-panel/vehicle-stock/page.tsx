@@ -103,11 +103,8 @@ export default function VehicleStockPage() {
   const { toast } = useToast();
   const [stockData, setStockData] = useState(initialStockData);
   const [currentBranch] = useState(branches[0].branchCode);
-  const [selectedDistrict, setSelectedDistrict] = useState("");
   const [eVehicleFilter, setEVehicleFilter] = useState("");
   
-  const districts = [...new Set(branches.map((b) => b.district))];
-
   useEffect(() => {
     try {
       const storedStock = localStorage.getItem('yunex-vehicle-stock');
@@ -175,38 +172,10 @@ export default function VehicleStockPage() {
     form.reset({ eVehicle: "", price: 0, openingStock: 0, sales: 0 });
   }
 
-  const handleDelete = (sNo: number) => {
-    const updatedStock = stockData.filter(item => item.sNo !== sNo);
-    setStockData(updatedStock);
-    try {
-      localStorage.setItem('yunex-vehicle-stock', JSON.stringify(updatedStock));
-      toast({
-        title: "Transaction Deleted",
-        description: "The vehicle stock transaction has been removed.",
-      });
-    } catch (error) {
-       console.error("Failed to update localStorage", error);
-       toast({
-        variant: "destructive",
-        title: "Delete Error",
-        description: "Could not delete the stock entry.",
-      });
-    }
-  };
-
-  const filteredCompanyStock = stockData.filter(item => {
+  const myBranchStock = stockData.filter(item => {
+    const branchMatch = item.branchCode === currentBranch;
     const eVehicleMatch = eVehicleFilter ? item.eVehicle.toLowerCase().includes(eVehicleFilter.toLowerCase()) : true;
-    return eVehicleMatch;
-  });
-
-  const filteredBranchStock = stockData.filter(item => {
-    if (!selectedDistrict) return true;
-
-    const branchCodesForDistrict = branches
-        .filter(branch => branch.district === selectedDistrict)
-        .map(branch => branch.branchCode);
-
-    return branchCodesForDistrict.includes(item.branchCode);
+    return branchMatch && eVehicleMatch;
   });
 
   return (
@@ -243,10 +212,10 @@ export default function VehicleStockPage() {
                 <div>
                     <CardTitle className="flex items-center gap-2">
                         <Warehouse className="h-6 w-6" />
-                        <span>Company Vehicle Stock</span>
+                        <span>My Branch Vehicle Stock</span>
                     </CardTitle>
                     <CardDescription>
-                    A log of all vehicle inventory transactions across all branches.
+                    A log of all vehicle inventory transactions for your branch.
                     </CardDescription>
                 </div>
                 <div className="flex w-full md:w-auto items-center gap-2">
@@ -270,12 +239,11 @@ export default function VehicleStockPage() {
                       <TableHead className="text-right">Sales</TableHead>
                       <TableHead className="text-right">Closing Stock</TableHead>
                       <TableHead>Date</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredCompanyStock.length > 0 ? (
-                      filteredCompanyStock.map((item) => (
+                    {myBranchStock.length > 0 ? (
+                      myBranchStock.map((item) => (
                         <TableRow key={item.sNo}>
                           <TableCell>{item.sNo}</TableCell>
                           <TableCell>{item.branchCode}</TableCell>
@@ -285,57 +253,12 @@ export default function VehicleStockPage() {
                           <TableCell className="text-right">{item.sales}</TableCell>
                           <TableCell className="text-right">{item.closingStock}</TableCell>
                           <TableCell>{item.date}</TableCell>
-                          <TableCell className="text-right">
-                            <Dialog>
-                              <DialogTrigger asChild>
-                                <Button variant="ghost" size="icon">
-                                  <Edit className="h-4 w-4" />
-                                </Button>
-                              </DialogTrigger>
-                              <DialogContent>
-                                <DialogHeader>
-                                  <DialogTitle>Edit Transaction #{item.sNo}</DialogTitle>
-                                  <DialogDescription>
-                                    This functionality is for demonstration purposes and is not yet implemented.
-                                  </DialogDescription>
-                                </DialogHeader>
-                                <DialogFooter>
-                                  <DialogClose asChild>
-                                    <Button type="button" variant="secondary">Close</Button>
-                                  </DialogClose>
-                                </DialogFooter>
-                              </DialogContent>
-                            </Dialog>
-                            <Dialog>
-                              <DialogTrigger asChild>
-                                  <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
-                                      <Trash2 className="h-4 w-4" />
-                                  </Button>
-                              </DialogTrigger>
-                               <DialogContent>
-                                <DialogHeader>
-                                  <DialogTitle>Delete Transaction #{item.sNo}?</DialogTitle>
-                                  <DialogDescription>
-                                    This action cannot be undone. Are you sure you want to permanently delete this transaction?
-                                  </DialogDescription>
-                                </DialogHeader>
-                                <DialogFooter>
-                                  <DialogClose asChild>
-                                    <Button variant="secondary">Cancel</Button>
-                                  </DialogClose>
-                                   <DialogClose asChild>
-                                    <Button variant="destructive" onClick={() => handleDelete(item.sNo)}>Delete</Button>
-                                  </DialogClose>
-                                </DialogFooter>
-                              </DialogContent>
-                            </Dialog>
-                          </TableCell>
                         </TableRow>
                       ))
                     ) : (
                       <TableRow>
-                        <TableCell colSpan={9} className="text-center">
-                          No stock data found for the current filter.
+                        <TableCell colSpan={8} className="text-center">
+                          No stock data found for your branch.
                         </TableCell>
                       </TableRow>
                     )}
@@ -347,7 +270,7 @@ export default function VehicleStockPage() {
         <Card>
           <CardHeader>
             <CardTitle>Closing Daily Report Submit</CardTitle>
-            <CardDescription>Fill out the form to submit the daily stock report.</CardDescription>
+            <CardDescription>Fill out the form to submit the daily stock report for your branch ({currentBranch}).</CardDescription>
           </CardHeader>
           <CardContent>
             <Form {...form}>
@@ -411,117 +334,7 @@ export default function VehicleStockPage() {
             </Form>
           </CardContent>
         </Card>
-
-        <Card>
-            <CardHeader>
-                <CardTitle>Branch Vehicle Stock</CardTitle>
-                <CardDescription>Filter vehicle inventory by district.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <div className="flex items-center gap-4 mb-4">
-                    <Select value={selectedDistrict} onValueChange={(value) => setSelectedDistrict(value === "all" ? "" : value)}>
-                        <SelectTrigger className="w-full md:w-[280px]">
-                            <SelectValue placeholder="Filter by District..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="all">All Districts</SelectItem>
-                            {districts.map((district) => (
-                                <SelectItem key={district} value={district}>
-                                    {district}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                </div>
-                <Separator className="mb-4" />
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>S. No.</TableHead>
-                      <TableHead>Branch Code</TableHead>
-                      <TableHead>E. Vehicle</TableHead>
-                      <TableHead className="text-right">Price</TableHead>
-                      <TableHead className="text-right">Opening Stock</TableHead>
-                      <TableHead className="text-right">Sales</TableHead>
-                      <TableHead className="text-right">Closing Stock</TableHead>
-                      <TableHead>Date</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredBranchStock.length > 0 ? (
-                      filteredBranchStock.map((item) => (
-                        <TableRow key={item.sNo}>
-                          <TableCell>{item.sNo}</TableCell>
-                          <TableCell>{item.branchCode}</TableCell>
-                          <TableCell className="font-medium">{item.eVehicle}</TableCell>
-                          <TableCell className="text-right">{item.price ? `₹${item.price.toLocaleString('en-IN')}` : 'N/A'}</TableCell>
-                          <TableCell className="text-right">{item.openingStock}</TableCell>
-                          <TableCell className="text-right">{item.sales}</TableCell>
-                          <TableCell className="text-right">{item.closingStock}</TableCell>
-                          <TableCell>{item.date}</TableCell>
-                          <TableCell className="text-right">
-                             <Dialog>
-                              <DialogTrigger asChild>
-                                <Button variant="ghost" size="icon">
-                                  <Edit className="h-4 w-4" />
-                                </Button>
-                              </DialogTrigger>
-                              <DialogContent>
-                                <DialogHeader>
-                                  <DialogTitle>Edit Transaction #{item.sNo}</DialogTitle>
-                                  <DialogDescription>
-                                    This functionality is for demonstration purposes and is not yet implemented.
-                                  </DialogDescription>
-                                </DialogHeader>
-                                <DialogFooter>
-                                  <DialogClose asChild>
-                                    <Button type="button" variant="secondary">Close</Button>
-                                  </DialogClose>
-                                </DialogFooter>
-                              </DialogContent>
-                            </Dialog>
-                            <Dialog>
-                              <DialogTrigger asChild>
-                                  <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
-                                      <Trash2 className="h-4 w-4" />
-                                  </Button>
-                              </DialogTrigger>
-                               <DialogContent>
-                                <DialogHeader>
-                                  <DialogTitle>Delete Transaction #{item.sNo}?</DialogTitle>
-                                  <DialogDescription>
-                                    This action cannot be undone. Are you sure you want to permanently delete this transaction?
-                                  </DialogDescription>
-                                </DialogHeader>
-                                <DialogFooter>
-                                  <DialogClose asChild>
-                                    <Button variant="secondary">Cancel</Button>
-                                  </DialogClose>
-                                   <DialogClose asChild>
-                                    <Button variant="destructive" onClick={() => handleDelete(item.sNo)}>Delete</Button>
-                                  </DialogClose>
-                                </DialogFooter>
-                              </DialogContent>
-                            </Dialog>
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    ) : (
-                      <TableRow>
-                        <TableCell colSpan={9} className="text-center">
-                          No stock data found for the current filter.
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-            </CardContent>
-        </Card>
-
       </main>
     </div>
   );
 }
-
-    
