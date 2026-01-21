@@ -42,34 +42,37 @@ import {
 import { Input } from "@/components/ui/input";
 
 const initialBranches = [
-  { id: '01', district: 'Deoghar', branchCode: 'Yunex202601', pin: '123456' },
-  { id: '02', district: 'Dumka', branchCode: 'Yunex202602', pin: '234567' },
-  { id: '03', district: 'Bokaro', branchCode: 'Yunex202603', pin: '345678' },
-  { id: '04', district: 'Giridih', branchCode: 'Yunex202604', pin: '456789' },
-  { id: '05', district: 'Koderma', branchCode: 'Yunex202605', pin: '567890' },
-  { id: '06', district: 'Godda', branchCode: 'Yunex202606', pin: '678901' },
-  { id: '07', district: 'Chatra', branchCode: 'Yunex202607', pin: '789012' },
-  { id: '08', district: 'Dhanbad', branchCode: 'Yunex202608', pin: '890123' },
-  { id: '09', district: 'Garhwa', branchCode: 'Yunex202609', pin: '901234' },
-  { id: '10', district: 'East-Singhbhum', branchCode: 'Yunex202610', pin: '012345' },
-  { id: '11', district: 'Jamtara', branchCode: 'Yunex202611', pin: '112233' },
-  { id: '12', district: 'Saraikela-Kharsawan', branchCode: 'Yunex202612', pin: '223344' },
-  { id: '13', district: 'Ranchi', branchCode: 'Yunex202613', pin: '334455' },
-  { id: '14', district: 'Pakur', branchCode: 'Yunex202614', pin: '445566' },
-  { id: '15', district: 'Latehar', branchCode: 'Yunex202615', pin: '556677' },
-  { id: '16', district: 'Hazaribagh', branchCode: 'Yunex202616', pin: '667788' },
-  { id: '17', district: 'Lohardaga', branchCode: 'Yunex202617', pin: '778899' },
-  { id: '18', district: 'Palamu', branchCode: 'Yunex202618', pin: '889900' },
-  { id: '19', district: 'Ramghar', branchCode: 'Yunex202619', pin: '990011' },
-  { id: '20', district: 'Simdega', branchCode: 'Yunex202620', pin: '001122' },
-  { id: '21', district: 'West-Singhbhum', branchCode: 'Yunex202621', pin: '112233' },
-  { id: '22', district: 'Sahebganj', branchCode: 'Yunex202622', pin: '223344' },
-  { id: '23', district: 'Gumla', branchCode: 'Yunex202623', pin: '334455' },
-  { id: '24', district: 'Khunti', branchCode: 'Yunex202624', pin: '445566' },
+  { id: '01', district: 'Deoghar', branchName: 'Deoghar Main', address: '123 Test St, Deoghar', gstNo: '20AAAAA0000A1Z5', branchCode: 'Yunex202601', pin: '123456' },
+  { id: '02', district: 'Dumka', branchName: 'Dumka Central', address: '456 Sample Ave, Dumka', gstNo: '20BBBBB1111B1Z4', branchCode: 'Yunex202602', pin: '234567' },
+  { id: '03', district: 'Bokaro', branchName: 'Bokaro Steel City', address: '789 Demo Rd, Bokaro', gstNo: '20CCCCC2222C1Z3', branchCode: 'Yunex202603', pin: '345678' },
+  { id: '04', district: 'Giridih', branchName: 'Giridih Town', address: '101 Example Blvd, Giridih', gstNo: '20DDDDD3333D1Z2', branchCode: 'Yunex202604', pin: '456789' },
+  { id: '05', district: 'Koderma', branchName: 'Koderma Station', address: '212 Fake St, Koderma', gstNo: '20EEEEE4444E1Z1', branchCode: 'Yunex202605', pin: '567890' },
+  { id: '06', district: 'Godda', branchName: 'Godda Market', address: '333 Placeholder Ln, Godda', gstNo: '', branchCode: 'Yunex202606', pin: '678901' },
+  { id: '07', district: 'Chatra', branchName: 'Chatra Chowk', address: '444 Dev Dr, Chatra', gstNo: '', branchCode: 'Yunex202607', pin: '789012' },
+  { id: '08', district: 'Dhanbad', branchName: 'Dhanbad City', address: '555 Code Cres, Dhanbad', gstNo: '20HHHHH8888H1Z8', branchCode: 'Yunex202608', pin: '890123' },
+  { id: '09', district: 'Garhwa', branchName: 'Garhwa Road', address: '666 Script St, Garhwa', gstNo: '', branchCode: 'Yunex202609', pin: '901234' },
+  { id: '10', district: 'East-Singhbhum', branchName: 'Jamshedpur', address: '777 HTML Hwy, East-Singhbhum', gstNo: '20JJJJJ0000J1Z6', branchCode: 'Yunex202610', pin: '012345' },
+  { id: '11', district: 'Jamtara', branchName: 'Jamtara Cyber', address: '888 CSS Ct, Jamtara', gstNo: '', branchCode: 'Yunex202611', pin: '112233' },
+  { id: '12', district: 'Saraikela-Kharsawan', branchName: 'Saraikela Town', address: '999 JS St, Saraikela', gstNo: '', branchCode: 'Yunex202612', pin: '223344' },
+  { id: '13', district: 'Ranchi', branchName: 'Ranchi Capital', address: '121 React Rd, Ranchi', gstNo: '20MMMMM3333M1Z3', branchCode: 'Yunex202613', pin: '334455' },
+  { id: '14', district: 'Pakur', branchName: 'Pakur Border', address: '232 Next Ave, Pakur', gstNo: '', branchCode: 'Yunex202614', pin: '445566' },
+  { id: '15', district: 'Latehar', branchName: 'Latehar Hills', address: '343 TS St, Latehar', gstNo: '', branchCode: 'Yunex202615', pin: '556677' },
+  { id: '16', district: 'Hazaribagh', branchName: 'Hazaribagh National Park', address: '454 Node St, Hazaribagh', gstNo: '20QQQQQ7777Q1Z9', branchCode: 'Yunex202616', pin: '667788' },
+  { id: '17', district: 'Lohardaga', branchName: 'Lohardaga Mines', address: '565 API Ave, Lohardaga', gstNo: '', branchCode: 'Yunex202617', pin: '778899' },
+  { id: '18', district: 'Palamu', branchName: 'Palamu Fort', address: '676 JSON Jct, Palamu', gstNo: '', branchCode: 'Yunex202618', pin: '889900' },
+  { id: '19', district: 'Ramghar', branchName: 'Ramghar Cantt', address: '787 XML Xing, Ramghar', gstNo: '', branchCode: 'Yunex202619', pin: '990011' },
+  { id: '20', district: 'Simdega', branchName: 'Simdega Hockey', address: '898 Component Ct, Simdega', gstNo: '', branchCode: 'Yunex202620', pin: '001122' },
+  { id: '21', district: 'West-Singhbhum', branchName: 'Chaibasa', address: '909 Prop Pl, West-Singhbhum', gstNo: '', branchCode: 'Yunex202621', pin: '112233' },
+  { id: '22', district: 'Sahebganj', branchName: 'Sahebganj Ganga', address: '111 State St, Sahebganj', gstNo: '', branchCode: 'Yunex202622', pin: '223344' },
+  { id: '23', district: 'Gumla', branchName: 'Gumla Hills', address: '222 Hook Hbr, Gumla', gstNo: '', branchCode: 'Yunex202623', pin: '334455' },
+  { id: '24', district: 'Khunti', branchName: 'Khunti Birsa', address: '333 Effect Espl, Khunti', gstNo: '', branchCode: 'Yunex202624', pin: '445566' },
 ];
 
 const branchSchema = z.object({
   district: z.string().min(1, "District is required."),
+  branchName: z.string().min(1, "Branch name is required."),
+  address: z.string().min(1, "Address is required."),
+  gstNo: z.string().optional(),
   branchCode: z.string().min(1, "Branch code is required."),
   pin: z.string().length(6, "PIN must be 6 digits."),
 });
@@ -84,6 +87,9 @@ export default function BranchDetailsPage() {
     resolver: zodResolver(branchSchema),
     defaultValues: {
       district: "",
+      branchName: "",
+      address: "",
+      gstNo: "",
       branchCode: "",
       pin: "",
     },
@@ -95,7 +101,7 @@ export default function BranchDetailsPage() {
     setBranches(prev => [...prev, newBranch]);
     toast({
       title: "Branch Added",
-      description: `Branch "${values.district}" has been successfully added.`,
+      description: `Branch "${values.branchName}" has been successfully added.`,
     });
     form.reset();
     setIsAddDialogOpen(false);
@@ -146,7 +152,7 @@ export default function BranchDetailsPage() {
                           Add New Branch
                        </Button>
                     </DialogTrigger>
-                    <DialogContent>
+                    <DialogContent className="sm:max-w-md">
                         <DialogHeader>
                         <DialogTitle>Add New Branch</DialogTitle>
                         <DialogDescription>
@@ -154,15 +160,54 @@ export default function BranchDetailsPage() {
                         </DialogDescription>
                         </DialogHeader>
                         <Form {...form}>
-                          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                          <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <FormField
                               control={form.control}
                               name="district"
                               render={({ field }) => (
                                 <FormItem>
-                                  <FormLabel>District (Branch)</FormLabel>
+                                  <FormLabel>District</FormLabel>
                                   <FormControl>
-                                    <Input placeholder="e.g., New District" {...field} />
+                                    <Input placeholder="e.g., Deoghar" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="branchName"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Branch Name</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="e.g., Deoghar Main" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="address"
+                              render={({ field }) => (
+                                <FormItem className="md:col-span-2">
+                                  <FormLabel>Address</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="e.g., 123 Main St, Deoghar" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                             <FormField
+                              control={form.control}
+                              name="gstNo"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>GST No. (Optional)</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="e.g., 20AAAAA0000A1Z5" {...field} />
                                   </FormControl>
                                   <FormMessage />
                                 </FormItem>
@@ -194,7 +239,7 @@ export default function BranchDetailsPage() {
                                 </FormItem>
                               )}
                             />
-                            <DialogFooter>
+                            <DialogFooter className="md:col-span-2">
                               <Button type="button" variant="secondary" onClick={() => setIsAddDialogOpen(false)}>
                                 Cancel
                               </Button>
@@ -210,8 +255,11 @@ export default function BranchDetailsPage() {
                   <TableHeader>
                     <TableRow>
                       <TableHead className="w-[80px]">S. No.</TableHead>
-                      <TableHead>District (Branch)</TableHead>
+                      <TableHead>District</TableHead>
+                      <TableHead>Branch Name</TableHead>
                       <TableHead>Branch Code</TableHead>
+                      <TableHead>Address</TableHead>
+                      <TableHead>GST. No.</TableHead>
                       <TableHead>6-Digit Pin</TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
@@ -220,8 +268,11 @@ export default function BranchDetailsPage() {
                     {branches.map(branch => (
                       <TableRow key={branch.id}>
                         <TableCell>{branch.id}</TableCell>
-                        <TableCell className="font-medium">{branch.district}</TableCell>
+                        <TableCell>{branch.district}</TableCell>
+                        <TableCell className="font-medium">{branch.branchName}</TableCell>
                         <TableCell>{branch.branchCode}</TableCell>
+                        <TableCell>{branch.address}</TableCell>
+                        <TableCell>{branch.gstNo}</TableCell>
                         <TableCell>{branch.pin}</TableCell>
                         <TableCell className="text-right">
                           <Dialog>
@@ -232,7 +283,7 @@ export default function BranchDetailsPage() {
                             </DialogTrigger>
                             <DialogContent>
                               <DialogHeader>
-                                <DialogTitle>Edit Branch: {branch.district}</DialogTitle>
+                                <DialogTitle>Edit Branch: {branch.branchName}</DialogTitle>
                                 <DialogDescription>
                                   This functionality is for demonstration purposes and is not yet implemented.
                                 </DialogDescription>
@@ -252,7 +303,7 @@ export default function BranchDetailsPage() {
                             </DialogTrigger>
                              <DialogContent>
                               <DialogHeader>
-                                <DialogTitle>Delete Branch: {branch.district}?</DialogTitle>
+                                <DialogTitle>Delete Branch: {branch.branchName}?</DialogTitle>
                                 <DialogDescription>
                                   This action cannot be undone. Are you sure you want to permanently delete this branch?
                                 </DialogDescription>
