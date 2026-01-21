@@ -91,6 +91,8 @@ export default function VehicleStockPage() {
   const { toast } = useToast();
   const [stockData, setStockData] = useState(initialStockData);
   const [currentBranch, setCurrentBranch] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterKey, setFilterKey] = useState<"branchCode" | "district">("branchCode");
 
   useEffect(() => {
     try {
@@ -166,6 +168,20 @@ export default function VehicleStockPage() {
     form.reset({ eVehicle: "", openingStock: 0, sales: 0 });
   }
 
+  const branchMap = new Map(branches.map(b => [b.branchCode, b.district]));
+
+  const filteredStockData = stockData.filter(item => {
+    if (!searchQuery) return true;
+    if (filterKey === 'branchCode') {
+        return item.branchCode.toLowerCase().includes(searchQuery.toLowerCase());
+    }
+    if (filterKey === 'district') {
+        const district = branchMap.get(item.branchCode) || '';
+        return district.toLowerCase().includes(searchQuery.toLowerCase());
+    }
+    return true;
+  });
+
   return (
     <div className="flex min-h-screen w-full flex-col relative bg-background">
       <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b px-4 md:px-8 bg-[#326cd1]">
@@ -216,44 +232,6 @@ export default function VehicleStockPage() {
                         ))}
                     </SelectContent>
                 </Select>
-            </CardContent>
-        </Card>
-
-        <Card>
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                    <Warehouse className="h-6 w-6" />
-                    <span>Company Vehicle Stock</span>
-                </CardTitle>
-                 <CardDescription>
-                  A log of all vehicle inventory transactions across all branches.
-                </CardDescription>
-            </CardHeader>
-            <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>S. No.</TableHead>
-                      <TableHead>E. Vehicle</TableHead>
-                      <TableHead className="text-right">Opening Stock</TableHead>
-                      <TableHead className="text-right">Sales</TableHead>
-                      <TableHead className="text-right">Closing Stock</TableHead>
-                      <TableHead>Date</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {stockData.map((item) => (
-                      <TableRow key={item.sNo}>
-                        <TableCell>{item.sNo}</TableCell>
-                        <TableCell className="font-medium">{item.eVehicle}</TableCell>
-                        <TableCell className="text-right">{item.openingStock}</TableCell>
-                        <TableCell className="text-right">{item.sales}</TableCell>
-                        <TableCell className="text-right">{item.closingStock}</TableCell>
-                        <TableCell>{item.date}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
             </CardContent>
         </Card>
 
@@ -312,6 +290,70 @@ export default function VehicleStockPage() {
               </form>
             </Form>
           </CardContent>
+        </Card>
+        
+        <Card>
+            <CardHeader>
+                <CardTitle>Find Branch Stock</CardTitle>
+                <CardDescription>Filter vehicle stock by District or Branch Code.</CardDescription>
+            </CardHeader>
+            <CardContent className="flex items-center gap-4">
+                 <Select value={filterKey} onValueChange={(value) => setFilterKey(value as "branchCode" | "district")}>
+                    <SelectTrigger className="w-full md:w-[180px]">
+                        <SelectValue placeholder="Filter by..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="branchCode">Branch Code</SelectItem>
+                        <SelectItem value="district">District</SelectItem>
+                    </SelectContent>
+                </Select>
+                <Input
+                    placeholder={`Filter by ${filterKey === 'branchCode' ? 'Branch Code' : 'District'}...`}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full"
+                />
+            </CardContent>
+        </Card>
+
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                    <Warehouse className="h-6 w-6" />
+                    <span>Company Vehicle Stock</span>
+                </CardTitle>
+                 <CardDescription>
+                  A log of all vehicle inventory transactions across all branches.
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>S. No.</TableHead>
+                      <TableHead>Branch Code</TableHead>
+                      <TableHead>E. Vehicle</TableHead>
+                      <TableHead className="text-right">Opening Stock</TableHead>
+                      <TableHead className="text-right">Sales</TableHead>
+                      <TableHead className="text-right">Closing Stock</TableHead>
+                      <TableHead>Date</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredStockData.map((item) => (
+                      <TableRow key={item.sNo}>
+                        <TableCell>{item.sNo}</TableCell>
+                        <TableCell>{item.branchCode}</TableCell>
+                        <TableCell className="font-medium">{item.eVehicle}</TableCell>
+                        <TableCell className="text-right">{item.openingStock}</TableCell>
+                        <TableCell className="text-right">{item.sales}</TableCell>
+                        <TableCell className="text-right">{item.closingStock}</TableCell>
+                        <TableCell>{item.date}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+            </CardContent>
         </Card>
 
       </main>
