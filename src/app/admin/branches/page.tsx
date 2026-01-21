@@ -107,6 +107,13 @@ export default function BranchDetailsPage() {
   });
 
   function onSubmit(values: z.infer<typeof branchSchema>) {
+    if (branches.some(branch => branch.branchCode.toLowerCase() === values.branchCode.toLowerCase())) {
+      form.setError("branchCode", {
+        type: "manual",
+        message: "Branch code must be unique."
+      });
+      return;
+    }
     const newId = (branches.length + 1).toString().padStart(2, '0');
     const newBranch = { id: newId, ...values };
     setBranches(prev => [...prev, newBranch]);
