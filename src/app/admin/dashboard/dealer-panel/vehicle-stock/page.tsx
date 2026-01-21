@@ -91,10 +91,10 @@ export default function VehicleStockPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [stockData, setStockData] = useState(initialStockData);
+  const [currentBranch] = useState(branches[0].branchCode);
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [eVehicleFilter, setEVehicleFilter] = useState("");
-  const [dateFilter, setDateFilter] = useState("");
-
+  
   const districts = [...new Set(branches.map((b) => b.district))];
 
   useEffect(() => {
@@ -133,7 +133,7 @@ export default function VehicleStockPage() {
   function onSubmit(values: z.infer<typeof reportSchema>) {
     const newEntry = {
       sNo: stockData.length > 0 ? Math.max(...stockData.map(item => item.sNo)) + 1 : 1,
-      branchCode: branches[0].branchCode, // Default to first branch for now
+      branchCode: currentBranch,
       eVehicle: values.eVehicle,
       openingStock: values.openingStock,
       sales: values.sales,
@@ -164,8 +164,7 @@ export default function VehicleStockPage() {
 
   const filteredCompanyStock = stockData.filter(item => {
     const eVehicleMatch = eVehicleFilter ? item.eVehicle.toLowerCase().includes(eVehicleFilter.toLowerCase()) : true;
-    const dateMatch = dateFilter ? item.date === dateFilter : true;
-    return eVehicleMatch && dateMatch;
+    return eVehicleMatch;
   });
 
   const filteredBranchStock = stockData.filter(item => {
@@ -228,12 +227,6 @@ export default function VehicleStockPage() {
                         placeholder="Filter by E. Vehicle..."
                         value={eVehicleFilter}
                         onChange={(e) => setEVehicleFilter(e.target.value)}
-                        className="max-w-sm"
-                    />
-                    <Input 
-                        type="date"
-                        value={dateFilter}
-                        onChange={(e) => setDateFilter(e.target.value)}
                         className="max-w-sm"
                     />
                 </div>
@@ -392,5 +385,3 @@ export default function VehicleStockPage() {
     </div>
   );
 }
-
-    
