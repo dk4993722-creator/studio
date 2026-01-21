@@ -149,6 +149,8 @@ export default function SparePartsStockPage() {
   const [currentBranch, setCurrentBranch] = useState(branches[0].branchCode);
   const [sparePartInvoices, setSparePartInvoices] = useState<SparePartInvoice[]>([]);
   const [selectedPart, setSelectedPart] = useState<{ price: number; partCode: string; hsnCode: string; } | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterKey, setFilterKey] = useState<"branchCode" | "district">("branchCode");
   
   const addStockForm = useForm<z.infer<typeof addStockSchema>>({
     resolver: zodResolver(addStockSchema),
@@ -576,6 +578,20 @@ export default function SparePartsStockPage() {
   };
 
   const availableParts = [...new Set(stockData.filter(item => item.branchCode === currentBranch && item.closingStock > 0).map(item => item.sparePart))];
+  
+  const branchMap = new Map(branches.map(b => [b.branchCode, b.district]));
+
+  const filteredStockData = stockData.filter(item => {
+    if (!searchQuery) return true;
+    if (filterKey === 'branchCode') {
+        return item.branchCode.toLowerCase().includes(searchQuery.toLowerCase());
+    }
+    if (filterKey === 'district') {
+        const district = branchMap.get(item.branchCode) || '';
+        return district.toLowerCase().includes(searchQuery.toLowerCase());
+    }
+    return true;
+  });
 
   return (
     <div className="flex min-h-screen w-full flex-col relative bg-background">
@@ -760,6 +776,30 @@ export default function SparePartsStockPage() {
 
         <Card>
             <CardHeader>
+                <CardTitle>Find Branch Stock</CardTitle>
+                <CardDescription>Filter spare parts stock by District or Branch Code.</CardDescription>
+            </CardHeader>
+            <CardContent className="flex items-center gap-4">
+                 <Select value={filterKey} onValueChange={(value) => setFilterKey(value as "branchCode" | "district")}>
+                    <SelectTrigger className="w-full md:w-[180px]">
+                        <SelectValue placeholder="Filter by..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="branchCode">Branch Code</SelectItem>
+                        <SelectItem value="district">District</SelectItem>
+                    </SelectContent>
+                </Select>
+                <Input
+                    placeholder={`Filter by ${filterKey === 'branchCode' ? 'Branch Code' : 'District'}...`}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full"
+                />
+            </CardContent>
+        </Card>
+
+        <Card>
+            <CardHeader>
                 <CardTitle>Branch Spare Parts Details</CardTitle>
                 <CardDescription>View and edit spare parts stock transactions for all branches.</CardDescription>
             </CardHeader>
@@ -779,7 +819,7 @@ export default function SparePartsStockPage() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {stockData.map((item) => (
+                        {filteredStockData.map((item) => (
                         <TableRow key={item.sNo}>
                             <TableCell>{item.sNo}</TableCell>
                             <TableCell>{item.branchCode}</TableCell>
