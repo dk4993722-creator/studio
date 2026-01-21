@@ -12,7 +12,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ArrowLeft, LogOut, Warehouse } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogClose,
+} from "@/components/ui/dialog";
+import { ArrowLeft, LogOut, Warehouse, Edit, Trash2 } from "lucide-react";
 import { YunexLogo } from "@/components/yunex-logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import placeholderImages from "@/lib/placeholder-images.json";
@@ -165,6 +175,25 @@ export default function VehicleStockPage() {
     form.reset({ eVehicle: "", price: 0, openingStock: 0, sales: 0 });
   }
 
+  const handleDelete = (sNo: number) => {
+    const updatedStock = stockData.filter(item => item.sNo !== sNo);
+    setStockData(updatedStock);
+    try {
+      localStorage.setItem('yunex-vehicle-stock', JSON.stringify(updatedStock));
+      toast({
+        title: "Transaction Deleted",
+        description: "The vehicle stock transaction has been removed.",
+      });
+    } catch (error) {
+       console.error("Failed to update localStorage", error);
+       toast({
+        variant: "destructive",
+        title: "Delete Error",
+        description: "Could not delete the stock entry.",
+      });
+    }
+  };
+
   const filteredCompanyStock = stockData.filter(item => {
     const eVehicleMatch = eVehicleFilter ? item.eVehicle.toLowerCase().includes(eVehicleFilter.toLowerCase()) : true;
     return eVehicleMatch;
@@ -241,6 +270,7 @@ export default function VehicleStockPage() {
                       <TableHead className="text-right">Sales</TableHead>
                       <TableHead className="text-right">Closing Stock</TableHead>
                       <TableHead>Date</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -255,11 +285,56 @@ export default function VehicleStockPage() {
                           <TableCell className="text-right">{item.sales}</TableCell>
                           <TableCell className="text-right">{item.closingStock}</TableCell>
                           <TableCell>{item.date}</TableCell>
+                          <TableCell className="text-right">
+                            <Dialog>
+                              <DialogTrigger asChild>
+                                <Button variant="ghost" size="icon">
+                                  <Edit className="h-4 w-4" />
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent>
+                                <DialogHeader>
+                                  <DialogTitle>Edit Transaction #{item.sNo}</DialogTitle>
+                                  <DialogDescription>
+                                    This functionality is for demonstration purposes and is not yet implemented.
+                                  </DialogDescription>
+                                </DialogHeader>
+                                <DialogFooter>
+                                  <DialogClose asChild>
+                                    <Button type="button" variant="secondary">Close</Button>
+                                  </DialogClose>
+                                </DialogFooter>
+                              </DialogContent>
+                            </Dialog>
+                            <Dialog>
+                              <DialogTrigger asChild>
+                                  <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
+                                      <Trash2 className="h-4 w-4" />
+                                  </Button>
+                              </DialogTrigger>
+                               <DialogContent>
+                                <DialogHeader>
+                                  <DialogTitle>Delete Transaction #{item.sNo}?</DialogTitle>
+                                  <DialogDescription>
+                                    This action cannot be undone. Are you sure you want to permanently delete this transaction?
+                                  </DialogDescription>
+                                </DialogHeader>
+                                <DialogFooter>
+                                  <DialogClose asChild>
+                                    <Button variant="secondary">Cancel</Button>
+                                  </DialogClose>
+                                   <DialogClose asChild>
+                                    <Button variant="destructive" onClick={() => handleDelete(item.sNo)}>Delete</Button>
+                                  </DialogClose>
+                                </DialogFooter>
+                              </DialogContent>
+                            </Dialog>
+                          </TableCell>
                         </TableRow>
                       ))
                     ) : (
                       <TableRow>
-                        <TableCell colSpan={8} className="text-center">
+                        <TableCell colSpan={9} className="text-center">
                           No stock data found for the current filter.
                         </TableCell>
                       </TableRow>
@@ -363,12 +438,14 @@ export default function VehicleStockPage() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>S. No.</TableHead>
+                      <TableHead>Branch Code</TableHead>
                       <TableHead>E. Vehicle</TableHead>
                       <TableHead className="text-right">Price</TableHead>
                       <TableHead className="text-right">Opening Stock</TableHead>
                       <TableHead className="text-right">Sales</TableHead>
                       <TableHead className="text-right">Closing Stock</TableHead>
                       <TableHead>Date</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -376,17 +453,63 @@ export default function VehicleStockPage() {
                       filteredBranchStock.map((item) => (
                         <TableRow key={item.sNo}>
                           <TableCell>{item.sNo}</TableCell>
+                          <TableCell>{item.branchCode}</TableCell>
                           <TableCell className="font-medium">{item.eVehicle}</TableCell>
                           <TableCell className="text-right">{item.price ? `₹${item.price.toLocaleString('en-IN')}` : 'N/A'}</TableCell>
                           <TableCell className="text-right">{item.openingStock}</TableCell>
                           <TableCell className="text-right">{item.sales}</TableCell>
                           <TableCell className="text-right">{item.closingStock}</TableCell>
                           <TableCell>{item.date}</TableCell>
+                          <TableCell className="text-right">
+                             <Dialog>
+                              <DialogTrigger asChild>
+                                <Button variant="ghost" size="icon">
+                                  <Edit className="h-4 w-4" />
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent>
+                                <DialogHeader>
+                                  <DialogTitle>Edit Transaction #{item.sNo}</DialogTitle>
+                                  <DialogDescription>
+                                    This functionality is for demonstration purposes and is not yet implemented.
+                                  </DialogDescription>
+                                </DialogHeader>
+                                <DialogFooter>
+                                  <DialogClose asChild>
+                                    <Button type="button" variant="secondary">Close</Button>
+                                  </DialogClose>
+                                </DialogFooter>
+                              </DialogContent>
+                            </Dialog>
+                            <Dialog>
+                              <DialogTrigger asChild>
+                                  <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
+                                      <Trash2 className="h-4 w-4" />
+                                  </Button>
+                              </DialogTrigger>
+                               <DialogContent>
+                                <DialogHeader>
+                                  <DialogTitle>Delete Transaction #{item.sNo}?</DialogTitle>
+                                  <DialogDescription>
+                                    This action cannot be undone. Are you sure you want to permanently delete this transaction?
+                                  </DialogDescription>
+                                </DialogHeader>
+                                <DialogFooter>
+                                  <DialogClose asChild>
+                                    <Button variant="secondary">Cancel</Button>
+                                  </DialogClose>
+                                   <DialogClose asChild>
+                                    <Button variant="destructive" onClick={() => handleDelete(item.sNo)}>Delete</Button>
+                                  </DialogClose>
+                                </DialogFooter>
+                              </DialogContent>
+                            </Dialog>
+                          </TableCell>
                         </TableRow>
                       ))
                     ) : (
                       <TableRow>
-                        <TableCell colSpan={7} className="text-center">
+                        <TableCell colSpan={9} className="text-center">
                           No stock data found for the current filter.
                         </TableCell>
                       </TableRow>
@@ -400,3 +523,5 @@ export default function VehicleStockPage() {
     </div>
   );
 }
+
+    
