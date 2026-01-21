@@ -243,7 +243,6 @@ export default function VehicleStockPage() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>S. No.</TableHead>
-                      <TableHead>Branch Code</TableHead>
                       <TableHead>E. Vehicle</TableHead>
                       <TableHead className="text-right">Opening Stock</TableHead>
                       <TableHead className="text-right">Sales</TableHead>
@@ -256,7 +255,6 @@ export default function VehicleStockPage() {
                       filteredCompanyStock.map((item) => (
                         <TableRow key={item.sNo}>
                           <TableCell>{item.sNo}</TableCell>
-                          <TableCell>{item.branchCode}</TableCell>
                           <TableCell className="font-medium">{item.eVehicle}</TableCell>
                           <TableCell className="text-right">{item.openingStock}</TableCell>
                           <TableCell className="text-right">{item.sales}</TableCell>
@@ -266,7 +264,7 @@ export default function VehicleStockPage() {
                       ))
                     ) : (
                       <TableRow>
-                        <TableCell colSpan={7} className="text-center">
+                        <TableCell colSpan={6} className="text-center">
                           No stock data found for the current filter.
                         </TableCell>
                       </TableRow>
@@ -396,5 +394,3 @@ export default function VehicleStockPage() {
     </div>
   );
 }
-
-    
