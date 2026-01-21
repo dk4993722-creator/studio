@@ -136,7 +136,7 @@ export default function SparePartsStockPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [stockData, setStockData] = useState<StockItem[]>(initialStockData);
-  const [currentBranch, setCurrentBranch] = useState("");
+  const [currentBranch, setCurrentBranch] = useState(branches[0].branchCode);
   const [sparePartInvoices, setSparePartInvoices] = useState<SparePartInvoice[]>([]);
   const [selectedPart, setSelectedPart] = useState<{ price: number; partCode: string; hsnCode: string; } | null>(null);
   
@@ -574,25 +574,6 @@ export default function SparePartsStockPage() {
           </Button>
           <h2 className="text-3xl font-bold tracking-tight font-headline">Spare Parts Stock</h2>
         </div>
-
-        <Card>
-            <CardHeader>
-                <CardTitle>Select Branch</CardTitle>
-                <CardDescription>Choose a branch to manage its spare parts stock.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <Select onValueChange={setCurrentBranch} value={currentBranch}>
-                    <SelectTrigger className="w-full md:w-1/3">
-                        <SelectValue placeholder="Select a branch" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {branches.map(branch => (
-                            <SelectItem key={branch.id} value={branch.branchCode}>{branch.district}</SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-            </CardContent>
-        </Card>
 
         <Card>
             <CardHeader className="flex-row items-center justify-between">
