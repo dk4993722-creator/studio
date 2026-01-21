@@ -11,7 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ArrowLeft, Phone, LogOut, TrendingUp, ShoppingCart, ClipboardList, BadgeCheck } from "lucide-react";
+import { ArrowLeft, Phone, LogOut, TrendingUp, ShoppingCart, ClipboardList, BadgeCheck, Warehouse } from "lucide-react";
 import { YunexLogo } from "@/components/yunex-logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import placeholderImages from "@/lib/placeholder-images.json";
@@ -58,7 +58,8 @@ export default function DealerPanelPage() {
   const dealerFeatures = [
     { title: "Sales Panel", icon: <TrendingUp className="h-10 w-10 text-primary" />, onClick: () => router.push("/dashboard/dealer-panel/sales"), description: "View sales data and reports." },
     { title: "Purchase Panel", icon: <ShoppingCart className="h-10 w-10 text-primary" />, onClick: () => router.push("/dashboard/dealer-panel/purchase"), description: "Manage purchases and orders." },
-    { title: "Account Section", icon: <ClipboardList className="h-10 w-10 text-primary" />, onClick: () => router.push("/dashboard/dealer-panel/accounts"), description: "Manage account details." }
+    { title: "Account Section", icon: <ClipboardList className="h-10 w-10 text-primary" />, onClick: () => router.push("/dashboard/dealer-panel/accounts"), description: "Manage account details." },
+    { title: "Vehicle Stock", icon: <Warehouse className="h-10 w-10 text-primary" />, onClick: () => router.push("/dashboard/dealer-panel/vehicle-stock"), description: "Manage vehicle inventory." },
   ];
 
   return (
@@ -138,7 +139,7 @@ export default function DealerPanelPage() {
             </CardContent>
         </Card>
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {dealerFeatures.map(feature => (
             <Card key={feature.title} onClick={feature.onClick} className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
               <CardHeader className="flex flex-col items-center justify-center text-center p-6 flex-grow">
