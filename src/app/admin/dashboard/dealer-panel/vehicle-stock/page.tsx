@@ -272,6 +272,63 @@ export default function VehicleStockPage() {
                 </Table>
             </CardContent>
         </Card>
+        
+        <Card>
+          <CardHeader>
+            <CardTitle>Closing Daily Report Submit</CardTitle>
+            <CardDescription>Fill out the form to submit the daily stock report.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 items-end">
+                    <FormField
+                      control={form.control}
+                      name="eVehicle"
+                      render={({ field }) => (
+                        <FormItem className="lg:col-span-1">
+                          <FormLabel>E. Vehicle</FormLabel>
+                          <FormControl><Input {...field} /></FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="openingStock"
+                      render={({ field }) => (
+                        <FormItem className="lg:col-span-1">
+                          <FormLabel>Opening Stock</FormLabel>
+                          <FormControl><Input type="number" {...field} /></FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                     <FormField
+                      control={form.control}
+                      name="sales"
+                      render={({ field }) => (
+                        <FormItem className="lg:col-span-1">
+                          <FormLabel>Sales</FormLabel>
+                          <FormControl><Input type="number" {...field} /></FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <div className="lg:col-span-1">
+                        <FormLabel>Closing</FormLabel>
+                        <Input value={closingStock < 0 ? 0 : closingStock} disabled />
+                    </div>
+                    <div className="lg:col-span-1">
+                        <FormLabel>Date</FormLabel>
+                        <Input value={currentDate} disabled />
+                    </div>
+                </div>
+                 <Button type="submit" className="w-full md:w-auto">Submit Report</Button>
+              </form>
+            </Form>
+          </CardContent>
+        </Card>
 
         <Card>
             <CardHeader>
@@ -330,63 +387,6 @@ export default function VehicleStockPage() {
                   </TableBody>
                 </Table>
             </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader>
-            <CardTitle>Closing Daily Report Submit</CardTitle>
-            <CardDescription>Fill out the form to submit the daily stock report.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 items-end">
-                    <FormField
-                      control={form.control}
-                      name="eVehicle"
-                      render={({ field }) => (
-                        <FormItem className="lg:col-span-1">
-                          <FormLabel>E. Vehicle</FormLabel>
-                          <FormControl><Input {...field} /></FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="openingStock"
-                      render={({ field }) => (
-                        <FormItem className="lg:col-span-1">
-                          <FormLabel>Opening Stock</FormLabel>
-                          <FormControl><Input type="number" {...field} /></FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                     <FormField
-                      control={form.control}
-                      name="sales"
-                      render={({ field }) => (
-                        <FormItem className="lg:col-span-1">
-                          <FormLabel>Sales</FormLabel>
-                          <FormControl><Input type="number" {...field} /></FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <div className="lg:col-span-1">
-                        <FormLabel>Closing</FormLabel>
-                        <Input value={closingStock < 0 ? 0 : closingStock} disabled />
-                    </div>
-                    <div className="lg:col-span-1">
-                        <FormLabel>Date</FormLabel>
-                        <Input value={currentDate} disabled />
-                    </div>
-                </div>
-                 <Button type="submit" className="w-full md:w-auto">Submit Report</Button>
-              </form>
-            </Form>
-          </CardContent>
         </Card>
 
       </main>
