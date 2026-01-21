@@ -205,6 +205,113 @@ export default function VehicleStockPage() {
         </div>
 
         <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                    <Warehouse className="h-6 w-6" />
+                    <span>Company Vehicle Stock</span>
+                </CardTitle>
+                 <CardDescription>
+                  A log of all vehicle inventory transactions across all branches.
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>S. No.</TableHead>
+                      <TableHead>Branch Code</TableHead>
+                      <TableHead>E. Vehicle</TableHead>
+                      <TableHead className="text-right">Opening Stock</TableHead>
+                      <TableHead className="text-right">Sales</TableHead>
+                      <TableHead className="text-right">Closing Stock</TableHead>
+                      <TableHead>Date</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {stockData.length > 0 ? (
+                      stockData.map((item) => (
+                        <TableRow key={item.sNo}>
+                          <TableCell>{item.sNo}</TableCell>
+                          <TableCell>{item.branchCode}</TableCell>
+                          <TableCell className="font-medium">{item.eVehicle}</TableCell>
+                          <TableCell className="text-right">{item.openingStock}</TableCell>
+                          <TableCell className="text-right">{item.sales}</TableCell>
+                          <TableCell className="text-right">{item.closingStock}</TableCell>
+                          <TableCell>{item.date}</TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={7} className="text-center">
+                          No stock data found.
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+            </CardContent>
+        </Card>
+
+        <Card>
+            <CardHeader>
+                <CardTitle>Branch Vehicle Stock</CardTitle>
+                <CardDescription>Filter vehicle inventory by district.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div className="flex items-center gap-4 mb-4">
+                    <Select value={selectedDistrict} onValueChange={(value) => setSelectedDistrict(value === "all" ? "" : value)}>
+                        <SelectTrigger className="w-full md:w-[280px]">
+                            <SelectValue placeholder="Filter by District..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All Districts</SelectItem>
+                            {districts.map((district) => (
+                                <SelectItem key={district} value={district}>
+                                    {district}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+                <Separator className="mb-4" />
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>S. No.</TableHead>
+                      <TableHead>Branch Code</TableHead>
+                      <TableHead>E. Vehicle</TableHead>
+                      <TableHead className="text-right">Opening Stock</TableHead>
+                      <TableHead className="text-right">Sales</TableHead>
+                      <TableHead className="text-right">Closing Stock</TableHead>
+                      <TableHead>Date</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredStockData.length > 0 ? (
+                      filteredStockData.map((item) => (
+                        <TableRow key={item.sNo}>
+                          <TableCell>{item.sNo}</TableCell>
+                          <TableCell>{item.branchCode}</TableCell>
+                          <TableCell className="font-medium">{item.eVehicle}</TableCell>
+                          <TableCell className="text-right">{item.openingStock}</TableCell>
+                          <TableCell className="text-right">{item.sales}</TableCell>
+                          <TableCell className="text-right">{item.closingStock}</TableCell>
+                          <TableCell>{item.date}</TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={7} className="text-center">
+                          No stock data found for the current filter.
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+            </CardContent>
+        </Card>
+        
+        <Card>
           <CardHeader>
             <CardTitle>Closing Daily Report Submit</CardTitle>
             <CardDescription>Fill out the form to submit the daily stock report.</CardDescription>
@@ -261,69 +368,6 @@ export default function VehicleStockPage() {
           </CardContent>
         </Card>
 
-        <Card>
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                    <Warehouse className="h-6 w-6" />
-                    <span>Branch Vehicle Stock</span>
-                </CardTitle>
-                 <CardDescription>
-                  View and filter vehicle inventory transactions for all branches.
-                </CardDescription>
-            </CardHeader>
-            <CardContent>
-                <div className="flex items-center gap-4 mb-4">
-                    <Select value={selectedDistrict} onValueChange={(value) => setSelectedDistrict(value === "all" ? "" : value)}>
-                        <SelectTrigger className="w-full md:w-[280px]">
-                            <SelectValue placeholder="Filter by District..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="all">All Districts</SelectItem>
-                            {districts.map((district) => (
-                                <SelectItem key={district} value={district}>
-                                    {district}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                </div>
-                <Separator className="mb-4" />
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>S. No.</TableHead>
-                      <TableHead>Branch Code</TableHead>
-                      <TableHead>E. Vehicle</TableHead>
-                      <TableHead className="text-right">Opening Stock</TableHead>
-                      <TableHead className="text-right">Sales</TableHead>
-                      <TableHead className="text-right">Closing Stock</TableHead>
-                      <TableHead>Date</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredStockData.length > 0 ? (
-                      filteredStockData.map((item) => (
-                        <TableRow key={item.sNo}>
-                          <TableCell>{item.sNo}</TableCell>
-                          <TableCell>{item.branchCode}</TableCell>
-                          <TableCell className="font-medium">{item.eVehicle}</TableCell>
-                          <TableCell className="text-right">{item.openingStock}</TableCell>
-                          <TableCell className="text-right">{item.sales}</TableCell>
-                          <TableCell className="text-right">{item.closingStock}</TableCell>
-                          <TableCell>{item.date}</TableCell>
-                        </TableRow>
-                      ))
-                    ) : (
-                      <TableRow>
-                        <TableCell colSpan={7} className="text-center">
-                          No stock data found for the current filter.
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-            </CardContent>
-        </Card>
       </main>
     </div>
   );
