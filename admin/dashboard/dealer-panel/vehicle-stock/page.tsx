@@ -206,64 +206,6 @@ export default function VehicleStockPage() {
           </Button>
           <h2 className="text-3xl font-bold tracking-tight font-headline">Vehicle Stock</h2>
         </div>
-
-        <Card>
-            <CardHeader className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                <div>
-                    <CardTitle className="flex items-center gap-2">
-                        <Warehouse className="h-6 w-6" />
-                        <span>My Branch Vehicle Stock</span>
-                    </CardTitle>
-                    <CardDescription>
-                    A log of all vehicle inventory transactions for your branch.
-                    </CardDescription>
-                </div>
-                <div className="flex w-full md:w-auto items-center gap-2">
-                    <Input 
-                        placeholder="Find E. Vehicle Models..."
-                        value={eVehicleFilter}
-                        onChange={(e) => setEVehicleFilter(e.target.value)}
-                        className="max-w-sm"
-                    />
-                </div>
-            </CardHeader>
-            <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>S. No.</TableHead>
-                      <TableHead>E. Vehicle</TableHead>
-                      <TableHead className="text-right">Price</TableHead>
-                      <TableHead className="text-right">Opening Stock</TableHead>
-                      <TableHead className="text-right">Sales</TableHead>
-                      <TableHead className="text-right">Closing Stock</TableHead>
-                      <TableHead>Date</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {myBranchStock.length > 0 ? (
-                      myBranchStock.map((item) => (
-                        <TableRow key={item.sNo}>
-                          <TableCell>{item.sNo}</TableCell>
-                          <TableCell className="font-medium">{item.eVehicle}</TableCell>
-                          <TableCell className="text-right">{item.price ? `₹${item.price.toLocaleString('en-IN')}` : 'N/A'}</TableCell>
-                          <TableCell className="text-right">{item.openingStock}</TableCell>
-                          <TableCell className="text-right">{item.sales}</TableCell>
-                          <TableCell className="text-right">{item.closingStock}</TableCell>
-                          <TableCell>{item.date}</TableCell>
-                        </TableRow>
-                      ))
-                    ) : (
-                      <TableRow>
-                        <TableCell colSpan={7} className="text-center">
-                          No stock data found for your branch.
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-            </CardContent>
-        </Card>
         
         <Card>
           <CardHeader>
