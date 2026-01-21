@@ -28,7 +28,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 import { Separator } from "@/components/ui/separator";
@@ -92,12 +91,8 @@ export default function VehicleStockPage() {
   const { toast } = useToast();
   const [stockData, setStockData] = useState(initialStockData);
   const [currentBranch] = useState(branches[0].branchCode);
-  const [selectedDistrict, setSelectedDistrict] = useState("");
   const [eVehicleFilter, setEVehicleFilter] = useState("");
-  const [dateFilter, setDateFilter] = useState("");
-
-  const districts = [...new Set(branches.map((b) => b.district))];
-
+  
   useEffect(() => {
     try {
       const storedStock = localStorage.getItem('yunex-vehicle-stock');
@@ -163,14 +158,10 @@ export default function VehicleStockPage() {
     form.reset({ eVehicle: "", openingStock: 0, sales: 0 });
   }
 
-  const filteredBranchStock = stockData.filter(item => {
-    if (!selectedDistrict) return true;
-
-    const branchCodesForDistrict = branches
-        .filter(branch => branch.district === selectedDistrict)
-        .map(branch => branch.branchCode);
-
-    return branchCodesForDistrict.includes(item.branchCode);
+  const myBranchStock = stockData.filter(item => {
+    const branchMatch = item.branchCode === currentBranch;
+    const eVehicleMatch = eVehicleFilter ? item.eVehicle.toLowerCase().includes(eVehicleFilter.toLowerCase()) : true;
+    return branchMatch && eVehicleMatch;
   });
 
   return (
@@ -208,9 +199,65 @@ export default function VehicleStockPage() {
         </div>
 
         <Card>
+            <CardHeader className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div>
+                    <CardTitle className="flex items-center gap-2">
+                        <Warehouse className="h-6 w-6" />
+                        <span>My Branch Vehicle Stock</span>
+                    </CardTitle>
+                    <CardDescription>
+                    A log of all vehicle inventory transactions for your branch.
+                    </CardDescription>
+                </div>
+                <div className="flex w-full md:w-auto items-center gap-2">
+                    <Input 
+                        placeholder="Find E. Vehicle Models..."
+                        value={eVehicleFilter}
+                        onChange={(e) => setEVehicleFilter(e.target.value)}
+                        className="max-w-sm"
+                    />
+                </div>
+            </CardHeader>
+            <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>S. No.</TableHead>
+                      <TableHead>E. Vehicle</TableHead>
+                      <TableHead className="text-right">Opening Stock</TableHead>
+                      <TableHead className="text-right">Sales</TableHead>
+                      <TableHead className="text-right">Closing Stock</TableHead>
+                      <TableHead>Date</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {myBranchStock.length > 0 ? (
+                      myBranchStock.map((item) => (
+                        <TableRow key={item.sNo}>
+                          <TableCell>{item.sNo}</TableCell>
+                          <TableCell className="font-medium">{item.eVehicle}</TableCell>
+                          <TableCell className="text-right">{item.openingStock}</TableCell>
+                          <TableCell className="text-right">{item.sales}</TableCell>
+                          <TableCell className="text-right">{item.closingStock}</TableCell>
+                          <TableCell>{item.date}</TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={6} className="text-center">
+                          No stock data found for your branch.
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+            </CardContent>
+        </Card>
+        
+        <Card>
           <CardHeader>
             <CardTitle>Closing Daily Report Submit</CardTitle>
-            <CardDescription>Fill out the form to submit the daily stock report.</CardDescription>
+            <CardDescription>Fill out the form to submit the daily stock report for your branch ({currentBranch}).</CardDescription>
           </CardHeader>
           <CardContent>
             <Form {...form}>
@@ -263,64 +310,6 @@ export default function VehicleStockPage() {
             </Form>
           </CardContent>
         </Card>
-
-        <Card>
-            <CardHeader>
-                <CardTitle>Branch Vehicle Stock</CardTitle>
-                <CardDescription>Filter vehicle inventory by district.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <div className="flex items-center gap-4 mb-4">
-                    <Select value={selectedDistrict} onValueChange={(value) => setSelectedDistrict(value === "all" ? "" : value)}>
-                        <SelectTrigger className="w-full md:w-[280px]">
-                            <SelectValue placeholder="Filter by District..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="all">All Districts</SelectItem>
-                            {districts.map((district) => (
-                                <SelectItem key={district} value={district}>
-                                    {district}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                </div>
-                <Separator className="mb-4" />
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>S. No.</TableHead>
-                      <TableHead>E. Vehicle</TableHead>
-                      <TableHead className="text-right">Opening Stock</TableHead>
-                      <TableHead className="text-right">Sales</TableHead>
-                      <TableHead className="text-right">Closing Stock</TableHead>
-                      <TableHead>Date</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredBranchStock.length > 0 ? (
-                      filteredBranchStock.map((item) => (
-                        <TableRow key={item.sNo}>
-                          <TableCell>{item.sNo}</TableCell>
-                          <TableCell className="font-medium">{item.eVehicle}</TableCell>
-                          <TableCell className="text-right">{item.openingStock}</TableCell>
-                          <TableCell className="text-right">{item.sales}</TableCell>
-                          <TableCell className="text-right">{item.closingStock}</TableCell>
-                          <TableCell>{item.date}</TableCell>
-                        </TableRow>
-                      ))
-                    ) : (
-                      <TableRow>
-                        <TableCell colSpan={6} className="text-center">
-                          No stock data found for the current filter.
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-            </CardContent>
-        </Card>
-
       </main>
     </div>
   );
