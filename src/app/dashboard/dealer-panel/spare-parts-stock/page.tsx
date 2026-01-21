@@ -89,9 +89,18 @@ const addStockSchema = z.object({
 });
 
 const sparePartInvoiceSchema = z.object({
-  customerName: z.string().min(1, "Customer name is required."),
-  customerAddress: z.string().min(1, "Customer address is required."),
-  contact: z.string().min(1, "Customer contact is required."),
+  // Branch Details
+  branchName: z.string().min(1, "Branch name is required"),
+  branchCode: z.string().min(1, "Branch code is required"),
+  branchGstNo: z.string().optional(),
+  branchContact: z.string().min(1, "Contact is required"),
+  branchAddress: z.string().min(1, "Address is required"),
+  branchCity: z.string().min(1, "City is required"),
+  branchDistrict: z.string().min(1, "District is required"),
+  branchState: z.string().min(1, "State is required"),
+  branchPinCode: z.string().min(1, "Pin code is required"),
+  
+  // Part Details
   sparePart: z.string().min(1, "Please select a spare part."),
   quantity: z.coerce.number().min(1, "Quantity must be at least 1."),
 });
@@ -117,7 +126,7 @@ type SparePartInvoice = z.infer<typeof sparePartInvoiceSchema> & {
     partCode: string;
     hsnCode: string;
     rate: number;
-    branchCode: string;
+    sourceBranchCode: string;
 };
 
 const ones = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
@@ -166,9 +175,15 @@ export default function SparePartsStockPage() {
   const invoiceForm = useForm<z.infer<typeof sparePartInvoiceSchema>>({
     resolver: zodResolver(sparePartInvoiceSchema),
     defaultValues: {
-      customerName: "",
-      customerAddress: "",
-      contact: "",
+      branchName: "",
+      branchCode: "",
+      branchGstNo: "",
+      branchContact: "",
+      branchAddress: "",
+      branchCity: "",
+      branchDistrict: "",
+      branchState: "",
+      branchPinCode: "",
       sparePart: "",
       quantity: 1,
     },
@@ -326,7 +341,7 @@ export default function SparePartsStockPage() {
         partCode: latestEntry.partCode || 'N/A',
         hsnCode: latestEntry.hsnCode || 'N/A',
         rate: latestEntry.price || 0,
-        branchCode: currentBranch,
+        sourceBranchCode: currentBranch,
     };
     
     const updatedInvoices = [newInvoice, ...sparePartInvoices];
@@ -339,11 +354,17 @@ export default function SparePartsStockPage() {
     }
 
     invoiceForm.reset({
-        customerName: "",
-        customerAddress: "",
-        contact: "",
-        sparePart: "",
-        quantity: 1,
+      branchName: "",
+      branchCode: "",
+      branchGstNo: "",
+      branchContact: "",
+      branchAddress: "",
+      branchCity: "",
+      branchDistrict: "",
+      branchState: "",
+      branchPinCode: "",
+      sparePart: "",
+      quantity: 1,
     });
     toast({ title: "Invoice Generated", description: "Stock has been updated." });
   };
@@ -394,9 +415,9 @@ export default function SparePartsStockPage() {
     doc.line(14, 45, pageWidth - 14, 45);
 
     // Billing details
-    const branch = branches.find(b => b.branchCode === invoiceData.branchCode);
-    const sellerDetails = `YUNEX - ${branch?.district || invoiceData.branchCode}\nNear D.C. Office, Satyam Nagar\nDhanbad, Jharkhand, INDIA. 826004.\nE-mail: info@yunex.com`;
-    const buyerDetails = `${invoiceData.customerName}\n${invoiceData.customerAddress}\nContact: ${invoiceData.contact}`;
+    const sellerBranch = branches.find(b => b.branchCode === invoiceData.sourceBranchCode);
+    const sellerDetails = `YUNEX - ${sellerBranch?.district || invoiceData.sourceBranchCode}\nNear D.C. Office, Satyam Nagar\nDhanbad, Jharkhand, INDIA. 826004.\nE-mail: info@yunex.com`;
+    const buyerDetails = `Branch: ${invoiceData.branchName} (${invoiceData.branchCode})\n${invoiceData.branchAddress}, ${invoiceData.branchCity}, ${invoiceData.branchDistrict}, ${invoiceData.branchState} - ${invoiceData.branchPinCode}\nGSTIN: ${invoiceData.branchGstNo || 'N/A'}\nContact: ${invoiceData.branchContact}`;
 
     autoTable(doc, {
         startY: 50,
@@ -843,13 +864,61 @@ export default function SparePartsStockPage() {
             <Form {...invoiceForm}>
               <form onSubmit={invoiceForm.handleSubmit(onInvoiceSubmit)} className="space-y-6">
                 
-                <h3 className="text-lg font-medium">Customer Details</h3>
+                <h3 className="text-lg font-medium">Branch Details</h3>
                 <Separator />
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FormField control={invoiceForm.control} name="customerName" render={({ field }) => ( <FormItem> <FormLabel>Customer Name</FormLabel> <FormControl><Input placeholder="Enter customer name" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
-                    <FormField control={invoiceForm.control} name="contact" render={({ field }) => ( <FormItem> <FormLabel>Contact</FormLabel> <FormControl><Input placeholder="Enter contact number" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
-                    <FormField control={invoiceForm.control} name="customerAddress" render={({ field }) => ( <FormItem className="md:col-span-2"> <FormLabel>Address</FormLabel> <FormControl><Textarea placeholder="Enter customer address" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <FormField control={invoiceForm.control} name="branchName" render={({ field }) => ( <FormItem> <FormLabel>Branch Name</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )} />
+                  <FormField
+                    control={invoiceForm.control}
+                    name="branchCode"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Branch Code</FormLabel>
+                        <Select
+                          onValueChange={(value) => {
+                            field.onChange(value);
+                            const selectedBranch = branches.find(
+                              (b) => b.branchCode === value
+                            );
+                            if (selectedBranch) {
+                              invoiceForm.setValue("branchName", selectedBranch.district);
+                              invoiceForm.setValue("branchDistrict", selectedBranch.district);
+                              invoiceForm.setValue("branchCity", selectedBranch.district);
+                              invoiceForm.setValue("branchState", "Jharkhand");
+                              invoiceForm.setValue("branchAddress", "");
+                              invoiceForm.setValue("branchPinCode", "");
+                              invoiceForm.setValue("branchGstNo", "");
+                              invoiceForm.setValue("branchContact", "");
+                            }
+                          }}
+                          value={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select a branch" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {branches.map((branch) => (
+                              <SelectItem key={branch.id} value={branch.branchCode}>
+                                {branch.district} ({branch.branchCode})
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField control={invoiceForm.control} name="branchGstNo" render={({ field }) => ( <FormItem> <FormLabel>GST No.</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )} />
+                  <FormField control={invoiceForm.control} name="branchContact" render={({ field }) => ( <FormItem> <FormLabel>Contact</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )} />
+                  <FormField control={invoiceForm.control} name="branchAddress" render={({ field }) => ( <FormItem className="md:col-span-2"> <FormLabel>Address</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )} />
+                  <FormField control={invoiceForm.control} name="branchCity" render={({ field }) => ( <FormItem> <FormLabel>City</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )} />
+                  <FormField control={invoiceForm.control} name="branchDistrict" render={({ field }) => ( <FormItem> <FormLabel>District</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )} />
+                  <FormField control={invoiceForm.control} name="branchState" render={({ field }) => ( <FormItem> <FormLabel>State</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )} />
+                  <FormField control={invoiceForm.control} name="branchPinCode" render={({ field }) => ( <FormItem> <FormLabel>Pin Code</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )} />
                 </div>
+
 
                 <h3 className="text-lg font-medium pt-4">Part Details</h3>
                 <Separator />
@@ -904,7 +973,7 @@ export default function SparePartsStockPage() {
                     <TableHeader>
                         <TableRow>
                             <TableHead>Invoice ID</TableHead>
-                            <TableHead>Customer</TableHead>
+                            <TableHead>Branch</TableHead>
                             <TableHead>Spare Part</TableHead>
                             <TableHead>Date</TableHead>
                             <TableHead className="text-right">Amount</TableHead>
@@ -916,7 +985,7 @@ export default function SparePartsStockPage() {
                             sparePartInvoices.map((invoice) => (
                                 <TableRow key={invoice.id}>
                                     <TableCell className="font-medium">{invoice.id}</TableCell>
-                                    <TableCell>{invoice.customerName}</TableCell>
+                                    <TableCell>{invoice.branchName}</TableCell>
                                     <TableCell>{invoice.sparePart}</TableCell>
                                     <TableCell>{invoice.date.toLocaleDateString()}</TableCell>
                                     <TableCell className="text-right">₹{invoice.total.toFixed(2)}</TableCell>
