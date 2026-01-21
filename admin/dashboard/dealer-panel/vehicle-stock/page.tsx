@@ -220,7 +220,7 @@ export default function VehicleStockPage() {
                 </div>
                 <div className="flex w-full md:w-auto items-center gap-2">
                     <Input 
-                        placeholder="Filter by E. Vehicle..."
+                        placeholder="Find E. Vehicle Models..."
                         value={eVehicleFilter}
                         onChange={(e) => setEVehicleFilter(e.target.value)}
                         className="max-w-sm"
@@ -232,7 +232,6 @@ export default function VehicleStockPage() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>S. No.</TableHead>
-                      <TableHead>Branch Code</TableHead>
                       <TableHead>E. Vehicle</TableHead>
                       <TableHead className="text-right">Price</TableHead>
                       <TableHead className="text-right">Opening Stock</TableHead>
@@ -246,7 +245,6 @@ export default function VehicleStockPage() {
                       myBranchStock.map((item) => (
                         <TableRow key={item.sNo}>
                           <TableCell>{item.sNo}</TableCell>
-                          <TableCell>{item.branchCode}</TableCell>
                           <TableCell className="font-medium">{item.eVehicle}</TableCell>
                           <TableCell className="text-right">{item.price ? `₹${item.price.toLocaleString('en-IN')}` : 'N/A'}</TableCell>
                           <TableCell className="text-right">{item.openingStock}</TableCell>
@@ -257,7 +255,7 @@ export default function VehicleStockPage() {
                       ))
                     ) : (
                       <TableRow>
-                        <TableCell colSpan={8} className="text-center">
+                        <TableCell colSpan={7} className="text-center">
                           No stock data found for your branch.
                         </TableCell>
                       </TableRow>
