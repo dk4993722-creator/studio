@@ -209,6 +209,30 @@ export default function VehicleStockPage() {
 
         <Card>
             <CardHeader>
+                <CardTitle>Find Branch Stock</CardTitle>
+                <CardDescription>Filter vehicle stock by District or Branch Code.</CardDescription>
+            </CardHeader>
+            <CardContent className="flex items-center gap-4">
+                 <Select value={filterKey} onValueChange={(value) => setFilterKey(value as "branchCode" | "district")}>
+                    <SelectTrigger className="w-full md:w-[180px]">
+                        <SelectValue placeholder="Filter by..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="branchCode">Branch Code</SelectItem>
+                        <SelectItem value="district">District</SelectItem>
+                    </SelectContent>
+                </Select>
+                <Input
+                    placeholder={`Filter by ${filterKey === 'branchCode' ? 'Branch Code' : 'District'}...`}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full"
+                />
+            </CardContent>
+        </Card>
+
+        <Card>
+            <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                     <Warehouse className="h-6 w-6" />
                     <span>Company Vehicle Stock</span>
@@ -303,31 +327,6 @@ export default function VehicleStockPage() {
             </Form>
           </CardContent>
         </Card>
-        
-        <Card>
-            <CardHeader>
-                <CardTitle>Find Branch Stock</CardTitle>
-                <CardDescription>Filter vehicle stock by District or Branch Code.</CardDescription>
-            </CardHeader>
-            <CardContent className="flex items-center gap-4">
-                 <Select value={filterKey} onValueChange={(value) => setFilterKey(value as "branchCode" | "district")}>
-                    <SelectTrigger className="w-full md:w-[180px]">
-                        <SelectValue placeholder="Filter by..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="branchCode">Branch Code</SelectItem>
-                        <SelectItem value="district">District</SelectItem>
-                    </SelectContent>
-                </Select>
-                <Input
-                    placeholder={`Filter by ${filterKey === 'branchCode' ? 'Branch Code' : 'District'}...`}
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full"
-                />
-            </CardContent>
-        </Card>
-
       </main>
     </div>
   );
