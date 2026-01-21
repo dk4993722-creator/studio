@@ -180,6 +180,13 @@ export default function SparePartsStockPage() {
 
   useEffect(() => {
     try {
+      const storedStock = localStorage.getItem('yunex-spareparts-stock');
+      if (storedStock) {
+        setStockData(JSON.parse(storedStock));
+      } else {
+        localStorage.setItem('yunex-spareparts-stock', JSON.stringify(initialStockData));
+      }
+
       const storedInvoices = JSON.parse(localStorage.getItem('yunex-spare-part-invoices') || '[]');
       const formattedInvoices = storedInvoices.map((inv: any) => ({
         ...inv,
@@ -187,9 +194,14 @@ export default function SparePartsStockPage() {
       }));
       setSparePartInvoices(formattedInvoices);
     } catch (error) {
-      console.error("Failed to load spare part invoices from localStorage", error);
+      console.error("Failed to load data from localStorage", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Could not load page data.",
+      });
     }
-  }, []);
+  }, [toast]);
   
   useEffect(() => {
     if (currentBranch && watchedInvoiceSparePart) {
@@ -211,6 +223,20 @@ export default function SparePartsStockPage() {
     }
 }, [currentBranch, watchedInvoiceSparePart, stockData]);
 
+  const updateStockData = (newData: StockItem[]) => {
+      setStockData(newData);
+      try {
+          localStorage.setItem('yunex-spareparts-stock', JSON.stringify(newData));
+      } catch (error) {
+          console.error("Failed to save stock to localStorage", error);
+          toast({
+              variant: "destructive",
+              title: "Save Error",
+              description: "Could not save the new stock entry.",
+          });
+      }
+  };
+
   function onAddStockSubmit(values: z.infer<typeof addStockSchema>) {
     const { sparePart, addQty, partCode, hsnCode, price } = values;
     const branchCode = currentBranch;
@@ -231,7 +257,7 @@ export default function SparePartsStockPage() {
     const openingStockForAddition = latestEntry ? latestEntry.closingStock : 0;
 
     const newEntry: StockItem = {
-      sNo: stockData.length + 1,
+      sNo: stockData.length > 0 ? Math.max(...stockData.map(item => item.sNo)) + 1 : 1,
       branchCode: branchCode,
       sparePart: sparePart,
       partCode: partCode,
@@ -243,7 +269,7 @@ export default function SparePartsStockPage() {
       date: new Date().toISOString().split('T')[0],
     };
 
-    setStockData(prev => [newEntry, ...prev]);
+    updateStockData([newEntry, ...stockData]);
     
     toast({
       title: "Stock Added",
@@ -276,7 +302,7 @@ export default function SparePartsStockPage() {
 
     // 1. Create new stock transaction for the sale
     const newStockEntry: StockItem = {
-      sNo: stockData.length + 1,
+      sNo: stockData.length > 0 ? Math.max(...stockData.map(item => item.sNo)) + 1 : 1,
       branchCode: currentBranch,
       sparePart: values.sparePart,
       partCode: latestEntry.partCode,
@@ -287,7 +313,7 @@ export default function SparePartsStockPage() {
       closingStock: latestEntry.closingStock - values.quantity,
       date: new Date().toISOString().split('T')[0],
     };
-    setStockData(prev => [newStockEntry, ...prev]);
+    updateStockData([newStockEntry, ...stockData]);
     
     // 2. Create invoice
     const newInvoice: SparePartInvoice = {
@@ -586,14 +612,33 @@ export default function SparePartsStockPage() {
         </div>
 
         <Card>
+            <CardHeader>
+                <CardTitle>Select Branch</CardTitle>
+                <CardDescription>Choose a branch to manage its spare parts stock.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <Select onValueChange={setCurrentBranch} value={currentBranch}>
+                    <SelectTrigger className="w-full md:w-1/3">
+                        <SelectValue placeholder="Select a branch" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {branches.map(branch => (
+                            <SelectItem key={branch.id} value={branch.branchCode}>{branch.district} ({branch.branchCode})</SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+            </CardContent>
+        </Card>
+
+        <Card>
             <CardHeader className="flex-row items-center justify-between">
                 <div>
                     <CardTitle className="flex items-center gap-2">
                         <Wrench className="h-6 w-6" />
-                        <span>Daily Spare Parts Stock Transactions</span>
+                        <span>Company Spare Parts Stock</span>
                     </CardTitle>
                     <CardDescription>
-                      A daily summary of your spare parts inventory transactions.
+                      A log of all spare parts transactions across all branches.
                     </CardDescription>
                 </div>
                  <Button onClick={handleDownloadCsv} variant="outline">
