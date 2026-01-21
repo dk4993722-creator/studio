@@ -12,7 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ArrowLeft, Phone, LogOut, Warehouse } from "lucide-react";
+import { ArrowLeft, Phone, LogOut, Warehouse, Eye, Download } from "lucide-react";
 import { YunexLogo } from "@/components/yunex-logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import placeholderImages from "@/lib/placeholder-images.json";
@@ -30,7 +30,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
-import { Separator } from "@/components/ui/separator";
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 const initialStockData = [
   // Day 1: 2024-07-29
@@ -86,6 +87,8 @@ const reportSchema = z.object({
   message: "Sales cannot be greater than opening stock.",
   path: ["sales"],
 });
+
+type StockItem = typeof initialStockData[0];
 
 export default function VehicleStockPage() {
   const router = useRouter();
@@ -167,6 +170,58 @@ export default function VehicleStockPage() {
     return branchMatch && eVehicleMatch;
   });
 
+  const generatePDF = (stockItem: StockItem) => {
+    const doc = new jsPDF();
+    
+    doc.setFontSize(20);
+    doc.text("Stock Transaction Details", 14, 22);
+    
+    autoTable(doc, {
+        startY: 30,
+        head: [['Field', 'Value']],
+        body: [
+            ['S. No.', stockItem.sNo],
+            ['Branch Code', stockItem.branchCode],
+            ['E. Vehicle', stockItem.eVehicle],
+            ['Price', stockItem.price ? `₹${stockItem.price.toLocaleString('en-IN')}`: 'N/A'],
+            ['Date', stockItem.date],
+            ['Opening Stock', stockItem.openingStock],
+            ['Sales', stockItem.sales],
+            ['Closing Stock', stockItem.closingStock],
+        ],
+    });
+
+    return doc;
+  };
+
+  const handleView = (sNo: number) => {
+    const stockItem = stockData.find(item => item.sNo === sNo);
+    if (!stockItem) {
+        toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Stock item not found.",
+        });
+        return;
+    }
+    const doc = generatePDF(stockItem);
+    window.open(doc.output('bloburl'), '_blank');
+  };
+
+  const handleDownload = (sNo: number) => {
+    const stockItem = stockData.find(item => item.sNo === sNo);
+    if (!stockItem) {
+        toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Stock item not found.",
+        });
+        return;
+    }
+    const doc = generatePDF(stockItem);
+    doc.save(`stock-transaction-${stockItem.sNo}.pdf`);
+  };
+
   return (
     <div className="flex min-h-screen w-full flex-col relative bg-background">
       <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b px-4 md:px-8 bg-[#326cd1]">
@@ -232,6 +287,7 @@ export default function VehicleStockPage() {
                       <TableHead className="text-right">Sales</TableHead>
                       <TableHead className="text-right">Closing Stock</TableHead>
                       <TableHead>Date</TableHead>
+                      <TableHead className="text-center">View/Download</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -245,11 +301,19 @@ export default function VehicleStockPage() {
                           <TableCell className="text-right">{item.sales}</TableCell>
                           <TableCell className="text-right">{item.closingStock}</TableCell>
                           <TableCell>{item.date}</TableCell>
+                           <TableCell className="text-center">
+                            <Button variant="ghost" size="icon" onClick={() => handleView(item.sNo)}>
+                                <Eye className="h-4 w-4" />
+                            </Button>
+                            <Button variant="ghost" size="icon" onClick={() => handleDownload(item.sNo)}>
+                                <Download className="h-4 w-4" />
+                            </Button>
+                          </TableCell>
                         </TableRow>
                       ))
                     ) : (
                       <TableRow>
-                        <TableCell colSpan={7} className="text-center">
+                        <TableCell colSpan={8} className="text-center">
                           No stock data found for your branch.
                         </TableCell>
                       </TableRow>
