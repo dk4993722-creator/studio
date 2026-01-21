@@ -11,7 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ArrowLeft, Phone, LogOut, TrendingUp, ShoppingCart, ClipboardList, BadgeCheck, Warehouse, Wrench } from "lucide-react";
+import { ArrowLeft, Phone, LogOut, Receipt, ClipboardList, BadgeCheck, Warehouse, Wrench } from "lucide-react";
 import { YunexLogo } from "@/components/yunex-logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import placeholderImages from "@/lib/placeholder-images.json";
@@ -57,6 +57,7 @@ export default function DealerPanelPage() {
 
   const dealerFeatures = [
     { title: "Account Section", icon: <ClipboardList className="h-10 w-10 text-primary" />, onClick: () => router.push("/dashboard/dealer-panel/accounts"), description: "Manage account details." },
+    { title: "Bill Panel", icon: <Receipt className="h-10 w-10 text-primary" />, onClick: () => router.push("/dashboard/dealer-panel/bill-panel"), description: "Generate customer invoices." },
     { title: "E. Vehicle Stock", icon: <Warehouse className="h-10 w-10 text-primary" />, onClick: () => router.push("/dashboard/dealer-panel/vehicle-stock"), description: "Manage vehicle inventory." },
     { title: "Spare Parts Stock", icon: <Wrench className="h-10 w-10 text-primary" />, onClick: () => router.push("/dashboard/dealer-panel/spare-parts-stock"), description: "Manage spare parts inventory." },
   ];
