@@ -38,6 +38,16 @@ const paymentSchema = z.object({
   screenshot: z.any().refine((files) => files?.length == 1, "Screenshot is required."),
 });
 
+type PaymentRequest = {
+  id: string;
+  dealerId: string;
+  amount: number;
+  utrNumber: string;
+  screenshotName: string;
+  date: string;
+  status: 'Pending' | 'Approved' | 'Rejected';
+};
+
 
 export default function AccountsPage() {
   const router = useRouter();
@@ -49,12 +59,35 @@ export default function AccountsPage() {
   });
 
   const onPaymentSubmit = (values: z.infer<typeof paymentSchema>) => {
-      console.log("Payment details submitted:", values);
-      toast({
-        title: "Request Submitted!",
-        description: `Your payment of ₹${values.amount.toFixed(2)} is being processed. It will reflect in your account after verification.`,
-      });
-      form.reset();
+      const dealerId = "YUNEX202601"; // Hardcoded dealer ID for demo
+      const newPaymentRequest: PaymentRequest = {
+        id: `PAY-${Date.now()}`,
+        dealerId: dealerId,
+        amount: values.amount,
+        utrNumber: values.utrNumber,
+        screenshotName: values.screenshot[0].name,
+        date: new Date().toISOString(),
+        status: 'Pending',
+      };
+
+      try {
+        const existingRequests: PaymentRequest[] = JSON.parse(localStorage.getItem('yunex-payment-requests') || '[]');
+        const updatedRequests = [newPaymentRequest, ...existingRequests];
+        localStorage.setItem('yunex-payment-requests', JSON.stringify(updatedRequests));
+
+        toast({
+          title: "Request Submitted!",
+          description: `Your payment of ₹${values.amount.toFixed(2)} is being processed. It will reflect in your account after verification.`,
+        });
+        form.reset();
+      } catch (error) {
+        console.error("Failed to save payment request:", error);
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Could not submit your payment request. Please try again.",
+        });
+      }
   };
 
   const handleDownload = () => {
