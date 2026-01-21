@@ -12,7 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ArrowLeft, Phone, LogOut, Wrench, Download, Eye } from "lucide-react";
+import { ArrowLeft, Phone, LogOut, Wrench, Download, Eye, Edit } from "lucide-react";
 import { YunexLogo } from "@/components/yunex-logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import placeholderImages from "@/lib/placeholder-images.json";
@@ -27,6 +27,16 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogClose,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
@@ -701,6 +711,66 @@ export default function SparePartsStockPage() {
               </form>
             </Form>
           </CardContent>
+        </Card>
+
+        <Card>
+            <CardHeader>
+                <CardTitle>Branch Spare Parts Details</CardTitle>
+                <CardDescription>View and edit spare parts stock transactions for all branches.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>S. No.</TableHead>
+                            <TableHead>Branch Code</TableHead>
+                            <TableHead>Spare Part</TableHead>
+                            <TableHead>HSN Code</TableHead>
+                            <TableHead className="text-right">Opening Stock</TableHead>
+                            <TableHead className="text-right">Sales</TableHead>
+                            <TableHead className="text-right">Closing Stock</TableHead>
+                            <TableHead>Date</TableHead>
+                            <TableHead className="text-center">Actions</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {stockData.map((item) => (
+                        <TableRow key={item.sNo}>
+                            <TableCell>{item.sNo}</TableCell>
+                            <TableCell>{item.branchCode}</TableCell>
+                            <TableCell className="font-medium">{item.sparePart}</TableCell>
+                            <TableCell>{item.hsnCode || 'N/A'}</TableCell>
+                            <TableCell className="text-right">{item.openingStock}</TableCell>
+                            <TableCell className="text-right">{item.sales}</TableCell>
+                            <TableCell className="text-right">{item.closingStock}</TableCell>
+                            <TableCell>{item.date}</TableCell>
+                            <TableCell className="text-center">
+                                <Dialog>
+                                    <DialogTrigger asChild>
+                                        <Button variant="ghost" size="icon">
+                                            <Edit className="h-4 w-4" />
+                                        </Button>
+                                    </DialogTrigger>
+                                    <DialogContent>
+                                        <DialogHeader>
+                                            <DialogTitle>Edit Transaction</DialogTitle>
+                                            <DialogDescription>
+                                                This functionality is for demonstration purposes and is not yet implemented.
+                                            </DialogDescription>
+                                        </DialogHeader>
+                                        <DialogFooter>
+                                            <DialogClose asChild>
+                                                <Button type="button" variant="secondary">Close</Button>
+                                            </DialogClose>
+                                        </DialogFooter>
+                                    </DialogContent>
+                                </Dialog>
+                            </TableCell>
+                        </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </CardContent>
         </Card>
 
         <Card>
