@@ -90,7 +90,7 @@ export default function VehicleStockPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [stockData, setStockData] = useState(initialStockData);
-  const [currentBranch, setCurrentBranch] = useState("");
+  const [currentBranch, setCurrentBranch] = useState(branches[0].branchCode);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterKey, setFilterKey] = useState<"branchCode" | "district">("branchCode");
 
@@ -217,25 +217,6 @@ export default function VehicleStockPage() {
         </div>
         
         <Card>
-            <CardHeader>
-                <CardTitle>Select Branch</CardTitle>
-                <CardDescription>Choose a branch to manage its vehicle stock.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <Select onValueChange={setCurrentBranch} value={currentBranch}>
-                    <SelectTrigger className="w-full md:w-1/3">
-                        <SelectValue placeholder="Select a branch" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {branches.map(branch => (
-                            <SelectItem key={branch.id} value={branch.branchCode}>{branch.district}</SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-            </CardContent>
-        </Card>
-
-        <Card>
           <CardHeader>
             <CardTitle>Closing Daily Report Submit</CardTitle>
             <CardDescription>Fill out the form to submit the daily stock report.</CardDescription>
@@ -360,3 +341,5 @@ export default function VehicleStockPage() {
     </div>
   );
 }
+
+    
