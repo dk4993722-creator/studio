@@ -40,43 +40,14 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const initialVehicleModels = [
-  { sNo: 1, branch: 'Deoghar', eVehicleModel: 'Yunex-X1', price: 75000, date: '2024-07-29' },
-  { sNo: 2, branch: 'Dumka', eVehicleModel: 'Yunex-S1', price: 68000, date: '2024-07-29' },
-  { sNo: 3, branch: 'Bokaro', eVehicleModel: 'Yunex-X2', price: 82000, date: '2024-07-30' },
-];
-
-const branches = [
-  { id: '01', district: 'Deoghar', branchCode: 'Yunex202601' },
-  { id: '02', district: 'Dumka', branchCode: 'Yunex202602' },
-  { id: '03', district: 'Bokaro', branchCode: 'Yunex202603' },
-  { id: '04', district: 'Giridih', branchCode: 'Yunex202604' },
-  { id: '05', district: 'Koderma', branchCode: 'Yunex202605' },
-  { id: '06', district: 'Godda', branchCode: 'Yunex202606' },
-  { id: '07', district: 'Chatra', branchCode: 'Yunex202607' },
-  { id: '08', district: 'Dhanbad', branchCode: 'Yunex202608' },
-  { id: '09', district: 'Garhwa', branchCode: 'Yunex202609' },
-  { id: '10', district: 'East-Singhbhum', branchCode: 'Yunex202610' },
-  { id: '11', district: 'Jamtara', branchCode: 'Yunex202611' },
-  { id: '12', district: 'Saraikela-Kharsawan', branchCode: 'Yunex202612' },
-  { id: '13', district: 'Ranchi', branchCode: 'Yunex202613' },
-  { id: '14', district: 'Pakur', branchCode: 'Yunex202614' },
-  { id: '15', district: 'Latehar', branchCode: 'Yunex202615' },
-  { id: '16', district: 'Hazaribagh', branchCode: 'Yunex202616' },
-  { id: '17', district: 'Lohardaga', branchCode: 'Yunex202617' },
-  { id: '18', district: 'Palamu', branchCode: 'Yunex202618' },
-  { id: '19', district: 'Ramghar', branchCode: 'Yunex202619' },
-  { id: '20', district: 'Simdega', branchCode: 'Yunex202620' },
-  { id: '21', district: 'West-Singhbhum', branchCode: 'Yunex202621' },
-  { id: '22', district: 'Sahebganj', branchCode: 'Yunex202622' },
-  { id: '23', district: 'Gumla', branchCode: 'Yunex202623' },
-  { id: '24', district: 'Khunti', branchCode: 'Yunex202624' },
+  { sNo: 1, eVehicleModel: 'Yunex-X1', price: 75000, date: '2024-07-29' },
+  { sNo: 2, eVehicleModel: 'Yunex-S1', price: 68000, date: '2024-07-29' },
+  { sNo: 3, eVehicleModel: 'Yunex-X2', price: 82000, date: '2024-07-30' },
 ];
 
 const vehicleModelSchema = z.object({
-  branch: z.string().min(1, "Branch is required."),
   eVehicleModel: z.string().min(1, "Model name is required."),
   price: z.coerce.number().min(0, "Price must be a positive number."),
 });
@@ -90,7 +61,6 @@ export default function EVehicleModelsPage() {
   const form = useForm<z.infer<typeof vehicleModelSchema>>({
     resolver: zodResolver(vehicleModelSchema),
     defaultValues: {
-      branch: "",
       eVehicleModel: "",
       price: 0,
     },
@@ -172,30 +142,6 @@ export default function EVehicleModelsPage() {
                       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                         <FormField
                           control={form.control}
-                          name="branch"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Branch</FormLabel>
-                              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <FormControl>
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Select a branch" />
-                                  </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                  {branches.map((branch) => (
-                                    <SelectItem key={branch.id} value={branch.district}>
-                                      {branch.district}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={form.control}
                           name="eVehicleModel"
                           render={({ field }) => (
                             <FormItem>
@@ -236,7 +182,6 @@ export default function EVehicleModelsPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>S. No.</TableHead>
-                  <TableHead>Branch</TableHead>
                   <TableHead>E. Vehicle Model</TableHead>
                   <TableHead className="text-right">Price</TableHead>
                   <TableHead>Date</TableHead>
@@ -247,7 +192,6 @@ export default function EVehicleModelsPage() {
                 {models.map(model => (
                   <TableRow key={model.sNo}>
                     <TableCell>{model.sNo}</TableCell>
-                    <TableCell>{model.branch}</TableCell>
                     <TableCell className="font-medium">{model.eVehicleModel}</TableCell>
                     <TableCell className="text-right">₹{model.price.toLocaleString('en-IN')}</TableCell>
                     <TableCell>{model.date}</TableCell>
