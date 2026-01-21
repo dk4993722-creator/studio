@@ -11,7 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ArrowLeft, Phone, LogOut, Users, TrendingUp, ShoppingCart, Warehouse, Wrench, Building2 } from "lucide-react";
+import { ArrowLeft, Phone, LogOut, Users, TrendingUp, ShoppingCart, Warehouse, Wrench, Building2, Car, CreditCard } from "lucide-react";
 import { YunexLogo } from "@/components/yunex-logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import placeholderImages from "@/lib/placeholder-images.json";
@@ -22,9 +22,11 @@ export default function AdminDashboardPage() {
   const adminFeatures = [
     { title: "User Management", icon: <Users className="h-10 w-10 text-primary" />, onClick: () => router.push("/admin/users"), description: "Edit and manage user data." },
     { title: "Sales Panel", icon: <TrendingUp className="h-10 w-10 text-primary" />, onClick: () => router.push("/dashboard/dealer-panel/sales"), description: "Access and edit sales data." },
-    { title: "Vehicle Stock", icon: <Warehouse className="h-10 w-10 text-primary" />, onClick: () => router.push("/dashboard/dealer-panel/vehicle-stock"), description: "Manage vehicle inventory." },
+    { title: "Vehicle Stock", icon: <Warehouse className="h-10 w-10 text-primary" />, onClick: () => router.push("/admin/dashboard/dealer-panel/vehicle-stock"), description: "Manage vehicle inventory." },
     { title: "Spare Parts Stock", icon: <Wrench className="h-10 w-10 text-primary" />, onClick: () => router.push("/dashboard/dealer-panel/spare-parts-stock"), description: "Manage spare parts inventory." },
     { title: "Branch Details", icon: <Building2 className="h-10 w-10 text-primary" />, onClick: () => router.push("/admin/branches"), description: "Manage branch information." },
+    { title: "E. Vehicle Models", icon: <Car className="h-10 w-10 text-primary" />, onClick: () => router.push("/admin/e-vehicle-models"), description: "Manage E. Vehicle models." },
+    { title: "Payment System", icon: <CreditCard className="h-10 w-10 text-primary" />, onClick: () => router.push("/admin/payment-system"), description: "Configure payment settings." },
   ];
 
   return (
