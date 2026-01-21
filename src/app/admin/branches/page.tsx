@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -40,6 +39,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const initialBranches = [
   { id: '01', district: 'Deoghar', branchName: 'Deoghar Main', address: '123 Test St, Deoghar', gstNo: '20AAAAA0000A1Z5', branchCode: 'Yunex202601', pin: '123456' },
@@ -77,11 +77,22 @@ const branchSchema = z.object({
   pin: z.string().length(6, "PIN must be 6 digits."),
 });
 
+type Branch = typeof initialBranches[0];
+
 export default function BranchDetailsPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [branches, setBranches] = useState(initialBranches);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterKey, setFilterKey] = useState<keyof Branch>("branchName");
+
+  const filterLabels: { [key in keyof Branch]?: string } = {
+    district: "District",
+    branchCode: "Branch Code",
+    branchName: "Branch Name",
+    pin: "Pin Code",
+  };
 
   const form = useForm<z.infer<typeof branchSchema>>({
     resolver: zodResolver(branchSchema),
@@ -106,6 +117,12 @@ export default function BranchDetailsPage() {
     form.reset();
     setIsAddDialogOpen(false);
   }
+
+  const filteredBranches = branches.filter(branch => {
+    if (!searchQuery) return true;
+    const value = branch[filterKey];
+    return value.toLowerCase().includes(searchQuery.toLowerCase());
+  });
 
   return (
     <div className="flex min-h-screen w-full flex-col relative bg-background">
@@ -137,7 +154,7 @@ export default function BranchDetailsPage() {
         </div>
 
         <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
+            <CardHeader className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <div>
                     <CardTitle className="flex items-center gap-2">
                         <Building2 className="h-6 w-6" />
@@ -145,110 +162,129 @@ export default function BranchDetailsPage() {
                     </CardTitle>
                     <CardDescription>Add, edit, or remove branch details from this panel.</CardDescription>
                 </div>
-                 <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-                    <DialogTrigger asChild>
-                       <Button onClick={() => setIsAddDialogOpen(true)}>
-                          <PlusCircle className="mr-2 h-4 w-4" />
-                          Add New Branch
-                       </Button>
-                    </DialogTrigger>
-                    <DialogContent className="sm:max-w-md">
-                        <DialogHeader>
-                        <DialogTitle>Add New Branch</DialogTitle>
-                        <DialogDescription>
-                            Fill in the details for the new branch.
-                        </DialogDescription>
-                        </DialogHeader>
-                        <Form {...form}>
-                          <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <FormField
-                              control={form.control}
-                              name="district"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>District</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="e.g., Deoghar" {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            <FormField
-                              control={form.control}
-                              name="branchName"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Branch Name</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="e.g., Deoghar Main" {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            <FormField
-                              control={form.control}
-                              name="address"
-                              render={({ field }) => (
-                                <FormItem className="md:col-span-2">
-                                  <FormLabel>Address</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="e.g., 123 Main St, Deoghar" {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                             <FormField
-                              control={form.control}
-                              name="gstNo"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>GST No. (Optional)</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="e.g., 20AAAAA0000A1Z5" {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            <FormField
-                              control={form.control}
-                              name="branchCode"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Branch Code</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="e.g., Yunex202625" {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            <FormField
-                              control={form.control}
-                              name="pin"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>6-Digit Pin</FormLabel>
-                                  <FormControl>
-                                    <Input type="password" placeholder="••••••" {...field} maxLength={6} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            <DialogFooter className="md:col-span-2">
-                              <Button type="button" variant="secondary" onClick={() => setIsAddDialogOpen(false)}>
-                                Cancel
-                              </Button>
-                              <Button type="submit">Save Branch</Button>
-                            </DialogFooter>
-                          </form>
-                        </Form>
-                    </DialogContent>
-                </Dialog>
+                <div className="flex w-full md:w-auto items-center gap-2">
+                    <Select value={filterKey} onValueChange={(value) => setFilterKey(value as keyof Branch)}>
+                        <SelectTrigger className="w-full md:w-[150px]">
+                            <SelectValue placeholder="Filter by..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="district">District</SelectItem>
+                            <SelectItem value="branchCode">Branch Code</SelectItem>
+                            <SelectItem value="branchName">Branch Name</SelectItem>
+                            <SelectItem value="pin">Pin Code</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <Input
+                        placeholder={`Filter by ${filterLabels[filterKey]}...`}
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full md:max-w-xs"
+                    />
+                    <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+                        <DialogTrigger asChild>
+                           <Button onClick={() => setIsAddDialogOpen(true)} className="whitespace-nowrap">
+                              <PlusCircle className="mr-2 h-4 w-4" />
+                              Add Branch
+                           </Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-md">
+                            <DialogHeader>
+                            <DialogTitle>Add New Branch</DialogTitle>
+                            <DialogDescription>
+                                Fill in the details for the new branch.
+                            </DialogDescription>
+                            </DialogHeader>
+                            <Form {...form}>
+                              <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <FormField
+                                  control={form.control}
+                                  name="district"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel>District</FormLabel>
+                                      <FormControl>
+                                        <Input placeholder="e.g., Deoghar" {...field} />
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                                <FormField
+                                  control={form.control}
+                                  name="branchName"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel>Branch Name</FormLabel>
+                                      <FormControl>
+                                        <Input placeholder="e.g., Deoghar Main" {...field} />
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                                <FormField
+                                  control={form.control}
+                                  name="address"
+                                  render={({ field }) => (
+                                    <FormItem className="md:col-span-2">
+                                      <FormLabel>Address</FormLabel>
+                                      <FormControl>
+                                        <Input placeholder="e.g., 123 Main St, Deoghar" {...field} />
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                                 <FormField
+                                  control={form.control}
+                                  name="gstNo"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel>GST No. (Optional)</FormLabel>
+                                      <FormControl>
+                                        <Input placeholder="e.g., 20AAAAA0000A1Z5" {...field} />
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                                <FormField
+                                  control={form.control}
+                                  name="branchCode"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel>Branch Code</FormLabel>
+                                      <FormControl>
+                                        <Input placeholder="e.g., Yunex202625" {...field} />
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                                <FormField
+                                  control={form.control}
+                                  name="pin"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel>6-Digit Pin</FormLabel>
+                                      <FormControl>
+                                        <Input type="password" placeholder="••••••" {...field} maxLength={6} />
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                                <DialogFooter className="md:col-span-2">
+                                  <Button type="button" variant="secondary" onClick={() => setIsAddDialogOpen(false)}>
+                                    Cancel
+                                  </Button>
+                                  <Button type="submit">Save Branch</Button>
+                                </DialogFooter>
+                              </form>
+                            </Form>
+                        </DialogContent>
+                    </Dialog>
+                </div>
             </CardHeader>
             <CardContent>
                 <Table>
@@ -265,7 +301,7 @@ export default function BranchDetailsPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {branches.map(branch => (
+                    {filteredBranches.map(branch => (
                       <TableRow key={branch.id}>
                         <TableCell>{branch.id}</TableCell>
                         <TableCell>{branch.district}</TableCell>
@@ -273,7 +309,7 @@ export default function BranchDetailsPage() {
                         <TableCell>{branch.branchCode}</TableCell>
                         <TableCell>{branch.address}</TableCell>
                         <TableCell>{branch.gstNo}</TableCell>
-                        <TableCell>{branch.pin}</TableCell>
+                        <TableCell>{'••••••'}</TableCell>
                         <TableCell className="text-right">
                           <Dialog>
                             <DialogTrigger asChild>
