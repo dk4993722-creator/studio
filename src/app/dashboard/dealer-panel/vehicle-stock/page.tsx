@@ -34,20 +34,20 @@ import { Separator } from "@/components/ui/separator";
 
 const initialStockData = [
   // Day 1: 2024-07-29
-  { sNo: 1, branchCode: 'Yunex202601', eVehicle: 'Yunex-X1', openingStock: 50, sales: 5, closingStock: 45, date: '2024-07-29' },
-  { sNo: 2, branchCode: 'Yunex202602', eVehicle: 'Yunex-S1', openingStock: 30, sales: 10, closingStock: 20, date: '2024-07-29' },
-  { sNo: 3, branchCode: 'Yunex202601', eVehicle: 'Yunex-X2', openingStock: 40, sales: 0, closingStock: 40, date: '2024-07-29' },
-  { sNo: 4, branchCode: 'Yunex202603', eVehicle: 'Yunex-X3', openingStock: 25, sales: 3, closingStock: 22, date: '2024-07-29' },
+  { sNo: 1, branchCode: 'Yunex202601', eVehicle: 'Yunex-X1', price: 75000, openingStock: 50, sales: 5, closingStock: 45, date: '2024-07-29' },
+  { sNo: 2, branchCode: 'Yunex202602', eVehicle: 'Yunex-S1', price: 68000, openingStock: 30, sales: 10, closingStock: 20, date: '2024-07-29' },
+  { sNo: 3, branchCode: 'Yunex202601', eVehicle: 'Yunex-X2', price: 82000, openingStock: 40, sales: 0, closingStock: 40, date: '2024-07-29' },
+  { sNo: 4, branchCode: 'Yunex202603', eVehicle: 'Yunex-X3', price: 79000, openingStock: 25, sales: 3, closingStock: 22, date: '2024-07-29' },
 
   // Day 2: 2024-07-30
-  { sNo: 5, branchCode: 'Yunex202601', eVehicle: 'Yunex-X1', openingStock: 45, sales: 2, closingStock: 43, date: '2024-07-30' },
-  { sNo: 6, branchCode: 'Yunex202602', eVehicle: 'Yunex-S1', openingStock: 20, sales: 5, closingStock: 15, date: '2024-07-30' },
-  { sNo: 7, branchCode: 'Yunex202601', eVehicle: 'Yunex-X2', openingStock: 40, sales: 1, closingStock: 39, date: '2024-07-30' },
+  { sNo: 5, branchCode: 'Yunex202601', eVehicle: 'Yunex-X1', price: 75000, openingStock: 45, sales: 2, closingStock: 43, date: '2024-07-30' },
+  { sNo: 6, branchCode: 'Yunex202602', eVehicle: 'Yunex-S1', price: 68000, openingStock: 20, sales: 5, closingStock: 15, date: '2024-07-30' },
+  { sNo: 7, branchCode: 'Yunex202601', eVehicle: 'Yunex-X2', price: 82000, openingStock: 40, sales: 1, closingStock: 39, date: '2024-07-30' },
 
   // Day 3: 2024-07-31
-  { sNo: 8, branchCode: 'Yunex202601', eVehicle: 'Yunex-X1', openingStock: 43, sales: 3, closingStock: 40, date: '2024-07-31' },
-  { sNo: 9, branchCode: 'Yunex202602', eVehicle: 'Yunex-S1', openingStock: 15, sales: 0, closingStock: 15, date: '2024-07-31' },
-  { sNo: 10, branchCode: 'Yunex202603', eVehicle: 'Yunex-X3', openingStock: 22, sales: 2, closingStock: 20, date: '2024-07-31' },
+  { sNo: 8, branchCode: 'Yunex202601', eVehicle: 'Yunex-X1', price: 75000, openingStock: 43, sales: 3, closingStock: 40, date: '2024-07-31' },
+  { sNo: 9, branchCode: 'Yunex202602', eVehicle: 'Yunex-S1', price: 68000, openingStock: 15, sales: 0, closingStock: 15, date: '2024-07-31' },
+  { sNo: 10, branchCode: 'Yunex202603', eVehicle: 'Yunex-X3', price: 79000, openingStock: 22, sales: 2, closingStock: 20, date: '2024-07-31' },
 ];
 
 const branches = [
@@ -79,6 +79,7 @@ const branches = [
 
 const reportSchema = z.object({
   eVehicle: z.string().min(1, "E. Vehicle name is required."),
+  price: z.coerce.number().min(0, "Price cannot be negative."),
   openingStock: z.coerce.number().min(0, "Opening stock cannot be negative."),
   sales: z.coerce.number().min(0, "Sales cannot be negative."),
 }).refine(data => data.sales <= data.openingStock, {
@@ -115,6 +116,7 @@ export default function VehicleStockPage() {
     resolver: zodResolver(reportSchema),
     defaultValues: {
       eVehicle: "",
+      price: 0,
       openingStock: 0,
       sales: 0,
     },
@@ -131,6 +133,7 @@ export default function VehicleStockPage() {
       sNo: stockData.length > 0 ? Math.max(...stockData.map(item => item.sNo)) + 1 : 1,
       branchCode: currentBranch,
       eVehicle: values.eVehicle,
+      price: values.price,
       openingStock: values.openingStock,
       sales: values.sales,
       closingStock: values.openingStock - values.sales,
@@ -155,7 +158,7 @@ export default function VehicleStockPage() {
       title: "Report Submitted",
       description: "The daily vehicle stock transaction has been updated.",
     });
-    form.reset({ eVehicle: "", openingStock: 0, sales: 0 });
+    form.reset({ eVehicle: "", price: 0, openingStock: 0, sales: 0 });
   }
 
   const myBranchStock = stockData.filter(item => {
@@ -224,6 +227,7 @@ export default function VehicleStockPage() {
                     <TableRow>
                       <TableHead>S. No.</TableHead>
                       <TableHead>E. Vehicle</TableHead>
+                      <TableHead className="text-right">Price</TableHead>
                       <TableHead className="text-right">Opening Stock</TableHead>
                       <TableHead className="text-right">Sales</TableHead>
                       <TableHead className="text-right">Closing Stock</TableHead>
@@ -236,6 +240,7 @@ export default function VehicleStockPage() {
                         <TableRow key={item.sNo}>
                           <TableCell>{item.sNo}</TableCell>
                           <TableCell className="font-medium">{item.eVehicle}</TableCell>
+                          <TableCell className="text-right">{item.price ? `₹${item.price.toLocaleString('en-IN')}` : 'N/A'}</TableCell>
                           <TableCell className="text-right">{item.openingStock}</TableCell>
                           <TableCell className="text-right">{item.sales}</TableCell>
                           <TableCell className="text-right">{item.closingStock}</TableCell>
@@ -244,7 +249,7 @@ export default function VehicleStockPage() {
                       ))
                     ) : (
                       <TableRow>
-                        <TableCell colSpan={6} className="text-center">
+                        <TableCell colSpan={7} className="text-center">
                           No stock data found for your branch.
                         </TableCell>
                       </TableRow>
@@ -262,7 +267,7 @@ export default function VehicleStockPage() {
           <CardContent>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 items-end">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 items-end">
                     <FormField
                       control={form.control}
                       name="eVehicle"
@@ -270,6 +275,17 @@ export default function VehicleStockPage() {
                         <FormItem className="lg:col-span-1">
                           <FormLabel>E. Vehicle</FormLabel>
                           <FormControl><Input {...field} /></FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="price"
+                      render={({ field }) => (
+                        <FormItem className="lg:col-span-1">
+                          <FormLabel>Price</FormLabel>
+                          <FormControl><Input type="number" {...field} /></FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
