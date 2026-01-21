@@ -808,6 +808,7 @@ export default function SparePartsStockPage() {
                             <TableHead>Branch Code</TableHead>
                             <TableHead>Spare Part</TableHead>
                             <TableHead>HSN Code</TableHead>
+                            <TableHead className="text-right">Price</TableHead>
                             <TableHead className="text-right">Opening Stock</TableHead>
                             <TableHead className="text-right">Sales</TableHead>
                             <TableHead className="text-right">Closing Stock</TableHead>
@@ -822,6 +823,7 @@ export default function SparePartsStockPage() {
                             <TableCell>{item.branchCode}</TableCell>
                             <TableCell className="font-medium">{item.sparePart}</TableCell>
                             <TableCell>{item.hsnCode || 'N/A'}</TableCell>
+                            <TableCell className="text-right">{item.price ? `₹${item.price.toFixed(2)}` : 'N/A'}</TableCell>
                             <TableCell className="text-right">{item.openingStock}</TableCell>
                             <TableCell className="text-right">{item.sales}</TableCell>
                             <TableCell className="text-right">{item.closingStock}</TableCell>
@@ -843,6 +845,29 @@ export default function SparePartsStockPage() {
                                         <DialogFooter>
                                             <DialogClose asChild>
                                                 <Button type="button" variant="secondary">Close</Button>
+                                            </DialogClose>
+                                        </DialogFooter>
+                                    </DialogContent>
+                                </Dialog>
+                                <Dialog>
+                                    <DialogTrigger asChild>
+                                        <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
+                                            <Trash2 className="h-4 w-4" />
+                                        </Button>
+                                    </DialogTrigger>
+                                    <DialogContent>
+                                        <DialogHeader>
+                                            <DialogTitle>Delete Transaction #{item.sNo}?</DialogTitle>
+                                            <DialogDescription>
+                                                This action cannot be undone. Are you sure you want to permanently delete this transaction?
+                                            </DialogDescription>
+                                        </DialogHeader>
+                                        <DialogFooter>
+                                            <DialogClose asChild>
+                                                <Button variant="secondary">Cancel</Button>
+                                            </DialogClose>
+                                            <DialogClose asChild>
+                                                <Button variant="destructive" onClick={() => handleDelete(item.sNo)}>Delete</Button>
                                             </DialogClose>
                                         </DialogFooter>
                                     </DialogContent>
