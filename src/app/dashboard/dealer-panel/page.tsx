@@ -57,8 +57,8 @@ export default function DealerPanelPage() {
 
   const dealerFeatures = [
     { title: "Account Section", icon: <ClipboardList className="h-10 w-10 text-primary" />, onClick: () => router.push("/dashboard/dealer-panel/accounts"), description: "Manage account details." },
-    { title: "E. Vehicle Stock", icon: <Warehouse className="h-10 w-10 text-primary" />, onClick: () => router.push("/admin/dashboard/dealer-panel/vehicle-stock"), description: "Manage vehicle inventory." },
-    { title: "Spare Parts Stock", icon: <Wrench className="h-10 w-10 text-primary" />, onClick: () => router.push("/admin/dashboard/dealer-panel/spare-parts-stock"), description: "Manage spare parts inventory." },
+    { title: "E. Vehicle Stock", icon: <Warehouse className="h-10 w-10 text-primary" />, onClick: () => router.push("/dashboard/dealer-panel/vehicle-stock"), description: "Manage vehicle inventory." },
+    { title: "Spare Parts Stock", icon: <Wrench className="h-10 w-10 text-primary" />, onClick: () => router.push("/dashboard/dealer-panel/spare-parts-stock"), description: "Manage spare parts inventory." },
   ];
 
   return (
