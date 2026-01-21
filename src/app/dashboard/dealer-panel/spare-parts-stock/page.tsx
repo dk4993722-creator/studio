@@ -12,7 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ArrowLeft, Phone, LogOut, Wrench, Download, Eye, Edit } from "lucide-react";
+import { ArrowLeft, Phone, LogOut, Wrench, Download, Eye, Edit, Trash2 } from "lucide-react";
 import { YunexLogo } from "@/components/yunex-logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import placeholderImages from "@/lib/placeholder-images.json";
@@ -347,6 +347,15 @@ export default function SparePartsStockPage() {
     });
     toast({ title: "Invoice Generated", description: "Stock has been updated." });
   };
+  
+  const handleDelete = (sNo: number) => {
+    const updatedStock = stockData.filter(item => item.sNo !== sNo);
+    updateStockData(updatedStock);
+    toast({
+        title: "Transaction Deleted",
+        description: "The stock transaction has been removed.",
+    });
+  };
 
   const generateSparePartInvoicePDF = (invoiceData: SparePartInvoice) => {
     const doc = new jsPDF();
@@ -475,57 +484,6 @@ export default function SparePartsStockPage() {
     try {
         const doc = generateSparePartInvoicePDF(invoice);
         doc.save(`spare-part-invoice-${invoice.id}.pdf`);
-        toast({ title: "Success", description: "PDF downloaded successfully." });
-    } catch(e) {
-        console.error("PDF Download Error:", e);
-        toast({ variant: "destructive", title: "Error", description: "Failed to generate PDF for download." });
-    }
-  };
-  
-  const generatePDF = (item: StockItem) => {
-    const doc = new jsPDF();
-    
-    doc.setFontSize(20);
-    doc.text("Spare Part Stock Report", 14, 22);
-    doc.setFontSize(12);
-    doc.text(`Date: ${new Date().toLocaleDateString()}`, 14, 30);
-    
-    autoTable(doc, {
-        startY: 40,
-        head: [['Attribute', 'Value']],
-        body: [
-            ['S. No.', item.sNo.toString()],
-            ['Branch Code', item.branchCode],
-            ['Spare Part', item.sparePart],
-            ['Part Code', item.partCode || 'N/A'],
-            ['HSN Code', item.hsnCode || 'N/A'],
-            ['Price', item.price ? `₹${item.price.toFixed(2)}` : 'N/A'],
-            ['Report Date', item.date],
-            ['Opening Stock', item.openingStock.toString()],
-            ['Sales', item.sales.toString()],
-            ['Closing Stock', item.closingStock.toString()],
-        ],
-        theme: 'striped',
-        headStyles: { fillColor: [50, 108, 209] },
-    });
-    
-    return doc;
-  };
-
-  const handleViewPdf = (item: StockItem) => {
-    try {
-        const doc = generatePDF(item);
-        window.open(doc.output('bloburl'), '_blank');
-    } catch(e) {
-        console.error("PDF View Error:", e);
-        toast({ variant: "destructive", title: "Error", description: "Failed to generate PDF for viewing." });
-    }
-  };
-
-  const handleDownloadPdf = (item: StockItem) => {
-    try {
-        const doc = generatePDF(item);
-        doc.save(`stock-report-${item.branchCode}-${item.sNo}.pdf`);
         toast({ title: "Success", description: "PDF downloaded successfully." });
     } catch(e) {
         console.error("PDF Download Error:", e);
@@ -669,13 +627,50 @@ export default function SparePartsStockPage() {
                         <TableCell className="text-right">{item.sales}</TableCell>
                         <TableCell className="text-right">{item.closingStock}</TableCell>
                         <TableCell>{item.date}</TableCell>
-                        <TableCell className="flex justify-center items-center gap-2">
-                            <Button variant="outline" size="icon" onClick={() => handleViewPdf(item)}>
-                                <Eye className="h-4 w-4" />
-                            </Button>
-                            <Button variant="outline" size="icon" onClick={() => handleDownloadPdf(item)}>
-                                <Download className="h-4 w-4" />
-                            </Button>
+                        <TableCell className="text-center">
+                            <Dialog>
+                                <DialogTrigger asChild>
+                                    <Button variant="ghost" size="icon">
+                                        <Edit className="h-4 w-4" />
+                                    </Button>
+                                </DialogTrigger>
+                                <DialogContent>
+                                    <DialogHeader>
+                                        <DialogTitle>Edit Transaction</DialogTitle>
+                                        <DialogDescription>
+                                            This functionality is for demonstration purposes and is not yet implemented.
+                                        </DialogDescription>
+                                    </DialogHeader>
+                                    <DialogFooter>
+                                        <DialogClose asChild>
+                                            <Button type="button" variant="secondary">Close</Button>
+                                        </DialogClose>
+                                    </DialogFooter>
+                                </DialogContent>
+                            </Dialog>
+                            <Dialog>
+                                <DialogTrigger asChild>
+                                    <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
+                                        <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                </DialogTrigger>
+                                <DialogContent>
+                                    <DialogHeader>
+                                        <DialogTitle>Delete Transaction #{item.sNo}?</DialogTitle>
+                                        <DialogDescription>
+                                            This action cannot be undone. Are you sure you want to permanently delete this transaction?
+                                        </DialogDescription>
+                                    </DialogHeader>
+                                    <DialogFooter>
+                                        <DialogClose asChild>
+                                            <Button variant="secondary">Cancel</Button>
+                                        </DialogClose>
+                                        <DialogClose asChild>
+                                            <Button variant="destructive" onClick={() => handleDelete(item.sNo)}>Delete</Button>
+                                        </DialogClose>
+                                    </DialogFooter>
+                                </DialogContent>
+                            </Dialog>
                         </TableCell>
                       </TableRow>
                     ))}
