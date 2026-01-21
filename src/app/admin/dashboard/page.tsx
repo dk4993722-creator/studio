@@ -11,7 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ArrowLeft, Phone, LogOut, Users, TrendingUp, ShoppingCart, Warehouse, Wrench, Building2, Car, CreditCard } from "lucide-react";
+import { ArrowLeft, Phone, LogOut, Users, TrendingUp, ShoppingCart, Warehouse, Wrench, Building2, Car, CreditCard, Receipt } from "lucide-react";
 import { YunexLogo } from "@/components/yunex-logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import placeholderImages from "@/lib/placeholder-images.json";
@@ -27,6 +27,7 @@ export default function AdminDashboardPage() {
     { title: "Branch Details", icon: <Building2 className="h-10 w-10 text-primary" />, onClick: () => router.push("/admin/branches"), description: "Manage branch information." },
     { title: "E. Vehicle Models", icon: <Car className="h-10 w-10 text-primary" />, onClick: () => router.push("/admin/e-vehicle-models"), description: "Manage E. Vehicle models." },
     { title: "Payment System", icon: <CreditCard className="h-10 w-10 text-primary" />, onClick: () => router.push("/admin/payment-system"), description: "Configure payment settings." },
+    { title: "Bill Panel", icon: <Receipt className="h-10 w-10 text-primary" />, onClick: () => router.push("/admin/bill-panel"), description: "Manage bills and invoices." },
   ];
 
   return (
@@ -55,7 +56,7 @@ export default function AdminDashboardPage() {
           <h2 className="text-3xl font-bold tracking-tight font-headline">Admin Dashboard</h2>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {adminFeatures.map(feature => (
             <Card key={feature.title} onClick={feature.onClick} className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
               <CardHeader className="flex flex-col items-center justify-center text-center p-6 flex-grow">
