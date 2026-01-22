@@ -10,6 +10,7 @@ import placeholderImages from "@/lib/placeholder-images.json";
 import { LogOut, Phone, User } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
+import { cn } from "@/lib/utils";
 
 type TreeNodeData = {
   id: string;
@@ -48,18 +49,48 @@ const treeData: TreeNodeData = {
   ],
 };
 
-
-const TreeNode = ({ node }: { node: TreeNodeData }) => {
+const TreeNode = ({ node, level = 0 }: { node: TreeNodeData, level?: number }) => {
   const hasChildren = node.children && node.children.length > 0;
+
+  // Define size classes for different levels
+  const nodeSizeClasses = [
+    "w-24 h-20", // level 0 (You)
+    "w-20 h-16", // level 1 (User A, B, C)
+    "w-16 h-14", // level 2 (User A1, A2...)
+  ];
+  
+  const iconSizeClasses = [
+    "w-5 h-5",    // level 0
+    "w-4 h-4",    // level 1
+    "w-3 h-3",    // level 2
+  ];
+
+  const textSizeClasses = [
+    "text-xs",      // level 0
+    "text-[11px]",  // level 1
+    "text-[10px]",  // level 2
+  ];
+
+  const idTextSizeClasses = [
+    "text-[10px]",  // level 0
+    "text-[9px]",   // level 1
+    "text-[8px]",   // level 2
+  ];
+
+  const currentLevel = Math.min(level, nodeSizeClasses.length - 1);
+
 
   return (
     <li className="flex flex-col items-center relative">
       <div 
-        className="flex flex-col items-center justify-center p-2 m-0.5 rounded-lg text-primary-foreground w-24 h-20 bg-primary/90"
+        className={cn(
+            "flex flex-col items-center justify-center p-1 m-0.5 rounded-lg text-primary-foreground bg-primary/90",
+            nodeSizeClasses[currentLevel]
+        )}
       >
-        <User className="w-5 h-5 mb-1" />
-        <span className="font-semibold text-xs leading-tight text-center">{node.name}</span>
-        <span className="text-[10px] opacity-80">ID: {node.id}</span>
+        <User className={cn("mb-1", iconSizeClasses[currentLevel])} />
+        <span className={cn("font-semibold leading-tight text-center", textSizeClasses[currentLevel])}>{node.name}</span>
+        <span className={cn("opacity-80", idTextSizeClasses[currentLevel])}>ID: {node.id}</span>
       </div>
       {hasChildren && (
         <>
@@ -72,7 +103,7 @@ const TreeNode = ({ node }: { node: TreeNodeData }) => {
               style={{ '--child-count': node.children.length } as React.CSSProperties}
           >
             {node.children.map((child) => (
-              <TreeNode key={child.id} node={child} />
+              <TreeNode key={child.id} node={child} level={level + 1}/>
             ))}
           </ul>
         </>
