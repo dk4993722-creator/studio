@@ -94,8 +94,8 @@ export default function EVehicleStockPage() {
   const addQty = watch("addQty");
   const watchedEVehicle = watch("eVehicle");
   
-  const calculatedClosingStock = openingStock + addQty;
-  const closingStock = isNaN(calculatedClosingStock) ? (openingStock || 0) : calculatedClosingStock;
+  const calculatedClosingStock = Number(openingStock || 0) + Number(addQty || 0);
+  const closingStock = isNaN(calculatedClosingStock) ? (Number(openingStock) || 0) : calculatedClosingStock;
 
   const currentDate = new Date().toISOString().split('T')[0];
 
