@@ -120,7 +120,7 @@ export default function BillPanelPage() {
   const [allVehicleStock, setAllVehicleStock] = useState<VehicleStockItem[]>([]);
   const [allSparePartStock, setAllSparePartStock] = useState<SparePartStockItem[]>([]);
 
-  const vehicleInvoiceFormMethods = useForm<z.infer<typeof vehicleInvoiceSchema>>({ resolver: zodResolver(vehicleInvoiceSchema), defaultValues: { quantity: 1 } });
+  const vehicleInvoiceFormMethods = useForm<z.infer<typeof vehicleInvoiceSchema>>({ resolver: zodResolver(vehicleInvoiceSchema), defaultValues: { quantity: 1, branchName: "", branchCode: "", branchGstNo: "", branchContact: "", branchAddress: "", branchCity: "", branchDistrict: "", branchState: "", branchPinCode: "", model: "", noOfSeat: "", chassisNo: "", motorNo: "", controllerNo: "", chargerNo1: "", chargerNo2: "", batteryMaker: "", batteryNo1: "", batteryNo2: "", batteryNo3: "", batteryNo4: "", batteryNo5: "", batteryNo6: "" } });
   const sparePartInvoiceFormMethods = useForm<z.infer<typeof sparePartInvoiceSchema>>({ resolver: zodResolver(sparePartInvoiceSchema), defaultValues: { quantity: 1 } });
 
   const watchedVehicleBranch = vehicleInvoiceFormMethods.watch("branchCode");
@@ -295,8 +295,8 @@ export default function BillPanelPage() {
     setAllVehicleStock(updatedStock);
     setAllTransactions(prev => [newTransaction, ...prev].sort((a, b) => b.date.getTime() - a.date.getTime()));
 
-    toast({ title: "Invoice Generated", description: `Invoice for ${data.branchName} created and stock updated.` });
-    vehicleInvoiceFormMethods.reset({ quantity: 1 });
+    toast({ title: "Invoice Generated & Stock Updated", description: `Invoice ${newInvoice.id} created for ${data.branchName}. Branch stock has been updated.` });
+    vehicleInvoiceFormMethods.reset({ quantity: 1, branchName: "", branchCode: "", branchGstNo: "", branchContact: "", branchAddress: "", branchCity: "", branchDistrict: "", branchState: "", branchPinCode: "", model: "", noOfSeat: "", chassisNo: "", motorNo: "", controllerNo: "", chargerNo1: "", chargerNo2: "", batteryMaker: "", batteryNo1: "", batteryNo2: "", batteryNo3: "", batteryNo4: "", batteryNo5: "", batteryNo6: "" });
   };
 
   const handleSparePartInvoiceSubmit = (data: z.infer<typeof sparePartInvoiceSchema>) => {

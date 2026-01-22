@@ -3,7 +3,13 @@
 
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -30,8 +36,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
-import type jsPDF from "jspdf";
-import type autoTable from "jspdf-autotable";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 const initialStockData = [
   // Day 1: 2024-07-29
@@ -93,7 +99,7 @@ type StockItem = typeof initialStockData[0];
 export default function VehicleStockPage() {
   const router = useRouter();
   const { toast } = useToast();
-  const [stockData, setStockData] = useState(initialStockData);
+  const [stockData, setStockData] = useState<StockItem[]>(initialStockData);
   const [currentBranch] = useState(branches[0].branchCode);
   const [eVehicleFilter, setEVehicleFilter] = useState("");
   
@@ -170,9 +176,7 @@ export default function VehicleStockPage() {
     return branchMatch && eVehicleMatch;
   });
 
-  const generatePDF = async (stockItem: StockItem) => {
-    const { default: jsPDF } = await import('jspdf');
-    const { default: autoTable } = await import('jspdf-autotable');
+  const generatePDF = (stockItem: StockItem) => {
     const doc = new jsPDF();
     
     doc.setFontSize(20);
@@ -196,7 +200,7 @@ export default function VehicleStockPage() {
     return doc;
   };
 
-  const handleView = async (sNo: number) => {
+  const handleView = (sNo: number) => {
     const stockItem = stockData.find(item => item.sNo === sNo);
     if (!stockItem) {
         toast({
@@ -206,11 +210,11 @@ export default function VehicleStockPage() {
         });
         return;
     }
-    const doc = await generatePDF(stockItem);
+    const doc = generatePDF(stockItem);
     window.open(doc.output('bloburl'), '_blank');
   };
 
-  const handleDownload = async (sNo: number) => {
+  const handleDownload = (sNo: number) => {
     const stockItem = stockData.find(item => item.sNo === sNo);
     if (!stockItem) {
         toast({
@@ -220,7 +224,7 @@ export default function VehicleStockPage() {
         });
         return;
     }
-    const doc = await generatePDF(stockItem);
+    const doc = generatePDF(stockItem);
     doc.save(`stock-transaction-${stockItem.sNo}.pdf`);
   };
 
