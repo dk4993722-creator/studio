@@ -18,8 +18,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -140,7 +138,9 @@ export default function BillPanelPage() {
     }
   }, [selectedVehicleStock, vehicleInvoiceFormMethods]);
 
-  const generateVehicleInvoicePDF = (invoiceData: VehicleInvoice) => {
+  const generateVehicleInvoicePDF = async (invoiceData: VehicleInvoice) => {
+    const { default: jsPDF } = await import('jspdf');
+    const { default: autoTable } = await import('jspdf-autotable');
     const doc = new jsPDF();
     const pageHeight = doc.internal.pageSize.height || doc.internal.pageSize.getHeight();
     const pageWidth = doc.internal.pageSize.width || doc.internal.pageSize.getWidth();
@@ -185,7 +185,9 @@ export default function BillPanelPage() {
     return doc;
   };
 
-  const generateSparePartInvoicePDF = (invoiceData: SparePartInvoice) => {
+  const generateSparePartInvoicePDF = async (invoiceData: SparePartInvoice) => {
+    const { default: jsPDF } = await import('jspdf');
+    const { default: autoTable } = await import('jspdf-autotable');
     const doc = new jsPDF();
     const pageHeight = doc.internal.pageSize.height || doc.internal.pageSize.getHeight();
     const pageWidth = doc.internal.pageSize.width || doc.internal.pageSize.getWidth();
@@ -285,11 +287,11 @@ export default function BillPanelPage() {
   };
 
 
-  const handleAction = (action: 'view' | 'download', transaction: Transaction) => {
+  const handleAction = async (action: 'view' | 'download', transaction: Transaction) => {
     try {
       const doc = transaction.type === 'E-Vehicle'
-        ? generateVehicleInvoicePDF(transaction.rawData as VehicleInvoice)
-        : generateSparePartInvoicePDF(transaction.rawData as SparePartInvoice);
+        ? await generateVehicleInvoicePDF(transaction.rawData as VehicleInvoice)
+        : await generateSparePartInvoicePDF(transaction.rawData as SparePartInvoice);
       
       if (action === 'view') {
         window.open(doc.output('bloburl'), '_blank');
@@ -375,12 +377,8 @@ export default function BillPanelPage() {
               </TabsList>
               <TabsContent value="all" className="mt-4">
                 <Card>
-                  <CardHeader>
-                    <CardTitle>All Invoice Transactions</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {renderTable(allTransactions)}
-                  </CardContent>
+                  <CardHeader><CardTitle>All Invoice Transactions</CardTitle></CardHeader>
+                  <CardContent>{renderTable(allTransactions)}</CardContent>
                 </Card>
               </TabsContent>
               <TabsContent value="e-vehicle" className="mt-4 space-y-6">
@@ -427,12 +425,8 @@ export default function BillPanelPage() {
                   </CardContent>
                 </Card>
                 <Card>
-                  <CardHeader>
-                    <CardTitle>E. Vehicle Invoice History</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {renderTable(allTransactions.filter(t => t.type === 'E-Vehicle'))}
-                  </CardContent>
+                  <CardHeader><CardTitle>E. Vehicle Invoice History</CardTitle></CardHeader>
+                  <CardContent>{renderTable(allTransactions.filter(t => t.type === 'E-Vehicle'))}</CardContent>
                 </Card>
               </TabsContent>
               <TabsContent value="spare-part" className="mt-4 space-y-6">
@@ -457,12 +451,8 @@ export default function BillPanelPage() {
                   </CardContent>
                 </Card>
                 <Card>
-                  <CardHeader>
-                    <CardTitle>Spare Parts Invoice History</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {renderTable(allTransactions.filter(t => t.type === 'Spare Part'))}
-                  </CardContent>
+                  <CardHeader><CardTitle>Spare Parts Invoice History</CardTitle></CardHeader>
+                  <CardContent>{renderTable(allTransactions.filter(t => t.type === 'Spare Part'))}</CardContent>
                 </Card>
               </TabsContent>
             </Tabs>

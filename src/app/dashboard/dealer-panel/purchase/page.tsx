@@ -11,8 +11,9 @@ import placeholderImages from "@/lib/placeholder-images.json";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
+import type jsPDF from 'jspdf';
+import type autoTable from 'jspdf-autotable';
+
 
 type Purchase = {
   id: string; 
@@ -106,7 +107,10 @@ export default function PurchasePanelPage() {
     }
   }, [toast]);
 
-  const generatePDF = (invoiceData: Invoice) => {
+  const generatePDF = async (invoiceData: Invoice) => {
+    const { default: jsPDF } = await import('jspdf');
+    const { default: autoTable } = await import('jspdf-autotable');
+
     const doc = new jsPDF();
     const pageHeight = doc.internal.pageSize.height || doc.internal.pageSize.getHeight();
     const pageWidth = doc.internal.pageSize.width || doc.internal.pageSize.getWidth();
@@ -225,14 +229,14 @@ export default function PurchasePanelPage() {
     return doc;
   };
 
-  const handleDownloadPdf = (purchaseId: string) => {
+  const handleDownloadPdf = async (purchaseId: string) => {
     const invoice = allInvoices.find(inv => inv.id === purchaseId);
     if (!invoice) {
         toast({ variant: "destructive", title: "Error", description: "Could not find invoice details for this purchase." });
         return;
     }
     try {
-        const doc = generatePDF(invoice);
+        const doc = await generatePDF(invoice);
         doc.save(`invoice-${invoice.id}.pdf`);
         toast({ title: "Success", description: "PDF downloaded successfully." });
     } catch(e) {
@@ -241,14 +245,14 @@ export default function PurchasePanelPage() {
     }
   };
   
-  const handleView = (purchaseId: string) => {
+  const handleView = async (purchaseId: string) => {
     const invoice = allInvoices.find(inv => inv.id === purchaseId);
     if (!invoice) {
         toast({ variant: "destructive", title: "Error", description: "Could not find invoice details for this purchase." });
         return;
     }
      try {
-        const doc = generatePDF(invoice);
+        const doc = await generatePDF(invoice);
         window.open(doc.output('bloburl'), '_blank');
     } catch(e) {
         console.error("PDF View Error:", e);

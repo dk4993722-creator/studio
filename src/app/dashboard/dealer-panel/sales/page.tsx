@@ -23,8 +23,8 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
+import type jsPDF from "jspdf";
+import type autoTable from "jspdf-autotable";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const branches = [
@@ -174,7 +174,9 @@ export default function SalesPanelPage() {
     setTotalAmount(amount);
   }, [quantity, rate]);
 
-  const generatePDF = (invoiceData: Invoice) => {
+  const generatePDF = async (invoiceData: Invoice) => {
+    const { default: jsPDF } = await import('jspdf');
+    const { default: autoTable } = await import('jspdf-autotable');
     const doc = new jsPDF();
     const pageHeight = doc.internal.pageSize.height || doc.internal.pageSize.getHeight();
     const pageWidth = doc.internal.pageSize.width || doc.internal.pageSize.getWidth();
@@ -309,9 +311,9 @@ export default function SalesPanelPage() {
   };
 
 
-  const handleDownload = (invoice: Invoice) => {
+  const handleDownload = async (invoice: Invoice) => {
     try {
-        const doc = generatePDF(invoice);
+        const doc = await generatePDF(invoice);
         doc.save(`invoice-${invoice.id}.pdf`);
         toast({ title: "Success", description: "PDF downloaded successfully." });
     } catch(e) {
@@ -320,9 +322,9 @@ export default function SalesPanelPage() {
     }
   };
 
-  const handleView = (invoice: Invoice) => {
+  const handleView = async (invoice: Invoice) => {
      try {
-        const doc = generatePDF(invoice);
+        const doc = await generatePDF(invoice);
         window.open(doc.output('bloburl'), '_blank');
     } catch(e) {
         console.error("PDF View Error:", e);

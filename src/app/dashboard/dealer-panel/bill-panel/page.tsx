@@ -18,8 +18,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -142,7 +140,9 @@ export default function DealerBillPanelPage() {
     }
   }, [selectedVehicleStock, vehicleInvoiceFormMethods]);
 
-  const generateVehicleInvoicePDF = (invoiceData: VehicleInvoice) => {
+  const generateVehicleInvoicePDF = async (invoiceData: VehicleInvoice) => {
+    const { default: jsPDF } = await import('jspdf');
+    const { default: autoTable } = await import('jspdf-autotable');
     const doc = new jsPDF();
     const pageHeight = doc.internal.pageSize.height || doc.internal.pageSize.getHeight();
     const pageWidth = doc.internal.pageSize.width || doc.internal.pageSize.getWidth();
@@ -187,7 +187,9 @@ export default function DealerBillPanelPage() {
     return doc;
   };
 
-  const generateSparePartInvoicePDF = (invoiceData: SparePartInvoice) => {
+  const generateSparePartInvoicePDF = async (invoiceData: SparePartInvoice) => {
+    const { default: jsPDF } = await import('jspdf');
+    const { default: autoTable } = await import('jspdf-autotable');
     const doc = new jsPDF();
     const pageHeight = doc.internal.pageSize.height || doc.internal.pageSize.getHeight();
     const pageWidth = doc.internal.pageSize.width || doc.internal.pageSize.getWidth();
@@ -286,11 +288,11 @@ export default function DealerBillPanelPage() {
   };
 
 
-  const handleAction = (action: 'view' | 'download', transaction: Transaction) => {
+  const handleAction = async (action: 'view' | 'download', transaction: Transaction) => {
     try {
       const doc = transaction.type === 'E-Vehicle'
-        ? generateVehicleInvoicePDF(transaction.rawData as VehicleInvoice)
-        : generateSparePartInvoicePDF(transaction.rawData as SparePartInvoice);
+        ? await generateVehicleInvoicePDF(transaction.rawData as VehicleInvoice)
+        : await generateSparePartInvoicePDF(transaction.rawData as SparePartInvoice);
       
       if (action === 'view') {
         window.open(doc.output('bloburl'), '_blank');

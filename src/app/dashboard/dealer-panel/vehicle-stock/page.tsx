@@ -30,8 +30,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
+import type jsPDF from "jspdf";
+import type autoTable from "jspdf-autotable";
 
 const initialStockData = [
   // Day 1: 2024-07-29
@@ -170,7 +170,9 @@ export default function VehicleStockPage() {
     return branchMatch && eVehicleMatch;
   });
 
-  const generatePDF = (stockItem: StockItem) => {
+  const generatePDF = async (stockItem: StockItem) => {
+    const { default: jsPDF } = await import('jspdf');
+    const { default: autoTable } = await import('jspdf-autotable');
     const doc = new jsPDF();
     
     doc.setFontSize(20);
@@ -194,7 +196,7 @@ export default function VehicleStockPage() {
     return doc;
   };
 
-  const handleView = (sNo: number) => {
+  const handleView = async (sNo: number) => {
     const stockItem = stockData.find(item => item.sNo === sNo);
     if (!stockItem) {
         toast({
@@ -204,11 +206,11 @@ export default function VehicleStockPage() {
         });
         return;
     }
-    const doc = generatePDF(stockItem);
+    const doc = await generatePDF(stockItem);
     window.open(doc.output('bloburl'), '_blank');
   };
 
-  const handleDownload = (sNo: number) => {
+  const handleDownload = async (sNo: number) => {
     const stockItem = stockData.find(item => item.sNo === sNo);
     if (!stockItem) {
         toast({
@@ -218,7 +220,7 @@ export default function VehicleStockPage() {
         });
         return;
     }
-    const doc = generatePDF(stockItem);
+    const doc = await generatePDF(stockItem);
     doc.save(`stock-transaction-${stockItem.sNo}.pdf`);
   };
 
