@@ -99,7 +99,7 @@ export default function AdminUsersPage() {
 
   const onEditSubmit = (values: z.infer<typeof userSchema>) => {
     if (!editingUser) return;
-    setUsers(users.map(u => u.id === editingUser.id ? { ...u, ...values } : u));
+    setUsers(users.map(u => u.id === editingUser.id ? { ...editingUser, ...values } : u));
     toast({
       title: "User Updated",
       description: `User "${values.name}" has been updated.`,
