@@ -43,6 +43,7 @@ const loginSchema = z.object({
 });
 
 const signupSchema = z.object({
+  sponsorId: z.string().min(1, { message: "Sponsor ID is required." }),
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
   email: z.string().email({ message: "Invalid email address." }),
   mobile: z.string().min(10, { message: "Mobile number must be at least 10 digits." }),
@@ -69,7 +70,7 @@ export default function AuthPage() {
 
   const signupForm = useForm<z.infer<typeof signupSchema>>({
     resolver: zodResolver(signupSchema),
-    defaultValues: { name: "", email: "", mobile: "", password: "", terms: false },
+    defaultValues: { sponsorId: "", name: "", email: "", mobile: "", password: "", terms: false },
   });
 
   const onLoginSubmit = (values: z.infer<typeof loginSchema>) => {
@@ -247,6 +248,19 @@ export default function AuthPage() {
             <CardContent>
               <Form {...signupForm}>
                 <form onSubmit={signupForm.handleSubmit(onSignup)} className="space-y-6">
+                  <FormField
+                    control={signupForm.control}
+                    name="sponsorId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Sponsor ID</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter sponsor ID" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                   <FormField
                     control={signupForm.control}
                     name="name"
