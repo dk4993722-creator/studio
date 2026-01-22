@@ -38,7 +38,7 @@ import {
 import { cn } from "@/lib/utils";
 
 const loginSchema = z.object({
-  email: z.string().email({ message: "Invalid email address." }),
+  identifier: z.string().min(1, { message: "User ID or Email is required." }),
   password: z.string().min(1, { message: "Password is required." }),
 });
 
@@ -65,7 +65,7 @@ export default function AuthPage() {
 
   const loginForm = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
-    defaultValues: { email: "", password: "" },
+    defaultValues: { identifier: "", password: "" },
   });
 
   const signupForm = useForm<z.infer<typeof signupSchema>>({
@@ -76,11 +76,11 @@ export default function AuthPage() {
   const onLoginSubmit = (values: z.infer<typeof loginSchema>) => {
     switch (loginRole) {
       case 'dealer':
-        console.log("User login attempt with:", values.email);
+        console.log("User login attempt with:", values.identifier);
         router.push("/dashboard");
         break;
       case 'admin':
-        if (values.email.trim() === 'admin@yunex.com' && values.password.trim() === 'admin') {
+        if (values.identifier.trim() === 'admin@yunex.com' && values.password.trim() === 'admin') {
           router.push('/admin/dashboard');
         } else {
           toast({
@@ -91,7 +91,7 @@ export default function AuthPage() {
         }
         break;
       case 'agency':
-        console.log("Agency login attempt with:", values.email);
+        console.log("Agency login attempt with:", values.identifier);
         toast({
             title: "Coming Soon",
             description: "The agency dashboard is not yet implemented.",
@@ -115,8 +115,8 @@ export default function AuthPage() {
     dealer: {
       title: "User Login",
       description: "Access your YUNEX wallet.",
-      emailLabel: "Email",
-      emailPlaceholder: "you@example.com",
+      emailLabel: "User ID / Email",
+      emailPlaceholder: "Enter your User ID or Email",
       passwordLabel: "Password",
       buttonText: "Login"
     },
@@ -197,7 +197,7 @@ export default function AuthPage() {
                 <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-6">
                   <FormField
                     control={loginForm.control}
-                    name="email"
+                    name="identifier"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>{currentRoleConfig.emailLabel}</FormLabel>
