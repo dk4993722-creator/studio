@@ -29,7 +29,7 @@ import {
   DialogTrigger,
   DialogClose,
 } from "@/components/ui/dialog";
-import { ArrowLeft, Edit, LogOut, Trash2 } from "lucide-react";
+import { ArrowLeft, Edit, LogOut, Trash2, Eye, EyeOff } from "lucide-react";
 import { YunexLogo } from "@/components/yunex-logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import placeholderImages from "@/lib/placeholder-images.json";
@@ -56,11 +56,11 @@ import {
 } from "@/components/ui/select";
 
 const mockUsersData = [
-  { id: 'YUNEX12345', sponsorId: 'YUNEXSP001', name: 'Sanjay Kumar', email: 'sanjay@example.com', mobile: '9876543210', role: 'Associate', status: 'Active' },
-  { id: 'YUNEX54321', sponsorId: 'YUNEXSP002', name: 'Priya Sharma', email: 'priya@example.com', mobile: '9876543211', role: 'Dealer', status: 'Active' },
-  { id: 'YUNEX67890', sponsorId: 'YUNEXSP001', name: 'Amit Singh', email: 'amit@example.com', mobile: '9876543212', role: 'Associate', status: 'Inactive' },
-  { id: 'YUNEX09876', sponsorId: 'YUNEXSP003', name: 'Deepika Rao', email: 'deepika@example.com', mobile: '9876543213', role: 'Associate', status: 'Active' },
-  { id: 'YUNEX11223', sponsorId: 'YUNEXSP002', name: 'Rohan Gupta', email: 'rohan@example.com', mobile: '9876543214', role: 'Dealer', status: 'Pending' },
+  { id: 'YUNEX12345', sponsorId: 'YUNEXSP001', name: 'Sanjay Kumar', email: 'sanjay@example.com', mobile: '9876543210', role: 'Associate', status: 'Active', password: 'password123' },
+  { id: 'YUNEX54321', sponsorId: 'YUNEXSP002', name: 'Priya Sharma', email: 'priya@example.com', mobile: '9876543211', role: 'Dealer', status: 'Active', password: 'password456' },
+  { id: 'YUNEX67890', sponsorId: 'YUNEXSP001', name: 'Amit Singh', email: 'amit@example.com', mobile: '9876543212', role: 'Associate', status: 'Inactive', password: 'password789' },
+  { id: 'YUNEX09876', sponsorId: 'YUNEXSP003', name: 'Deepika Rao', email: 'deepika@example.com', mobile: '9876543213', role: 'Associate', status: 'Active', password: 'password101' },
+  { id: 'YUNEX11223', sponsorId: 'YUNEXSP002', name: 'Rohan Gupta', email: 'rohan@example.com', mobile: '9876543214', role: 'Dealer', status: 'Pending', password: 'password112' },
 ];
 
 type User = typeof mockUsersData[0];
@@ -71,6 +71,7 @@ const userSchema = z.object({
   mobile: z.string().min(10, "Mobile number must be at least 10 digits."),
   role: z.enum(["Associate", "Dealer"]),
   status: z.enum(["Active", "Inactive", "Pending"]),
+  password: z.string().min(8, "Password must be at least 8 characters.").optional().or(z.literal('')),
 });
 
 
@@ -80,6 +81,7 @@ export default function AdminUsersPage() {
   const [users, setUsers] = useState(mockUsersData);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<z.infer<typeof userSchema>>({
     resolver: zodResolver(userSchema),
@@ -93,13 +95,22 @@ export default function AdminUsersPage() {
       mobile: user.mobile,
       role: user.role as "Associate" | "Dealer",
       status: user.status as "Active" | "Inactive" | "Pending",
+      password: "",
     });
     setIsEditDialogOpen(true);
   };
 
   const onEditSubmit = (values: z.infer<typeof userSchema>) => {
     if (!editingUser) return;
-    setUsers(users.map(u => u.id === editingUser.id ? { ...editingUser, ...values } : u));
+    setUsers(users.map(u => 
+      u.id === editingUser.id 
+        ? { 
+            ...u, 
+            ...values,
+            password: values.password ? values.password : u.password
+          } 
+        : u
+    ));
     toast({
       title: "User Updated",
       description: `User "${values.name}" has been updated.`,
@@ -161,6 +172,7 @@ export default function AdminUsersPage() {
                   <TableHead>Name</TableHead>
                   <TableHead>Email</TableHead>
                   <TableHead>Mobile No.</TableHead>
+                  <TableHead>Password</TableHead>
                   <TableHead>Role</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
@@ -175,6 +187,7 @@ export default function AdminUsersPage() {
                     <TableCell>{user.name}</TableCell>
                     <TableCell>{user.email}</TableCell>
                     <TableCell>{user.mobile}</TableCell>
+                    <TableCell>{'••••••••'}</TableCell>
                     <TableCell>{user.role}</TableCell>
                     <TableCell>
                       <Badge
@@ -263,6 +276,34 @@ export default function AdminUsersPage() {
                       <FormLabel>Mobile No.</FormLabel>
                       <FormControl>
                         <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>New Password</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Input
+                            type={showPassword ? 'text' : 'password'}
+                            placeholder="Leave blank to keep current"
+                            {...field}
+                          />
+                           <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground"
+                              onClick={() => setShowPassword(!showPassword)}
+                            >
+                              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                            </Button>
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
