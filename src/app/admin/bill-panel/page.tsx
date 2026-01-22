@@ -374,7 +374,14 @@ export default function BillPanelPage() {
                 <TabsTrigger value="spare-part">Spare Parts Invoices</TabsTrigger>
               </TabsList>
               <TabsContent value="all" className="mt-4">
-                <Card><CardHeader><CardTitle>All Invoice Transactions</CardTitle></CardHeader><CardContent>{renderTable(allTransactions)}</CardContent></Card>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>All Invoice Transactions</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {renderTable(allTransactions)}
+                  </CardContent>
+                </Card>
               </TabsContent>
               <TabsContent value="e-vehicle" className="mt-4 space-y-6">
                 <Card>
@@ -383,8 +390,12 @@ export default function BillPanelPage() {
                     <FormProvider {...vehicleInvoiceFormMethods}>
                       <form onSubmit={vehicleInvoiceFormMethods.handleSubmit(handleVehicleInvoiceSubmit)} className="space-y-6">
                          <h3 className="text-lg font-medium">Branch Details</h3><Separator />
-                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                            <FormField control={vehicleInvoiceFormMethods.control} name="branchCode" render={({ field }) => (<FormItem><FormLabel>Branch</FormLabel><Select onValueChange={(value) => { field.onChange(value); const b = branches.find(br => br.branchCode === value); if(b) { vehicleInvoiceFormMethods.setValue("branchName", b.district); vehicleInvoiceFormMethods.setValue("branchDistrict", b.district); vehicleInvoiceFormMethods.setValue("branchCity", b.district); } }} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a branch" /></SelectTrigger></FormControl><SelectContent>{branches.map((branch) => (<SelectItem key={branch.id} value={branch.branchCode}>{branch.district} ({branch.branchCode})</SelectItem>))}</SelectContent></Select><FormMessage /></FormItem>)} />
+                            <FormItem>
+                             <FormLabel>Branch Code</FormLabel>
+                             <FormControl><Input value={watchedVehicleBranch || ''} disabled /></FormControl>
+                           </FormItem>
                            <FormField control={vehicleInvoiceFormMethods.control} name="branchGstNo" render={({ field }) => (<FormItem><FormLabel>GST No.</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                            <FormField control={vehicleInvoiceFormMethods.control} name="branchContact" render={({ field }) => (<FormItem><FormLabel>Contact</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                            <FormField control={vehicleInvoiceFormMethods.control} name="branchAddress" render={({ field }) => (<FormItem className="md:col-span-2"><FormLabel>Address</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
@@ -400,7 +411,14 @@ export default function BillPanelPage() {
                     </FormProvider>
                   </CardContent>
                 </Card>
-                <Card><CardHeader><CardTitle>E. Vehicle Invoice History</CardTitle></CardHeader><CardContent>{renderTable(allTransactions.filter(t => t.type === 'E-Vehicle'))}</CardContent></Card>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>E. Vehicle Invoice History</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {renderTable(allTransactions.filter(t => t.type === 'E-Vehicle'))}
+                  </CardContent>
+                </Card>
               </TabsContent>
               <TabsContent value="spare-part" className="mt-4 space-y-6">
                 <Card>
@@ -423,7 +441,14 @@ export default function BillPanelPage() {
                     </FormProvider>
                   </CardContent>
                 </Card>
-                <Card><CardHeader><CardTitle>Spare Parts Invoice History</CardTitle></CardHeader><CardContent>{renderTable(allTransactions.filter(t => t.type === 'Spare Part'))}</CardContent></Card>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Spare Parts Invoice History</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {renderTable(allTransactions.filter(t => t.type === 'Spare Part'))}
+                  </CardContent>
+                </Card>
               </TabsContent>
             </Tabs>
           </CardContent>
@@ -432,5 +457,3 @@ export default function BillPanelPage() {
     </div>
   );
 }
-
-    
