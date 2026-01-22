@@ -29,7 +29,7 @@ import {
   DialogTrigger,
   DialogClose,
 } from "@/components/ui/dialog";
-import { ArrowLeft, Edit, LogOut, Trash2, Eye, EyeOff } from "lucide-react";
+import { ArrowLeft, Edit, LogOut, Trash2, Eye, EyeOff, PlusCircle } from "lucide-react";
 import { YunexLogo } from "@/components/yunex-logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import placeholderImages from "@/lib/placeholder-images.json";
@@ -68,23 +68,46 @@ type User = {
 
 const mockUsersData: User[] = [];
 
-const editUserSchema = z.object({
+const userSchema = z.object({
+  id: z.string().min(1, "User ID is required."),
+  sponsorId: z.string().min(1, "Sponsor ID is required."),
   name: z.string().min(2, "Name must be at least 2 characters."),
   email: z.string().email("Invalid email address."),
   mobile: z.string().min(10, "Mobile number must be at least 10 digits."),
+  password: z.string().min(8, "Password must be at least 8 characters."),
   role: z.enum(["Associate", "Dealer"]),
   status: z.enum(["Active", "Inactive", "Pending"]),
-  password: z.string().min(8, "Password must be at least 8 characters.").optional().or(z.literal('')),
 });
+
+const editUserSchema = userSchema.partial().extend({
+  password: userSchema.shape.password.optional().or(z.literal('')),
+});
+
 
 export default function AdminUsersPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [users, setUsers] = useState(mockUsersData);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
-  const [showPassword, setShowPassword] = useState(false);
+  const [showAddPassword, setShowAddPassword] = useState(false);
+  const [showEditPassword, setShowEditPassword] = useState(false);
   const [visiblePasswords, setVisiblePasswords] = useState(new Set());
+
+  const addUserForm = useForm<z.infer<typeof userSchema>>({
+    resolver: zodResolver(userSchema),
+    defaultValues: {
+      id: "",
+      sponsorId: "",
+      name: "",
+      email: "",
+      mobile: "",
+      password: "",
+      role: "Associate",
+      status: "Pending",
+    },
+  });
 
   const editForm = useForm<z.infer<typeof editUserSchema>>({
     resolver: zodResolver(editUserSchema),
@@ -114,6 +137,23 @@ export default function AdminUsersPage() {
     });
     setIsEditDialogOpen(true);
   };
+  
+  const onAddUserSubmit = (values: z.infer<typeof userSchema>) => {
+    if (users.some(u => u.id.toLowerCase() === values.id.toLowerCase())) {
+        addUserForm.setError("id", {
+            type: "manual",
+            message: "User ID must be unique."
+        });
+        return;
+    }
+    setUsers(prev => [...prev, values]);
+    toast({
+      title: "User Added",
+      description: `User "${values.name}" has been successfully created.`,
+    });
+    setIsAddDialogOpen(false);
+    addUserForm.reset();
+  };
 
   const onEditSubmit = (values: z.infer<typeof editUserSchema>) => {
     if (!editingUser) return;
@@ -128,7 +168,7 @@ export default function AdminUsersPage() {
     ));
     toast({
       title: "User Updated",
-      description: `User "${values.name}" has been updated.`,
+      description: `User "${values.name || editingUser.name}" has been updated.`,
     });
     setIsEditDialogOpen(false);
     setEditingUser(null);
@@ -178,6 +218,68 @@ export default function AdminUsersPage() {
               <CardTitle>All Users</CardTitle>
               <CardDescription>View and manage all users in the system.</CardDescription>
             </div>
+            <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+                <DialogTrigger asChild>
+                    <Button>
+                        <PlusCircle className="mr-2 h-4 w-4" />
+                        Add User
+                    </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                        <DialogTitle>Add New User</DialogTitle>
+                        <DialogDescription>
+                            Fill in the details for the new user.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <Form {...addUserForm}>
+                        <form onSubmit={addUserForm.handleSubmit(onAddUserSubmit)} className="space-y-4">
+                             <FormField control={addUserForm.control} name="id" render={({ field }) => (<FormItem><FormLabel>User ID</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                             <FormField control={addUserForm.control} name="sponsorId" render={({ field }) => (<FormItem><FormLabel>Sponsor ID</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                             <FormField control={addUserForm.control} name="name" render={({ field }) => (<FormItem><FormLabel>Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                             <FormField control={addUserForm.control} name="email" render={({ field }) => (<FormItem><FormLabel>Email</FormLabel><FormControl><Input type="email" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                             <FormField control={addUserForm.control} name="mobile" render={({ field }) => (<FormItem><FormLabel>Mobile No.</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                             <FormField
+                                control={addUserForm.control}
+                                name="password"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Password</FormLabel>
+                                    <div className="relative">
+                                      <FormControl>
+                                        <Input
+                                          type={showAddPassword ? "text" : "password"}
+                                          {...field}
+                                        />
+                                      </FormControl>
+                                      <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="icon"
+                                        className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground"
+                                        onClick={() => setShowAddPassword(!showAddPassword)}
+                                      >
+                                        {showAddPassword ? (
+                                          <EyeOff className="h-4 w-4" />
+                                        ) : (
+                                          <Eye className="h-4 w-4" />
+                                        )}
+                                      </Button>
+                                    </div>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                             <FormField control={addUserForm.control} name="role" render={({ field }) => (<FormItem><FormLabel>Role</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a role" /></SelectTrigger></FormControl><SelectContent><SelectItem value="Associate">Associate</SelectItem><SelectItem value="Dealer">Dealer</SelectItem></SelectContent></Select><FormMessage /></FormItem>)}/>
+                             <FormField control={addUserForm.control} name="status" render={({ field }) => (<FormItem><FormLabel>Status</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a status" /></SelectTrigger></FormControl><SelectContent><SelectItem value="Active">Active</SelectItem><SelectItem value="Inactive">Inactive</SelectItem><SelectItem value="Pending">Pending</SelectItem></SelectContent></Select><FormMessage /></FormItem>)}/>
+                            <DialogFooter>
+                                <Button type="button" variant="secondary" onClick={() => setIsAddDialogOpen(false)}>Cancel</Button>
+                                <Button type="submit">Create User</Button>
+                            </DialogFooter>
+                        </form>
+                    </Form>
+                </DialogContent>
+            </Dialog>
           </CardHeader>
           <CardContent>
             <Table>
@@ -196,68 +298,76 @@ export default function AdminUsersPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {users.map((user, index) => (
-                  <TableRow key={user.id}>
-                    <TableCell>{index + 1}</TableCell>
-                    <TableCell className="font-medium">{user.id}</TableCell>
-                    <TableCell>{user.sponsorId}</TableCell>
-                    <TableCell>{user.name}</TableCell>
-                    <TableCell>{user.email}</TableCell>
-                    <TableCell>{user.mobile}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <span>
-                          {visiblePasswords.has(user.id) ? user.password : '••••••••'}
-                        </span>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-7 w-7"
-                          onClick={() => togglePasswordVisibility(user.id)}
-                        >
-                          {visiblePasswords.has(user.id) ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                        </Button>
-                      </div>
-                    </TableCell>
-                    <TableCell>{user.role}</TableCell>
-                    <TableCell>
-                      <Badge
-                        variant={user.status === 'Active' ? 'default' : user.status === 'Inactive' ? 'destructive' : 'secondary'}
-                        className={user.status === 'Active' ? 'bg-green-500/20 text-green-700 border-green-500/40' : user.status === 'Inactive' ? 'bg-red-500/20 text-red-700 border-red-500/40' : ''}
-                      >
-                        {user.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Button variant="ghost" size="icon" onClick={() => handleEditClick(user)}>
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Dialog>
-                        <DialogTrigger asChild>
-                            <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
-                                <Trash2 className="h-4 w-4" />
+                {users.length > 0 ? (
+                    users.map((user, index) => (
+                    <TableRow key={user.id}>
+                        <TableCell>{index + 1}</TableCell>
+                        <TableCell className="font-medium">{user.id}</TableCell>
+                        <TableCell>{user.sponsorId}</TableCell>
+                        <TableCell>{user.name}</TableCell>
+                        <TableCell>{user.email}</TableCell>
+                        <TableCell>{user.mobile}</TableCell>
+                        <TableCell>
+                        <div className="flex items-center gap-2">
+                            <span>
+                            {visiblePasswords.has(user.id) ? user.password : '••••••••'}
+                            </span>
+                            <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7"
+                            onClick={() => togglePasswordVisibility(user.id)}
+                            >
+                            {visiblePasswords.has(user.id) ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                             </Button>
-                        </DialogTrigger>
-                         <DialogContent>
-                          <DialogHeader>
-                            <DialogTitle>Delete User: {user.name}?</DialogTitle>
-                            <DialogDescription>
-                              This action cannot be undone. Are you sure you want to permanently delete this user?
-                            </DialogDescription>
-                          </DialogHeader>
-                          <DialogFooter>
-                            <DialogClose asChild>
-                              <Button variant="secondary">Cancel</Button>
-                            </DialogClose>
-                             <DialogClose asChild>
-                              <Button variant="destructive" onClick={() => handleDeleteUser(user.id)}>Delete</Button>
-                            </DialogClose>
-                          </DialogFooter>
-                        </DialogContent>
-                      </Dialog>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                        </div>
+                        </TableCell>
+                        <TableCell>{user.role}</TableCell>
+                        <TableCell>
+                        <Badge
+                            variant={user.status === 'Active' ? 'default' : user.status === 'Inactive' ? 'destructive' : 'secondary'}
+                            className={user.status === 'Active' ? 'bg-green-500/20 text-green-700 border-green-500/40' : user.status === 'Inactive' ? 'bg-red-500/20 text-red-700 border-red-500/40' : ''}
+                        >
+                            {user.status}
+                        </Badge>
+                        </TableCell>
+                        <TableCell className="text-right">
+                        <Button variant="ghost" size="icon" onClick={() => handleEditClick(user)}>
+                            <Edit className="h-4 w-4" />
+                        </Button>
+                        <Dialog>
+                            <DialogTrigger asChild>
+                                <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
+                                    <Trash2 className="h-4 w-4" />
+                                </Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                            <DialogHeader>
+                                <DialogTitle>Delete User: {user.name}?</DialogTitle>
+                                <DialogDescription>
+                                This action cannot be undone. Are you sure you want to permanently delete this user?
+                                </DialogDescription>
+                            </DialogHeader>
+                            <DialogFooter>
+                                <DialogClose asChild>
+                                <Button variant="secondary">Cancel</Button>
+                                </DialogClose>
+                                <DialogClose asChild>
+                                <Button variant="destructive" onClick={() => handleDeleteUser(user.id)}>Delete</Button>
+                                </DialogClose>
+                            </DialogFooter>
+                            </DialogContent>
+                        </Dialog>
+                        </TableCell>
+                    </TableRow>
+                    ))
+                ) : (
+                    <TableRow>
+                        <TableCell colSpan={10} className="text-center">
+                            No users found. Click 'Add User' to create one.
+                        </TableCell>
+                    </TableRow>
+                )}
               </TableBody>
             </Table>
           </CardContent>
@@ -273,45 +383,9 @@ export default function AdminUsersPage() {
             </DialogHeader>
             <Form {...editForm}>
               <form onSubmit={editForm.handleSubmit(onEditSubmit)} className="space-y-4">
-                <FormField
-                  control={editForm.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Name</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={editForm.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input type="email" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                 <FormField
-                  control={editForm.control}
-                  name="mobile"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Mobile No.</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <FormField control={editForm.control} name="name" render={({ field }) => (<FormItem><FormLabel>Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)}/>
+                <FormField control={editForm.control} name="email" render={({ field }) => (<FormItem><FormLabel>Email</FormLabel><FormControl><Input type="email" {...field} /></FormControl><FormMessage /></FormItem>)}/>
+                 <FormField control={editForm.control} name="mobile" render={({ field }) => (<FormItem><FormLabel>Mobile No.</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)}/>
                 <FormField
                   control={editForm.control}
                   name="password"
@@ -321,7 +395,7 @@ export default function AdminUsersPage() {
                       <div className="relative">
                         <FormControl>
                           <Input
-                            type={showPassword ? "text" : "password"}
+                            type={showEditPassword ? "text" : "password"}
                             placeholder="Leave blank to keep current"
                             {...field}
                           />
@@ -331,9 +405,9 @@ export default function AdminUsersPage() {
                           variant="ghost"
                           size="icon"
                           className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground"
-                          onClick={() => setShowPassword(!showPassword)}
+                          onClick={() => setShowEditPassword(!showEditPassword)}
                         >
-                          {showPassword ? (
+                          {showEditPassword ? (
                             <EyeOff className="h-4 w-4" />
                           ) : (
                             <Eye className="h-4 w-4" />
@@ -344,49 +418,8 @@ export default function AdminUsersPage() {
                     </FormItem>
                   )}
                 />
-                <FormField
-                  control={editForm.control}
-                  name="role"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Role</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a role" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="Associate">Associate</SelectItem>
-                          <SelectItem value="Dealer">Dealer</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={editForm.control}
-                  name="status"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Status</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a status" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="Active">Active</SelectItem>
-                          <SelectItem value="Inactive">Inactive</SelectItem>
-                          <SelectItem value="Pending">Pending</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <FormField control={editForm.control} name="role" render={({ field }) => (<FormItem><FormLabel>Role</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a role" /></SelectTrigger></FormControl><SelectContent><SelectItem value="Associate">Associate</SelectItem><SelectItem value="Dealer">Dealer</SelectItem></SelectContent></Select><FormMessage /></FormItem>)}/>
+                <FormField control={editForm.control} name="status" render={({ field }) => (<FormItem><FormLabel>Status</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a status" /></SelectTrigger></FormControl><SelectContent><SelectItem value="Active">Active</SelectItem><SelectItem value="Inactive">Inactive</SelectItem><SelectItem value="Pending">Pending</SelectItem></SelectContent></Select><FormMessage /></FormItem>)}/>
                 <DialogFooter>
                   <Button type="button" variant="secondary" onClick={() => setIsEditDialogOpen(false)}>
                     Cancel
