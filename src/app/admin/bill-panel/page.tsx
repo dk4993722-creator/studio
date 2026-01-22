@@ -129,7 +129,7 @@ export default function BillPanelPage() {
   const watchedSparePartSourceBranch = sparePartInvoiceFormMethods.watch("sourceBranchCode");
   const watchedSparePart = sparePartInvoiceFormMethods.watch("sparePart");
 
-  const availableVehicleModels = allVehicleStock.filter(item => item.branchCode === watchedVehicleBranch && item.closingStock > 0).map(item => item.eVehicle);
+  const availableVehicleModels = allVehicleStock.map(item => item.eVehicle);
   const selectedVehicleStock = allVehicleStock.find(item => item.branchCode === watchedVehicleBranch && item.eVehicle === watchedVehicleModel);
 
   const availableSpareParts = allSparePartStock.filter(item => item.branchCode === watchedSparePartSourceBranch && item.closingStock > 0).map(item => item.sparePart);
