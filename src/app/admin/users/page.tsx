@@ -64,6 +64,7 @@ type User = {
     role: 'Associate' | 'Dealer';
     status: 'Active' | 'Inactive' | 'Pending';
     password: string;
+    isAdminCreated?: boolean;
 };
 
 const mockUsersData: User[] = [];
@@ -146,7 +147,8 @@ export default function AdminUsersPage() {
         });
         return;
     }
-    setUsers(prev => [...prev, values]);
+    const newUser: User = { ...values, isAdminCreated: true };
+    setUsers(prev => [...prev, newUser]);
     toast({
       title: "User Added",
       description: `User "${values.name}" has been successfully created.`,
@@ -175,6 +177,15 @@ export default function AdminUsersPage() {
   };
 
   const handleDeleteUser = (userId: string) => {
+    const userToDelete = users.find(user => user.id === userId);
+    if (userToDelete?.isAdminCreated) {
+        toast({
+            title: "Deletion Prevented",
+            description: "Users created by an admin cannot be deleted.",
+            variant: "destructive",
+        });
+        return;
+    }
     setUsers(users.filter(user => user.id !== userId));
     toast({
       title: "User Deleted",
@@ -434,5 +445,3 @@ export default function AdminUsersPage() {
     </div>
   );
 }
-
-    
