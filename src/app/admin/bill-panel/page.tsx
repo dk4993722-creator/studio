@@ -120,7 +120,7 @@ export default function BillPanelPage() {
   const [allVehicleStock, setAllVehicleStock] = useState<VehicleStockItem[]>([]);
   const [allSparePartStock, setAllSparePartStock] = useState<SparePartStockItem[]>([]);
 
-  const vehicleInvoiceFormMethods = useForm<z.infer<typeof vehicleInvoiceSchema>>({ resolver: zodResolver(vehicleInvoiceSchema), defaultValues: { quantity: 1, branchName: "", branchCode: "", branchGstNo: "", branchContact: "", branchAddress: "", branchCity: "", branchDistrict: "", branchState: "", branchPinCode: "", model: "", noOfSeat: "", chassisNo: "", motorNo: "", controllerNo: "", chargerNo1: "", chargerNo2: "", batteryMaker: "", batteryNo1: "", batteryNo2: "", batteryNo3: "", batteryNo4: "", batteryNo5: "", batteryNo6: "" } });
+  const vehicleInvoiceFormMethods = useForm<z.infer<typeof vehicleInvoiceSchema>>({ resolver: zodResolver(vehicleInvoiceSchema), defaultValues: { quantity: 1, rate: 0, branchName: "", branchCode: "", branchGstNo: "", branchContact: "", branchAddress: "", branchCity: "", branchDistrict: "", branchState: "", branchPinCode: "", model: "", noOfSeat: "", chassisNo: "", motorNo: "", controllerNo: "", chargerNo1: "", chargerNo2: "", batteryMaker: "", batteryNo1: "", batteryNo2: "", batteryNo3: "", batteryNo4: "", batteryNo5: "", batteryNo6: "" } });
   const sparePartInvoiceFormMethods = useForm<z.infer<typeof sparePartInvoiceSchema>>({ resolver: zodResolver(sparePartInvoiceSchema), defaultValues: { quantity: 1 } });
 
   const watchedVehicleBranch = vehicleInvoiceFormMethods.watch("branchCode");
@@ -130,7 +130,9 @@ export default function BillPanelPage() {
   const watchedSparePart = sparePartInvoiceFormMethods.watch("sparePart");
 
   const availableVehicleModels = allVehicleStock.map(item => item.eVehicle);
-  const selectedVehicleStock = allVehicleStock.find(item => item.branchCode === watchedVehicleBranch && item.eVehicle === watchedVehicleModel);
+  const selectedVehicleStock = allVehicleStock
+    .filter(item => item.branchCode === watchedVehicleBranch && item.eVehicle === watchedVehicleModel)
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
 
   const availableSpareParts = allSparePartStock.filter(item => item.branchCode === watchedSparePartSourceBranch && item.closingStock > 0).map(item => item.sparePart);
   const selectedSparePartStock = allSparePartStock.find(item => item.branchCode === watchedSparePartSourceBranch && item.sparePart === watchedSparePart);
@@ -179,6 +181,11 @@ export default function BillPanelPage() {
             vehicleInvoiceFormMethods.setValue("branchName", b.district);
             vehicleInvoiceFormMethods.setValue("branchDistrict", b.district);
             vehicleInvoiceFormMethods.setValue("branchCity", b.district);
+            vehicleInvoiceFormMethods.setValue("branchState", "Jharkhand");
+            vehicleInvoiceFormMethods.setValue("branchPinCode", "");
+            vehicleInvoiceFormMethods.setValue("branchContact", "");
+            vehicleInvoiceFormMethods.setValue("branchAddress", "");
+            vehicleInvoiceFormMethods.setValue("branchGstNo", "");
         }
         vehicleInvoiceFormMethods.resetField("model");
     }
@@ -296,7 +303,7 @@ export default function BillPanelPage() {
     setAllTransactions(prev => [newTransaction, ...prev].sort((a, b) => b.date.getTime() - a.date.getTime()));
 
     toast({ title: "Invoice Generated & Stock Updated", description: `Invoice ${newInvoice.id} created for ${data.branchName}. Branch stock has been updated.` });
-    vehicleInvoiceFormMethods.reset({ quantity: 1, branchName: "", branchCode: "", branchGstNo: "", branchContact: "", branchAddress: "", branchCity: "", branchDistrict: "", branchState: "", branchPinCode: "", model: "", noOfSeat: "", chassisNo: "", motorNo: "", controllerNo: "", chargerNo1: "", chargerNo2: "", batteryMaker: "", batteryNo1: "", batteryNo2: "", batteryNo3: "", batteryNo4: "", batteryNo5: "", batteryNo6: "" });
+    vehicleInvoiceFormMethods.reset({ quantity: 1, rate: 0, branchName: "", branchCode: "", branchGstNo: "", branchContact: "", branchAddress: "", branchCity: "", branchDistrict: "", branchState: "", branchPinCode: "", model: "", noOfSeat: "", chassisNo: "", motorNo: "", controllerNo: "", chargerNo1: "", chargerNo2: "", batteryMaker: "", batteryNo1: "", batteryNo2: "", batteryNo3: "", batteryNo4: "", batteryNo5: "", batteryNo6: "" });
   };
 
   const handleSparePartInvoiceSubmit = (data: z.infer<typeof sparePartInvoiceSchema>) => {
@@ -474,7 +481,7 @@ export default function BillPanelPage() {
                                     </SelectTrigger>
                                   </FormControl>
                                   <SelectContent>
-                                    {[...new Set(availableVehicleModels)].map(model => <SelectItem key={model} value={model}>{model}</SelectItem>)}
+                                    {[...new Set(allVehicleStock.map(item => item.eVehicle))].map(model => <SelectItem key={model} value={model}>{model}</SelectItem>)}
                                   </SelectContent>
                                 </Select>
                                 <FormMessage />
