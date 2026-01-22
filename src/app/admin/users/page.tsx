@@ -29,7 +29,7 @@ import {
   DialogTrigger,
   DialogClose,
 } from "@/components/ui/dialog";
-import { ArrowLeft, Edit, LogOut, Trash2, Eye, EyeOff } from "lucide-react";
+import { ArrowLeft, Edit, LogOut, Trash2, Eye, EyeOff, PlusCircle } from "lucide-react";
 import { YunexLogo } from "@/components/yunex-logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import placeholderImages from "@/lib/placeholder-images.json";
@@ -65,7 +65,7 @@ const mockUsersData = [
 
 type User = typeof mockUsersData[0];
 
-const userSchema = z.object({
+const editUserSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters."),
   email: z.string().email("Invalid email address."),
   mobile: z.string().min(10, "Mobile number must be at least 10 digits."),
@@ -74,18 +74,45 @@ const userSchema = z.object({
   password: z.string().min(8, "Password must be at least 8 characters.").optional().or(z.literal('')),
 });
 
+const addUserSchema = z.object({
+  id: z.string().min(1, "User ID is required."),
+  sponsorId: z.string().min(1, "Sponsor ID is required."),
+  name: z.string().min(2, "Name must be at least 2 characters."),
+  email: z.string().email("Invalid email address."),
+  mobile: z.string().min(10, "Mobile number must be at least 10 digits."),
+  password: z.string().min(8, "Password must be at least 8 characters."),
+  role: z.enum(["Associate", "Dealer"]),
+  status: z.enum(["Active", "Inactive", "Pending"]),
+});
+
 
 export default function AdminUsersPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [users, setUsers] = useState(mockUsersData);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [showAddPassword, setShowAddPassword] = useState(false);
   const [visiblePasswords, setVisiblePasswords] = useState(new Set());
 
-  const form = useForm<z.infer<typeof userSchema>>({
-    resolver: zodResolver(userSchema),
+  const editForm = useForm<z.infer<typeof editUserSchema>>({
+    resolver: zodResolver(editUserSchema),
+  });
+  
+  const addUserForm = useForm<z.infer<typeof addUserSchema>>({
+    resolver: zodResolver(addUserSchema),
+    defaultValues: {
+      id: '',
+      sponsorId: '',
+      name: '',
+      email: '',
+      mobile: '',
+      password: '',
+      role: 'Associate',
+      status: 'Pending',
+    },
   });
 
   const togglePasswordVisibility = (userId: string) => {
@@ -102,7 +129,7 @@ export default function AdminUsersPage() {
 
   const handleEditClick = (user: User) => {
     setEditingUser(user);
-    form.reset({
+    editForm.reset({
       name: user.name,
       email: user.email,
       mobile: user.mobile,
@@ -113,7 +140,7 @@ export default function AdminUsersPage() {
     setIsEditDialogOpen(true);
   };
 
-  const onEditSubmit = (values: z.infer<typeof userSchema>) => {
+  const onEditSubmit = (values: z.infer<typeof editUserSchema>) => {
     if (!editingUser) return;
     setUsers(users.map(u => 
       u.id === editingUser.id 
@@ -130,6 +157,33 @@ export default function AdminUsersPage() {
     });
     setIsEditDialogOpen(false);
     setEditingUser(null);
+  };
+  
+  const onAddUserSubmit = (values: z.infer<typeof addUserSchema>) => {
+    if (users.some(user => user.id.toLowerCase() === values.id.toLowerCase())) {
+        addUserForm.setError("id", {
+            type: "manual",
+            message: "User ID must be unique."
+        });
+        return;
+    }
+    const newUser: User = {
+        id: values.id,
+        sponsorId: values.sponsorId,
+        name: values.name,
+        email: values.email,
+        mobile: values.mobile,
+        password: values.password,
+        role: values.role,
+        status: values.status,
+    };
+    setUsers(prev => [newUser, ...prev]);
+    toast({
+        title: "User Added",
+        description: `User "${values.name}" has been successfully added.`,
+    });
+    addUserForm.reset();
+    setIsAddDialogOpen(false);
   };
 
   const handleDeleteUser = (userId: string) => {
@@ -171,9 +225,43 @@ export default function AdminUsersPage() {
         </div>
         
         <Card>
-          <CardHeader>
-            <CardTitle>All Users</CardTitle>
-            <CardDescription>View and manage all users in the system.</CardDescription>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+              <CardTitle>All Users</CardTitle>
+              <CardDescription>View and manage all users in the system.</CardDescription>
+            </div>
+            <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+              <DialogTrigger asChild>
+                <Button>
+                  <PlusCircle className="mr-2 h-4 w-4" />
+                  Add User
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Add New User</DialogTitle>
+                  <DialogDescription>
+                    Fill in the details to create a new user.
+                  </DialogDescription>
+                </DialogHeader>
+                <Form {...addUserForm}>
+                  <form onSubmit={addUserForm.handleSubmit(onAddUserSubmit)} className="space-y-4">
+                    <FormField control={addUserForm.control} name="id" render={({ field }) => ( <FormItem> <FormLabel>User ID</FormLabel> <FormControl><Input placeholder="Unique User ID" {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
+                    <FormField control={addUserForm.control} name="sponsorId" render={({ field }) => ( <FormItem> <FormLabel>Sponsor ID</FormLabel> <FormControl><Input placeholder="Sponsor's User ID" {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
+                    <FormField control={addUserForm.control} name="name" render={({ field }) => ( <FormItem> <FormLabel>Name</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
+                    <FormField control={addUserForm.control} name="email" render={({ field }) => ( <FormItem> <FormLabel>Email</FormLabel> <FormControl><Input type="email" {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
+                    <FormField control={addUserForm.control} name="mobile" render={({ field }) => ( <FormItem> <FormLabel>Mobile No.</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
+                    <FormField control={addUserForm.control} name="password" render={({ field }) => ( <FormItem> <FormLabel>Password</FormLabel> <FormControl> <div className="relative"> <Input type={showAddPassword ? 'text' : 'password'} {...field} /> <Button type="button" variant="ghost" size="icon" className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground" onClick={() => setShowAddPassword(!showAddPassword)}> {showAddPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />} </Button> </div> </FormControl> <FormMessage /> </FormItem> )}/>
+                    <FormField control={addUserForm.control} name="role" render={({ field }) => ( <FormItem> <FormLabel>Role</FormLabel> <Select onValueChange={field.onChange} defaultValue={field.value}> <FormControl> <SelectTrigger> <SelectValue placeholder="Select a role" /> </SelectTrigger> </FormControl> <SelectContent> <SelectItem value="Associate">Associate</SelectItem> <SelectItem value="Dealer">Dealer</SelectItem> </SelectContent> </Select> <FormMessage /> </FormItem> )}/>
+                    <FormField control={addUserForm.control} name="status" render={({ field }) => ( <FormItem> <FormLabel>Status</FormLabel> <Select onValueChange={field.onChange} defaultValue={field.value}> <FormControl> <SelectTrigger> <SelectValue placeholder="Select a status" /> </SelectTrigger> </FormControl> <SelectContent> <SelectItem value="Active">Active</SelectItem> <SelectItem value="Inactive">Inactive</SelectItem> <SelectItem value="Pending">Pending</SelectItem> </SelectContent> </Select> <FormMessage /> </FormItem> )}/>
+                    <DialogFooter>
+                      <Button type="button" variant="secondary" onClick={() => setIsAddDialogOpen(false)}> Cancel </Button>
+                      <Button type="submit">Add User</Button>
+                    </DialogFooter>
+                  </form>
+                </Form>
+              </DialogContent>
+            </Dialog>
           </CardHeader>
           <CardContent>
             <Table>
@@ -267,10 +355,10 @@ export default function AdminUsersPage() {
                 Update the user's details below.
               </DialogDescription>
             </DialogHeader>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onEditSubmit)} className="space-y-4">
+            <Form {...editForm}>
+              <form onSubmit={editForm.handleSubmit(onEditSubmit)} className="space-y-4">
                 <FormField
-                  control={form.control}
+                  control={editForm.control}
                   name="name"
                   render={({ field }) => (
                     <FormItem>
@@ -283,7 +371,7 @@ export default function AdminUsersPage() {
                   )}
                 />
                 <FormField
-                  control={form.control}
+                  control={editForm.control}
                   name="email"
                   render={({ field }) => (
                     <FormItem>
@@ -296,7 +384,7 @@ export default function AdminUsersPage() {
                   )}
                 />
                  <FormField
-                  control={form.control}
+                  control={editForm.control}
                   name="mobile"
                   render={({ field }) => (
                     <FormItem>
@@ -309,7 +397,7 @@ export default function AdminUsersPage() {
                   )}
                 />
                 <FormField
-                  control={form.control}
+                  control={editForm.control}
                   name="password"
                   render={({ field }) => (
                     <FormItem>
@@ -337,7 +425,7 @@ export default function AdminUsersPage() {
                   )}
                 />
                 <FormField
-                  control={form.control}
+                  control={editForm.control}
                   name="role"
                   render={({ field }) => (
                     <FormItem>
@@ -358,7 +446,7 @@ export default function AdminUsersPage() {
                   )}
                 />
                 <FormField
-                  control={form.control}
+                  control={editForm.control}
                   name="status"
                   render={({ field }) => (
                     <FormItem>
@@ -393,3 +481,4 @@ export default function AdminUsersPage() {
     </div>
   );
 }
+
