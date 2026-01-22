@@ -56,6 +56,26 @@ type Transaction = {
 type VehicleStockItem = { sNo: number; branchCode: string; eVehicle: string; price: number; openingStock: number; sales: number; closingStock: number; date: string; };
 type SparePartStockItem = { sNo: number; branchCode: string; sparePart: string; partCode?: string; hsnCode?: string; price?: number; openingStock: number; sales: number; closingStock: number; date: string; };
 
+const initialVehicleStockData: VehicleStockItem[] = [
+  { sNo: 1, branchCode: 'Yunex202601', eVehicle: 'Yunex-X1', price: 75000, openingStock: 50, sales: 5, closingStock: 45, date: '2024-07-29' },
+  { sNo: 2, branchCode: 'Yunex202602', eVehicle: 'Yunex-S1', price: 68000, openingStock: 30, sales: 10, closingStock: 20, date: '2024-07-29' },
+  { sNo: 3, branchCode: 'Yunex202601', eVehicle: 'Yunex-X2', price: 82000, openingStock: 40, sales: 0, closingStock: 40, date: '2024-07-29' },
+  { sNo: 4, branchCode: 'Yunex202603', eVehicle: 'Yunex-X3', price: 79000, openingStock: 25, sales: 3, closingStock: 22, date: '2024-07-29' },
+  { sNo: 5, branchCode: 'Yunex202601', eVehicle: 'Yunex-X1', price: 75000, openingStock: 45, sales: 2, closingStock: 43, date: '2024-07-30' },
+  { sNo: 6, branchCode: 'Yunex202602', eVehicle: 'Yunex-S1', price: 68000, openingStock: 20, sales: 5, closingStock: 15, date: '2024-07-30' },
+  { sNo: 7, branchCode: 'Yunex202601', eVehicle: 'Yunex-X2', price: 82000, openingStock: 40, sales: 1, closingStock: 39, date: '2024-07-30' },
+  { sNo: 8, branchCode: 'Yunex202601', eVehicle: 'Yunex-X1', price: 75000, openingStock: 43, sales: 3, closingStock: 40, date: '2024-07-31' },
+  { sNo: 9, branchCode: 'Yunex202602', eVehicle: 'Yunex-S1', price: 68000, openingStock: 15, sales: 0, closingStock: 15, date: '2024-07-31' },
+  { sNo: 10, branchCode: 'Yunex202603', eVehicle: 'Yunex-X3', price: 79000, openingStock: 22, sales: 2, closingStock: 20, date: '2024-07-31' },
+];
+
+const initialSparePartStockData: SparePartStockItem[] = [
+    { sNo: 1, branchCode: 'Yunex202601', sparePart: 'Brake Pad', partCode: 'BP-001', hsnCode: '8708', price: 550, openingStock: 200, sales: 20, closingStock: 180, date: '2024-07-30' },
+    { sNo: 2, branchCode: 'Yunex202602', sparePart: 'Headlight', partCode: 'HL-001', hsnCode: '8512', price: 1200, openingStock: 100, sales: 5, closingStock: 95, date: '2024-07-30' },
+    { sNo: 3, branchCode: 'Yunex202601', sparePart: 'Battery 48V', partCode: 'BT-48V', hsnCode: '8507', price: 15000, openingStock: 50, sales: 2, closingStock: 48, date: '2024-07-30' },
+    { sNo: 4, branchCode: 'Yunex202603', sparePart: 'Tyre 10-inch', partCode: 'TY-10', hsnCode: '4011', price: 2500, openingStock: 150, sales: 10, closingStock: 140, date: '2024-07-30' },
+];
+
 const branches = [
   { id: '01', district: 'Deoghar', branchCode: 'Yunex202601' }, { id: '02', district: 'Dumka', branchCode: 'Yunex202602' }, { id: '03', district: 'Bokaro', branchCode: 'Yunex202603' }, { id: '04', district: 'Giridih', branchCode: 'Yunex202604' }, { id: '05', district: 'Koderma', branchCode: 'Yunex202605' }, { id: '06', district: 'Godda', branchCode: 'Yunex202606' }, { id: '07', district: 'Chatra', branchCode: 'Yunex202607' }, { id: '08', district: 'Dhanbad', branchCode: 'Yunex202608' }, { id: '09', district: 'Garhwa', branchCode: 'Yunex202609' }, { id: '10', district: 'East-Singhbhum', branchCode: 'Yunex202610' }, { id: '11', district: 'Jamtara', branchCode: 'Yunex202611' }, { id: '12', district: 'Saraikela-Kharsawan', branchCode: 'Yunex202612' }, { id: '13', district: 'Ranchi', branchCode: 'Yunex202613' }, { id: '14', district: 'Pakur', branchCode: 'Yunex202614' }, { id: '15', district: 'Latehar', branchCode: 'Yunex202615' }, { id: '16', district: 'Hazaribagh', branchCode: 'Yunex202616' }, { id: '17', district: 'Lohardaga', branchCode: 'Yunex202617' }, { id: '18', district: 'Palamu', branchCode: 'Yunex202618' }, { id: '19', district: 'Ramghar', branchCode: 'Yunex202619' }, { id: '20', district: 'Simdega', branchCode: 'Yunex202620' }, { id: '21', district: 'West-Singhbhum', branchCode: 'Yunex202621' }, { id: '22', district: 'Sahebganj', branchCode: 'Yunex202622' }, { id: '23', district: 'Gumla', branchCode: 'Yunex202623' }, { id: '24', district: 'Khunti', branchCode: 'Yunex202624' },
 ];
@@ -119,8 +139,22 @@ export default function BillPanelPage() {
     try {
       const storedVehicleInvoices: VehicleInvoice[] = JSON.parse(localStorage.getItem('yunex-invoices') || '[]').map((inv: any) => ({ ...inv, date: new Date(inv.date) }));
       const storedSparePartInvoices: SparePartInvoice[] = JSON.parse(localStorage.getItem('yunex-spare-part-invoices') || '[]').map((inv: any) => ({ ...inv, date: new Date(inv.date) }));
-      setAllVehicleStock(JSON.parse(localStorage.getItem('yunex-vehicle-stock') || '[]'));
-      setAllSparePartStock(JSON.parse(localStorage.getItem('yunex-spareparts-stock') || '[]'));
+      
+      const storedVehicleStock = localStorage.getItem('yunex-vehicle-stock');
+      if (storedVehicleStock) {
+        setAllVehicleStock(JSON.parse(storedVehicleStock));
+      } else {
+        localStorage.setItem('yunex-vehicle-stock', JSON.stringify(initialVehicleStockData));
+        setAllVehicleStock(initialVehicleStockData);
+      }
+
+      const storedSparePartStock = localStorage.getItem('yunex-spareparts-stock');
+      if (storedSparePartStock) {
+        setAllSparePartStock(JSON.parse(storedSparePartStock));
+      } else {
+        localStorage.setItem('yunex-spareparts-stock', JSON.stringify(initialSparePartStockData));
+        setAllSparePartStock(initialSparePartStockData);
+      }
 
       const vehicleTransactions: Transaction[] = storedVehicleInvoices.map(inv => ({ id: inv.id, date: inv.date, total: inv.total, branchName: inv.branchName, description: inv.model || 'E-Vehicle', type: 'E-Vehicle', rawData: inv, }));
       const sparePartTransactions: Transaction[] = storedSparePartInvoices.map(inv => ({ id: inv.id, date: inv.date, total: inv.total, branchName: inv.branchName, description: inv.sparePart, type: 'Spare Part', rawData: inv, }));
@@ -146,7 +180,7 @@ export default function BillPanelPage() {
             vehicleInvoiceFormMethods.setValue("branchDistrict", b.district);
             vehicleInvoiceFormMethods.setValue("branchCity", b.district);
         }
-        vehicleInvoiceFormMethods.setValue("model", "");
+        vehicleInvoiceFormMethods.resetField("model");
     }
   }, [watchedVehicleBranch, vehicleInvoiceFormMethods]);
 
