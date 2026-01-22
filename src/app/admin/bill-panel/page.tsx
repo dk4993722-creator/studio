@@ -77,7 +77,36 @@ const initialSparePartStockData: SparePartStockItem[] = [
 ];
 
 const branches = [
-  { id: '01', district: 'Deoghar', branchCode: 'Yunex202601' }, { id: '02', district: 'Dumka', branchCode: 'Yunex202602' }, { id: '03', district: 'Bokaro', branchCode: 'Yunex202603' }, { id: '04', district: 'Giridih', branchCode: 'Yunex202604' }, { id: '05', district: 'Koderma', branchCode: 'Yunex202605' }, { id: '06', district: 'Godda', branchCode: 'Yunex202606' }, { id: '07', district: 'Chatra', branchCode: 'Yunex202607' }, { id: '08', district: 'Dhanbad', branchCode: 'Yunex202608' }, { id: '09', district: 'Garhwa', branchCode: 'Yunex202609' }, { id: '10', district: 'East-Singhbhum', branchCode: 'Yunex202610' }, { id: '11', district: 'Jamtara', branchCode: 'Yunex202611' }, { id: '12', district: 'Saraikela-Kharsawan', branchCode: 'Yunex202612' }, { id: '13', district: 'Ranchi', branchCode: 'Yunex202613' }, { id: '14', district: 'Pakur', branchCode: 'Yunex202614' }, { id: '15', district: 'Latehar', branchCode: 'Yunex202615' }, { id: '16', district: 'Hazaribagh', branchCode: 'Yunex202616' }, { id: '17', district: 'Lohardaga', branchCode: 'Yunex202617' }, { id: '18', district: 'Palamu', branchCode: 'Yunex202618' }, { id: '19', district: 'Ramghar', branchCode: 'Yunex202619' }, { id: '20', district: 'Simdega', branchCode: 'Yunex202620' }, { id: '21', district: 'West-Singhbhum', branchCode: 'Yunex202621' }, { id: '22', district: 'Sahebganj', branchCode: 'Yunex202622' }, { id: '23', district: 'Gumla', branchCode: 'Yunex202623' }, { id: '24', district: 'Khunti', branchCode: 'Yunex202624' },
+  { id: '01', district: 'Deoghar', branchName: 'Deoghar Main', address: '123 Test St, Deoghar', gstNo: '20AAAAA0000A1Z5', branchCode: 'Yunex202601', pin: '123456' },
+  { id: '25', district: 'Deoghar', branchName: 'Baidyanathdham', address: '456 Temple Rd, Deoghar', gstNo: '20AAAAA0000A1Z6', branchCode: 'Yunex202625', pin: '123457' },
+  { id: '26', district: 'Deoghar', branchName: 'Satsang Nagar', address: '789 Ashram Ave, Deoghar', gstNo: '20AAAAA0000A1Z7', branchCode: 'Yunex202626', pin: '123458' },
+  { id: '02', district: 'Dumka', branchName: 'Dumka Central', address: '456 Sample Ave, Dumka', gstNo: '20BBBBB1111B1Z4', branchCode: 'Yunex202602', pin: '234567' },
+  { id: '03', district: 'Bokaro', branchName: 'Bokaro Steel City', address: '789 Demo Rd, Bokaro', gstNo: '20CCCCC2222C1Z3', branchCode: 'Yunex202603', pin: '345678' },
+  { id: '04', district: 'Giridih', branchName: 'Giridih Town', address: '101 Example Blvd, Giridih', gstNo: '20DDDDD3333D1Z2', branchCode: 'Yunex202604', pin: '456789' },
+  { id: '05', district: 'Koderma', branchName: 'Koderma Station', address: '212 Fake St, Koderma', gstNo: '20EEEEE4444E1Z1', branchCode: 'Yunex202605', pin: '567890' },
+  { id: '06', district: 'Godda', branchName: 'Godda Market', address: '333 Placeholder Ln, Godda', gstNo: '', branchCode: 'Yunex202606', pin: '678901' },
+  { id: '07', district: 'Chatra', branchName: 'Chatra Chowk', address: '444 Dev Dr, Chatra', gstNo: '', branchCode: 'Yunex202607', pin: '789012' },
+  { id: '08', district: 'Dhanbad', branchName: 'Dhanbad City', address: '555 Code Cres, Dhanbad', gstNo: '20HHHHH8888H1Z8', branchCode: 'Yunex202608', pin: '890123' },
+  { id: '27', district: 'Dhanbad', branchName: 'Bank More', address: '111 Bank St, Dhanbad', gstNo: '20HHHHH8888H1Z9', branchCode: 'Yunex202627', pin: '890124' },
+  { id: '28', district: 'Dhanbad', branchName: 'Jharia', address: '222 Coal Rd, Jharia', gstNo: '20HHHHH8888H1Z0', branchCode: 'Yunex202628', pin: '890125' },
+  { id: '29', district: 'Dhanbad', branchName: 'Govindpur', address: '333 Govindpur St, Dhanbad', gstNo: '20HHHHH8888H1Z1', branchCode: 'Yunex202629', pin: '890126' },
+  { id: '09', district: 'Garhwa', branchName: 'Garhwa Road', address: '666 Script St, Garhwa', gstNo: '', branchCode: 'Yunex202609', pin: '901234' },
+  { id: '10', district: 'East-Singhbhum', branchName: 'Jamshedpur', address: '777 HTML Hwy, East-Singhbhum', gstNo: '20JJJJJ0000J1Z6', branchCode: 'Yunex202610', pin: '012345' },
+  { id: '11', district: 'Jamtara', branchName: 'Jamtara Cyber', address: '888 CSS Ct, Jamtara', gstNo: '', branchCode: 'Yunex202611', pin: '112233' },
+  { id: '12', district: 'Saraikela-Kharsawan', branchName: 'Saraikela Town', address: '999 JS St, Saraikela', gstNo: '', branchCode: 'Yunex202612', pin: '223344' },
+  { id: '13', district: 'Ranchi', branchName: 'Ranchi Capital', address: '121 React Rd, Ranchi', gstNo: '20MMMMM3333M1Z3', branchCode: 'Yunex202613', pin: '334455' },
+  { id: '30', district: 'Ranchi', branchName: 'Kanke Road', address: '454 Kanke Road, Ranchi', gstNo: '20MMMMM3333M1Z4', branchCode: 'Yunex202630', pin: '334456' },
+  { id: '14', district: 'Pakur', branchName: 'Pakur Border', address: '232 Next Ave, Pakur', gstNo: '', branchCode: 'Yunex202614', pin: '445566' },
+  { id: '15', district: 'Latehar', branchName: 'Latehar Hills', address: '343 TS St, Latehar', gstNo: '', branchCode: 'Yunex202615', pin: '556677' },
+  { id: '16', district: 'Hazaribagh', branchName: 'Hazaribagh National Park', address: '454 Node St, Hazaribagh', gstNo: '20QQQQQ7777Q1Z9', branchCode: 'Yunex202616', pin: '667788' },
+  { id: '17', district: 'Lohardaga', branchName: 'Lohardaga Mines', address: '565 API Ave, Lohardaga', gstNo: '', branchCode: 'Yunex202617', pin: '778899' },
+  { id: '18', district: 'Palamu', branchName: 'Palamu Fort', address: '676 JSON Jct, Palamu', gstNo: '', branchCode: 'Yunex202618', pin: '889900' },
+  { id: '19', district: 'Ramghar', branchName: 'Ramghar Cantt', address: '787 XML Xing, Ramghar', gstNo: '', branchCode: 'Yunex202619', pin: '990011' },
+  { id: '20', district: 'Simdega', branchName: 'Simdega Hockey', address: '898 Component Ct, Simdega', gstNo: '', branchCode: 'Yunex202620', pin: '001122' },
+  { id: '21', district: 'West-Singhbhum', branchName: 'Chaibasa', address: '909 Prop Pl, West-Singhbhum', gstNo: '', branchCode: 'Yunex202621', pin: '112233' },
+  { id: '22', district: 'Sahebganj', branchName: 'Sahebganj Ganga', address: '111 State St, Sahebganj', gstNo: '', branchCode: 'Yunex202622', pin: '223344' },
+  { id: '23', district: 'Gumla', branchName: 'Gumla Hills', address: '222 Hook Hbr, Gumla', gstNo: '', branchCode: 'Yunex202623', pin: '334455' },
+  { id: '24', district: 'Khunti', branchName: 'Khunti Birsa', address: '333 Effect Espl, Khunti', gstNo: '', branchCode: 'Yunex202624', pin: '445566' },
 ];
 
 const ones = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
@@ -178,14 +207,14 @@ export default function BillPanelPage() {
     if (watchedVehicleBranch) {
         const b = branches.find(br => br.branchCode === watchedVehicleBranch);
         if (b) {
-            vehicleInvoiceFormMethods.setValue("branchName", b.district);
+            vehicleInvoiceFormMethods.setValue("branchName", b.branchName);
             vehicleInvoiceFormMethods.setValue("branchDistrict", b.district);
             vehicleInvoiceFormMethods.setValue("branchCity", b.district);
             vehicleInvoiceFormMethods.setValue("branchState", "Jharkhand");
-            vehicleInvoiceFormMethods.setValue("branchPinCode", "");
-            vehicleInvoiceFormMethods.setValue("branchContact", "");
-            vehicleInvoiceFormMethods.setValue("branchAddress", "");
-            vehicleInvoiceFormMethods.setValue("branchGstNo", "");
+            vehicleInvoiceFormMethods.setValue("branchPinCode", b.pin);
+            vehicleInvoiceFormMethods.setValue("branchContact", ""); // Keep empty for user to fill
+            vehicleInvoiceFormMethods.setValue("branchAddress", b.address);
+            vehicleInvoiceFormMethods.setValue("branchGstNo", b.gstNo || "");
         }
         vehicleInvoiceFormMethods.resetField("model");
     }
@@ -257,7 +286,7 @@ export default function BillPanelPage() {
     doc.setDrawColor(200); doc.line(14, 45, pageWidth - 14, 45);
 
     const sellerBranch = branches.find(b => b.branchCode === invoiceData.sourceBranchCode);
-    const sellerDetails = `YUNEX - ${sellerBranch?.district || invoiceData.sourceBranchCode}\nNear D.C. Office, Satyam Nagar\nDhanbad, Jharkhand, INDIA. 826004.\nE-mail: info@yunex.com`;
+    const sellerDetails = `YUNEX - ${sellerBranch?.branchName || sellerBranch?.district || invoiceData.sourceBranchCode}\n${sellerBranch?.address || 'Near D.C. Office, Satyam Nagar, Dhanbad, Jharkhand, INDIA. 826004.'}\nE-mail: info@yunex.com`;
     const buyerDetails = `Branch: ${invoiceData.branchName} (${invoiceData.branchCode})\n${invoiceData.branchAddress}, ${invoiceData.branchCity}, ${invoiceData.branchDistrict}, ${invoiceData.branchState} - ${invoiceData.branchPinCode}\nGSTIN: ${invoiceData.branchGstNo || 'N/A'}\nContact: ${invoiceData.branchContact}`;
     autoTable(doc, { startY: 50, theme: 'plain', body: [[{ content: 'Billed By:', styles: { fontStyle: 'bold', textColor: primaryColor } }, { content: 'Billed To:', styles: { fontStyle: 'bold', textColor: primaryColor } }], [sellerDetails, buyerDetails]], styles: { fontSize: 9, cellPadding: {top: 1, right: 2, bottom: 1, left: 0}, valign: 'top' }, });
     autoTable(doc, { startY: (doc as any).lastAutoTable.finalY + 10, head: [['S.No.', 'Spare Part', 'Part Code', 'HSN Code', 'Qty', 'Rate', 'Amount']], body: [['1', invoiceData.sparePart, invoiceData.partCode, invoiceData.hsnCode, invoiceData.quantity, `₹${invoiceData.rate.toFixed(2)}`, `₹${invoiceData.total.toFixed(2)}`]], theme: 'grid', headStyles: { fillColor: [50, 108, 209], textColor: [255, 255, 255], fontStyle: 'bold' }, columnStyles: { 0: { halign: 'center' }, 4: { halign: 'right' }, 5: { halign: 'right' }, 6: { halign: 'right' } }, });
@@ -444,7 +473,7 @@ export default function BillPanelPage() {
                          <h3 className="text-lg font-medium">Branch Details</h3><Separator />
                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                            <FormField control={vehicleInvoiceFormMethods.control} name="branchCode" render={({ field }) => (
-                            <FormItem>
+                            <FormItem className="md:col-span-2">
                               <FormLabel>Branch</FormLabel>
                               <Select onValueChange={field.onChange} value={field.value}>
                                 <FormControl>
@@ -454,17 +483,13 @@ export default function BillPanelPage() {
                                 </FormControl>
                                 <SelectContent>
                                   {branches.map((branch) => (
-                                    <SelectItem key={branch.id} value={branch.branchCode}>{branch.district} ({branch.branchCode})</SelectItem>
+                                    <SelectItem key={branch.id} value={branch.branchCode}>{branch.district} - {branch.branchName} ({branch.branchCode})</SelectItem>
                                   ))}
                                 </SelectContent>
                               </Select>
                               <FormMessage />
                             </FormItem>
                            )} />
-                            <FormItem>
-                             <FormLabel>Branch Code</FormLabel>
-                             <FormControl><Input value={watchedVehicleBranch || ''} disabled /></FormControl>
-                           </FormItem>
                            <FormField control={vehicleInvoiceFormMethods.control} name="branchGstNo" render={({ field }) => (<FormItem><FormLabel>GST No.</FormLabel><FormControl><Input {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>)} />
                            <FormField control={vehicleInvoiceFormMethods.control} name="branchContact" render={({ field }) => (<FormItem><FormLabel>Contact</FormLabel><FormControl><Input {...field} value={field.value ?? ''}/></FormControl><FormMessage /></FormItem>)} />
                            <FormField control={vehicleInvoiceFormMethods.control} name="branchAddress" render={({ field }) => (<FormItem className="md:col-span-2"><FormLabel>Address</FormLabel><FormControl><Input {...field} value={field.value ?? ''}/></FormControl><FormMessage /></FormItem>)} />
@@ -522,8 +547,8 @@ export default function BillPanelPage() {
                     <FormProvider {...sparePartInvoiceFormMethods}>
                       <form onSubmit={sparePartInvoiceFormMethods.handleSubmit(handleSparePartInvoiceSubmit)} className="space-y-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <FormField control={sparePartInvoiceFormMethods.control} name="sourceBranchCode" render={({ field }) => (<FormItem><FormLabel>Source Branch (Billed By)</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select source branch" /></SelectTrigger></FormControl><SelectContent>{branches.map((b) => <SelectItem key={b.id} value={b.branchCode}>{b.district}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} />
-                          <FormField control={sparePartInvoiceFormMethods.control} name="branchCode" render={({ field }) => (<FormItem><FormLabel>Destination Branch (Billed To)</FormLabel><Select onValueChange={(value) => { field.onChange(value); const b = branches.find(br => br.branchCode === value); if(b) { sparePartInvoiceFormMethods.setValue("branchName", b.district); sparePartInvoiceFormMethods.setValue("branchDistrict", b.district); sparePartInvoiceFormMethods.setValue("branchCity", b.district); } }} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select destination branch" /></SelectTrigger></FormControl><SelectContent>{branches.map((b) => <SelectItem key={b.id} value={b.branchCode}>{b.district}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} />
+                          <FormField control={sparePartInvoiceFormMethods.control} name="sourceBranchCode" render={({ field }) => (<FormItem><FormLabel>Source Branch (Billed By)</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select source branch" /></SelectTrigger></FormControl><SelectContent>{branches.map((b) => <SelectItem key={b.id} value={b.branchCode}>{b.district} - {b.branchName} ({b.branchCode})</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} />
+                          <FormField control={sparePartInvoiceFormMethods.control} name="branchCode" render={({ field }) => (<FormItem><FormLabel>Destination Branch (Billed To)</FormLabel><Select onValueChange={(value) => { field.onChange(value); const b = branches.find(br => br.branchCode === value); if(b) { sparePartInvoiceFormMethods.setValue("branchName", b.branchName); sparePartInvoiceFormMethods.setValue("branchDistrict", b.district); sparePartInvoiceFormMethods.setValue("branchCity", b.district); sparePartInvoiceFormMethods.setValue("branchAddress", b.address); sparePartInvoiceFormMethods.setValue("branchGstNo", b.gstNo || ""); sparePartInvoiceFormMethods.setValue("branchPinCode", b.pin); sparePartInvoiceFormMethods.setValue("branchState", "Jharkhand"); sparePartInvoiceFormMethods.setValue("branchContact", "");} }} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select destination branch" /></SelectTrigger></FormControl><SelectContent>{branches.map((b) => <SelectItem key={b.id} value={b.branchCode}>{b.district} - {b.branchName} ({b.branchCode})</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} />
                         </div>
                          <h3 className="text-lg font-medium pt-4">Part & Billing</h3><Separator />
                          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
