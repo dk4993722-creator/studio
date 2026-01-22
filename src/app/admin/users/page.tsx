@@ -55,15 +55,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const mockUsersData = [
-  { id: 'YUNEX12345', sponsorId: 'YUNEXSP001', name: 'Sanjay Kumar', email: 'sanjay@example.com', mobile: '9876543210', role: 'Associate', status: 'Active', password: 'password123' },
-  { id: 'YUNEX54321', sponsorId: 'YUNEXSP002', name: 'Priya Sharma', email: 'priya@example.com', mobile: '9876543211', role: 'Dealer', status: 'Active', password: 'password456' },
-  { id: 'YUNEX67890', sponsorId: 'YUNEXSP001', name: 'Amit Singh', email: 'amit@example.com', mobile: '9876543212', role: 'Associate', status: 'Inactive', password: 'password789' },
-  { id: 'YUNEX09876', sponsorId: 'YUNEXSP003', name: 'Deepika Rao', email: 'deepika@example.com', mobile: '9876543213', role: 'Associate', status: 'Active', password: 'password101' },
-  { id: 'YUNEX11223', sponsorId: 'YUNEXSP002', name: 'Rohan Gupta', email: 'rohan@example.com', mobile: '9876543214', role: 'Dealer', status: 'Pending', password: 'password112' },
-];
+type User = {
+    id: string;
+    sponsorId: string;
+    name: string;
+    email: string;
+    mobile: string;
+    role: 'Associate' | 'Dealer';
+    status: 'Active' | 'Inactive' | 'Pending';
+    password: string;
+};
 
-type User = typeof mockUsersData[0];
+const mockUsersData: User[] = [];
 
 const editUserSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters."),
@@ -105,8 +108,8 @@ export default function AdminUsersPage() {
       name: user.name,
       email: user.email,
       mobile: user.mobile,
-      role: user.role as "Associate" | "Dealer",
-      status: user.status as "Active" | "Inactive" | "Pending",
+      role: user.role,
+      status: user.status,
       password: "",
     });
     setIsEditDialogOpen(true);
