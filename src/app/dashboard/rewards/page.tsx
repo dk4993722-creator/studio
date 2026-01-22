@@ -19,18 +19,7 @@ import {
 } from "@/components/ui/table";
 import Image from "next/image";
 
-const levelData = [
-    { level: 1, totalMember: 3, reward: "" },
-    { level: 2, totalMember: 9, reward: "" },
-    { level: 3, totalMember: 27, reward: "6 E.V. Scooter / Cash 70%" },
-    { level: 4, totalMember: 81, reward: "" },
-    { level: 5, totalMember: 243, reward: "20 E.V. Scooter / Cash 70%" },
-    { level: 6, totalMember: 729, reward: "" },
-    { level: 7, totalMember: 2187, reward: "" },
-    { level: 8, totalMember: 6561, reward: "40 E.V. Scooter / Cash 70%" },
-    { level: 9, totalMember: 19683, reward: "" },
-    { level: 10, totalMember: 59049, reward: "120 E.V. Scooter / Cash 70%" },
-];
+const levelData: { level: number; totalMember: number; reward: string; }[] = [];
 
 
 export default function RewardsPage() {
@@ -76,13 +65,21 @@ export default function RewardsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {levelData.map((row) => (
-                  <TableRow key={row.level}>
-                    <TableCell>{row.level}</TableCell>
-                    <TableCell>{row.totalMember}</TableCell>
-                    <TableCell>{row.reward}</TableCell>
+                {levelData.length > 0 ? (
+                  levelData.map((row) => (
+                    <TableRow key={row.level}>
+                      <TableCell>{row.level}</TableCell>
+                      <TableCell>{row.totalMember}</TableCell>
+                      <TableCell>{row.reward}</TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={3} className="text-center">
+                      No level data available.
+                    </TableCell>
                   </TableRow>
-                ))}
+                )}
               </TableBody>
             </Table>
           </CardContent>
