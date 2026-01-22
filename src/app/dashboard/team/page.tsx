@@ -46,7 +46,13 @@ export default function TeamPage() {
     },
   ];
   
-  const teamData: { level: number; totalMember: number; myTeam: number | string; remarks: string }[] = [];
+  const teamData = [
+    { level: 1, totalMember: 3, myTeam: 3, remarks: 'Complete' },
+    { level: 2, totalMember: 9, myTeam: 0, remarks: 'Pending' },
+    { level: 3, totalMember: 27, myTeam: 0, remarks: 'Pending' },
+    { level: 4, totalMember: 81, myTeam: 0, remarks: 'Pending' },
+    { level: 5, totalMember: 243, myTeam: 0, remarks: 'Pending' },
+  ];
 
   return (
     <div className="flex min-h-screen w-full flex-col relative bg-background">
@@ -107,20 +113,26 @@ export default function TeamPage() {
                     </TableRow>
                     </TableHeader>
                     <TableBody>
-                    {teamData.map((row) => (
+                    {teamData.length > 0 ? (
+                      teamData.map((row) => (
                         <TableRow key={row.level}>
                           <TableCell className="font-medium">{row.level}</TableCell>
                           <TableCell>{row.totalMember}</TableCell>
                           <TableCell>{row.myTeam}</TableCell>
                           <TableCell>
                               {row.remarks && (
-                                <Badge variant={row.remarks === 'Complete' ? 'default' : 'destructive'} className={row.remarks === 'Complete' ? 'bg-green-500/20 text-green-500 border-green-500/40' : 'bg-red-500/20 text-red-500 border-red-500/40'}>
+                                <Badge variant={row.remarks === 'Complete' ? 'default' : 'destructive'} className={row.remarks === 'Complete' ? 'bg-green-500/20 text-green-700 border-green-500/40' : 'bg-red-500/20 text-red-500 border-red-500/40'}>
                                   {row.remarks}
                                 </Badge>
                               )}
                           </TableCell>
                         </TableRow>
-                    ))}
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={4} className="text-center">No team data available.</TableCell>
+                      </TableRow>
+                    )}
                     </TableBody>
                 </Table>
                 </CardContent>

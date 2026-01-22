@@ -19,9 +19,13 @@ type TreeNodeData = {
 };
 
 const treeData: TreeNodeData = {
-  id: '1',
-  name: 'You',
-  children: [],
+  id: 'YNX26A0001',
+  name: 'Yunex',
+  children: [
+    { id: 'YNX26A0002', name: 'Ram', children: [] },
+    { id: 'YNX26A0003', name: 'Shiu', children: [] },
+    { id: 'YNX26A0004', name: 'Krishna', children: [] },
+  ],
 };
 
 const TreeNode = ({ node, level = 0 }: { node: TreeNodeData, level?: number }) => {

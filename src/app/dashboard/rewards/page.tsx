@@ -19,7 +19,13 @@ import {
 } from "@/components/ui/table";
 import Image from "next/image";
 
-const levelData: { level: number; totalMember: number; reward: string; }[] = [];
+const levelData = [
+    { level: 1, totalMember: 3, reward: 'T-Shirt' },
+    { level: 2, totalMember: 9, reward: 'Water Purifier' },
+    { level: 3, totalMember: 27, reward: 'LED TV' },
+    { level: 4, totalMember: 81, reward: 'Laptop' },
+    { level: 5, totalMember: 243, reward: 'Electric Scooty' },
+];
 
 
 export default function RewardsPage() {
