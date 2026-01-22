@@ -480,8 +480,8 @@ export default function BillPanelPage() {
                                 <FormMessage />
                               </FormItem>
                             )} />
-                             <FormField control={vehicleInvoiceFormMethods.control} name="quantity" render={({ field }) => (<FormItem><FormLabel>Quantity</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                             <FormField control={vehicleInvoiceFormMethods.control} name="rate" render={({ field }) => (<FormItem><FormLabel>Rate</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                             <FormField control={vehicleInvoiceFormMethods.control} name="quantity" render={({ field }) => (<FormItem><FormLabel>Quantity</FormLabel><FormControl><Input type="number" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>)} />
+                             <FormField control={vehicleInvoiceFormMethods.control} name="rate" render={({ field }) => (<FormItem><FormLabel>Rate</FormLabel><FormControl><Input type="number" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>)} />
                          </div>
                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 pt-6">
                             <FormField control={vehicleInvoiceFormMethods.control} name="noOfSeat" render={({ field }) => (<FormItem><FormLabel>No of Seat</FormLabel><FormControl><Input placeholder="e.g., 2" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>)} />
@@ -521,7 +521,7 @@ export default function BillPanelPage() {
                          <h3 className="text-lg font-medium pt-4">Part & Billing</h3><Separator />
                          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <FormField control={sparePartInvoiceFormMethods.control} name="sparePart" render={({ field }) => (<FormItem><FormLabel>Spare Part</FormLabel><Select onValueChange={field.onChange} value={field.value} disabled={!watchedSparePartSourceBranch}><FormControl><SelectTrigger><SelectValue placeholder="Select spare part" /></SelectTrigger></FormControl><SelectContent>{[...new Set(availableSpareParts)].map(part => <SelectItem key={part} value={part}>{part}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} />
-                            <FormField control={sparePartInvoiceFormMethods.control} name="quantity" render={({ field }) => (<FormItem><FormLabel>Quantity</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                            <FormField control={sparePartInvoiceFormMethods.control} name="quantity" render={({ field }) => (<FormItem><FormLabel>Quantity</FormLabel><FormControl><Input type="number" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>)} />
                             <div><FormLabel>Rate</FormLabel><Input value={selectedSparePartStock?.price ? `₹${selectedSparePartStock.price.toFixed(2)}` : 'N/A'} disabled /></div>
                          </div>
                          <Button type="submit" className="w-full md:w-auto">Generate Spare Part Invoice</Button>
