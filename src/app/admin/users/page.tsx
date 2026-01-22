@@ -56,11 +56,11 @@ import {
 } from "@/components/ui/select";
 
 const mockUsersData = [
-  { id: 'YUNEX12345', sponsorId: 'YUNEXSP001', name: 'Sanjay Kumar', email: 'sanjay@example.com', role: 'Associate', status: 'Active' },
-  { id: 'YUNEX54321', sponsorId: 'YUNEXSP002', name: 'Priya Sharma', email: 'priya@example.com', role: 'Dealer', status: 'Active' },
-  { id: 'YUNEX67890', sponsorId: 'YUNEXSP001', name: 'Amit Singh', email: 'amit@example.com', role: 'Associate', status: 'Inactive' },
-  { id: 'YUNEX09876', sponsorId: 'YUNEXSP003', name: 'Deepika Rao', email: 'deepika@example.com', role: 'Associate', status: 'Active' },
-  { id: 'YUNEX11223', sponsorId: 'YUNEXSP002', name: 'Rohan Gupta', email: 'rohan@example.com', role: 'Dealer', status: 'Pending' },
+  { id: 'YUNEX12345', sponsorId: 'YUNEXSP001', name: 'Sanjay Kumar', email: 'sanjay@example.com', mobile: '9876543210', role: 'Associate', status: 'Active' },
+  { id: 'YUNEX54321', sponsorId: 'YUNEXSP002', name: 'Priya Sharma', email: 'priya@example.com', mobile: '9876543211', role: 'Dealer', status: 'Active' },
+  { id: 'YUNEX67890', sponsorId: 'YUNEXSP001', name: 'Amit Singh', email: 'amit@example.com', mobile: '9876543212', role: 'Associate', status: 'Inactive' },
+  { id: 'YUNEX09876', sponsorId: 'YUNEXSP003', name: 'Deepika Rao', email: 'deepika@example.com', mobile: '9876543213', role: 'Associate', status: 'Active' },
+  { id: 'YUNEX11223', sponsorId: 'YUNEXSP002', name: 'Rohan Gupta', email: 'rohan@example.com', mobile: '9876543214', role: 'Dealer', status: 'Pending' },
 ];
 
 type User = typeof mockUsersData[0];
@@ -68,6 +68,7 @@ type User = typeof mockUsersData[0];
 const userSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters."),
   email: z.string().email("Invalid email address."),
+  mobile: z.string().min(10, "Mobile number must be at least 10 digits."),
   role: z.enum(["Associate", "Dealer"]),
   status: z.enum(["Active", "Inactive", "Pending"]),
 });
@@ -89,6 +90,7 @@ export default function AdminUsersPage() {
     form.reset({
       name: user.name,
       email: user.email,
+      mobile: user.mobile,
       role: user.role as "Associate" | "Dealer",
       status: user.status as "Active" | "Inactive" | "Pending",
     });
@@ -153,22 +155,26 @@ export default function AdminUsersPage() {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead>S. No.</TableHead>
                   <TableHead>User ID</TableHead>
                   <TableHead>Sponsor ID</TableHead>
                   <TableHead>Name</TableHead>
                   <TableHead>Email</TableHead>
+                  <TableHead>Mobile No.</TableHead>
                   <TableHead>Role</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {users.map(user => (
+                {users.map((user, index) => (
                   <TableRow key={user.id}>
+                    <TableCell>{index + 1}</TableCell>
                     <TableCell className="font-medium">{user.id}</TableCell>
                     <TableCell>{user.sponsorId}</TableCell>
                     <TableCell>{user.name}</TableCell>
                     <TableCell>{user.email}</TableCell>
+                    <TableCell>{user.mobile}</TableCell>
                     <TableCell>{user.role}</TableCell>
                     <TableCell>
                       <Badge
@@ -244,6 +250,19 @@ export default function AdminUsersPage() {
                       <FormLabel>Email</FormLabel>
                       <FormControl>
                         <Input type="email" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                 <FormField
+                  control={form.control}
+                  name="mobile"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Mobile No.</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
