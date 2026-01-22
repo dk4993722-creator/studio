@@ -138,6 +138,19 @@ export default function BillPanelPage() {
     }
   }, [selectedVehicleStock, vehicleInvoiceFormMethods]);
 
+  useEffect(() => {
+    if (watchedVehicleBranch) {
+        const b = branches.find(br => br.branchCode === watchedVehicleBranch);
+        if (b) {
+            vehicleInvoiceFormMethods.setValue("branchName", b.district);
+            vehicleInvoiceFormMethods.setValue("branchDistrict", b.district);
+            vehicleInvoiceFormMethods.setValue("branchCity", b.district);
+        }
+        vehicleInvoiceFormMethods.setValue("model", "");
+    }
+  }, [watchedVehicleBranch, vehicleInvoiceFormMethods]);
+
+
   const generateVehicleInvoicePDF = async (invoiceData: VehicleInvoice) => {
     const { default: jsPDF } = await import('jspdf');
     const { default: autoTable } = await import('jspdf-autotable');
@@ -389,7 +402,24 @@ export default function BillPanelPage() {
                       <form onSubmit={vehicleInvoiceFormMethods.handleSubmit(handleVehicleInvoiceSubmit)} className="space-y-6">
                          <h3 className="text-lg font-medium">Branch Details</h3><Separator />
                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                           <FormField control={vehicleInvoiceFormMethods.control} name="branchCode" render={({ field }) => (<FormItem><FormLabel>Branch</FormLabel><Select onValueChange={(value) => { field.onChange(value); const b = branches.find(br => br.branchCode === value); if(b) { vehicleInvoiceFormMethods.setValue("branchName", b.district); vehicleInvoiceFormMethods.setValue("branchDistrict", b.district); vehicleInvoiceFormMethods.setValue("branchCity", b.district); } }} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a branch" /></SelectTrigger></FormControl><SelectContent>{branches.map((branch) => (<SelectItem key={branch.id} value={branch.branchCode}>{branch.district} ({branch.branchCode})</SelectItem>))}</SelectContent></Select><FormMessage /></FormItem>)} />
+                           <FormField control={vehicleInvoiceFormMethods.control} name="branchCode" render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Branch</FormLabel>
+                              <Select onValueChange={field.onChange} value={field.value}>
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select a branch" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  {branches.map((branch) => (
+                                    <SelectItem key={branch.id} value={branch.branchCode}>{branch.district} ({branch.branchCode})</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                           )} />
                             <FormItem>
                              <FormLabel>Branch Code</FormLabel>
                              <FormControl><Input value={watchedVehicleBranch || ''} disabled /></FormControl>
@@ -400,7 +430,22 @@ export default function BillPanelPage() {
                          </div>
                          <h3 className="text-lg font-medium pt-4">Vehicle & Billing</h3><Separator />
                          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                             <FormField control={vehicleInvoiceFormMethods.control} name="model" render={({ field }) => (<FormItem><FormLabel>Model</FormLabel><Select onValueChange={field.onChange} value={field.value} disabled={!watchedVehicleBranch}><FormControl><SelectTrigger><SelectValue placeholder="Select vehicle model" /></SelectTrigger></FormControl><SelectContent>{[...new Set(availableVehicleModels)].map(model => <SelectItem key={model} value={model}>{model}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} />
+                             <FormField control={vehicleInvoiceFormMethods.control} name="model" render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Model</FormLabel>
+                                <Select onValueChange={field.onChange} value={field.value} disabled={!watchedVehicleBranch}>
+                                  <FormControl>
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Select vehicle model" />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    {[...new Set(availableVehicleModels)].map(model => <SelectItem key={model} value={model}>{model}</SelectItem>)}
+                                  </SelectContent>
+                                </Select>
+                                <FormMessage />
+                              </FormItem>
+                            )} />
                              <FormField control={vehicleInvoiceFormMethods.control} name="quantity" render={({ field }) => (<FormItem><FormLabel>Quantity</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>)} />
                              <FormField control={vehicleInvoiceFormMethods.control} name="rate" render={({ field }) => (<FormItem><FormLabel>Rate</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>)} />
                          </div>
