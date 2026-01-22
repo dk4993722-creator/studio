@@ -10,7 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { LogOut, Users, Building2, Car, CreditCard, Receipt, Warehouse, Wrench } from "lucide-react";
+import { LogOut, Users, Building2, Car, CreditCard, Receipt, Warehouse, Wrench, ShieldCheck } from "lucide-react";
 import { YunexLogo } from "@/components/yunex-logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import placeholderImages from "@/lib/placeholder-images.json";
@@ -26,6 +26,7 @@ export default function AdminDashboardPage() {
     { title: "Bill Panel", icon: <Receipt className="h-10 w-10 text-primary" />, onClick: () => router.push("/admin/bill-panel"), description: "Manage bills and invoices." },
     { title: "E. Vehicle Stock", icon: <Warehouse className="h-10 w-10 text-primary" />, onClick: () => router.push("/admin/dashboard/e-vehicle-stock"), description: "Manage E. Vehicle stock." },
     { title: "Spare Parts Stock", icon: <Wrench className="h-10 w-10 text-primary" />, onClick: () => router.push("/admin/dashboard/spare-parts-stock"), description: "Manage spare parts inventory." },
+    { title: "Warranty Panel", icon: <ShieldCheck className="h-10 w-10 text-primary" />, onClick: () => router.push("/admin/dashboard/warranty-panel"), description: "Manage product warranties." },
   ];
 
   return (
