@@ -42,14 +42,15 @@ import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 
 const initialStockData = [
-  { sNo: 1, eVehicle: 'Yunex-X1', price: 75000, openingStock: 150, sales: 15, closingStock: 135, date: '2024-07-29' },
-  { sNo: 2, eVehicle: 'Yunex-S1', price: 68000, openingStock: 100, sales: 20, closingStock: 80, date: '2024-07-29' },
-  { sNo: 3, eVehicle: 'Yunex-X2', price: 82000, openingStock: 120, sales: 10, closingStock: 110, date: '2024-07-30' },
-  { sNo: 4, eVehicle: 'Yunex-X3', price: 79000, openingStock: 75, sales: 5, closingStock: 70, date: '2024-07-31' },
+  { sNo: 1, eVehicle: 'Yunex-X1', chassisNo: 'YX1A0001', price: 75000, openingStock: 150, sales: 15, closingStock: 135, date: '2024-07-29' },
+  { sNo: 2, eVehicle: 'Yunex-S1', chassisNo: 'YS1A0001', price: 68000, openingStock: 100, sales: 20, closingStock: 80, date: '2024-07-29' },
+  { sNo: 3, eVehicle: 'Yunex-X2', chassisNo: 'YX2A0001', price: 82000, openingStock: 120, sales: 10, closingStock: 110, date: '2024-07-30' },
+  { sNo: 4, eVehicle: 'Yunex-X3', chassisNo: 'YX3A0001', price: 79000, openingStock: 75, sales: 5, closingStock: 70, date: '2024-07-31' },
 ];
 
 const addStockSchema = z.object({
   eVehicle: z.string().min(1, "E. Vehicle name is required."),
+  chassisNo: z.string().min(1, "Chassis number is required."),
   price: z.coerce.number().min(0, "Price cannot be negative."),
   openingStock: z.coerce.number().min(0, "Opening stock cannot be negative."),
   addQty: z.coerce.number().min(1, "Quantity to add must be at least 1."),
@@ -83,6 +84,7 @@ export default function EVehicleStockPage() {
     resolver: zodResolver(addStockSchema),
     defaultValues: {
       eVehicle: "",
+      chassisNo: "",
       price: 0,
       openingStock: 0,
       addQty: 0,
@@ -114,9 +116,15 @@ export default function EVehicleStockPage() {
   }, [watchedEVehicle, stockData, setValue]);
 
   function onSubmit(values: z.infer<typeof addStockSchema>) {
+    if (stockData.some(item => item.chassisNo === values.chassisNo)) {
+        form.setError("chassisNo", { type: "manual", message: "Chassis number must be unique." });
+        return;
+    }
+
     const newEntry = {
       sNo: stockData.length > 0 ? Math.max(...stockData.map(item => item.sNo)) + 1 : 1,
       eVehicle: values.eVehicle,
+      chassisNo: values.chassisNo,
       price: values.price,
       openingStock: values.openingStock,
       sales: 0,
@@ -142,7 +150,7 @@ export default function EVehicleStockPage() {
       title: "Stock Added",
       description: "The vehicle stock transaction has been updated.",
     });
-    form.reset({ eVehicle: "", price: 0, openingStock: 0, addQty: 0 });
+    form.reset({ eVehicle: "", chassisNo: "", price: 0, openingStock: 0, addQty: 0 });
   }
 
   const handleDelete = (sNo: number) => {
@@ -224,6 +232,7 @@ export default function EVehicleStockPage() {
                     <TableRow>
                       <TableHead>S. No.</TableHead>
                       <TableHead>E. Vehicle</TableHead>
+                      <TableHead>Chassis No.</TableHead>
                       <TableHead className="text-right">Price</TableHead>
                       <TableHead className="text-right">Opening Stock</TableHead>
                       <TableHead className="text-right">Sales</TableHead>
@@ -238,6 +247,7 @@ export default function EVehicleStockPage() {
                         <TableRow key={item.sNo}>
                           <TableCell>{item.sNo}</TableCell>
                           <TableCell className="font-medium">{item.eVehicle}</TableCell>
+                          <TableCell>{item.chassisNo}</TableCell>
                           <TableCell className="text-right">{item.price ? `₹${item.price.toLocaleString('en-IN')}` : 'N/A'}</TableCell>
                           <TableCell className="text-right">{item.openingStock}</TableCell>
                           <TableCell className="text-right">{item.sales}</TableCell>
@@ -292,7 +302,7 @@ export default function EVehicleStockPage() {
                       ))
                     ) : (
                       <TableRow>
-                        <TableCell colSpan={8} className="text-center">
+                        <TableCell colSpan={9} className="text-center">
                           No stock data found.
                         </TableCell>
                       </TableRow>
@@ -310,7 +320,7 @@ export default function EVehicleStockPage() {
           <CardContent>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 items-end">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 items-end">
                     <FormField
                       control={form.control}
                       name="eVehicle"
@@ -318,6 +328,17 @@ export default function EVehicleStockPage() {
                         <FormItem className="lg:col-span-1">
                           <FormLabel>E. Vehicle</FormLabel>
                           <FormControl><Input {...field} /></FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="chassisNo"
+                      render={({ field }) => (
+                        <FormItem className="lg:col-span-1">
+                          <FormLabel>Chassis No.</FormLabel>
+                          <FormControl><Input {...field} placeholder="Unique chassis number" /></FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
