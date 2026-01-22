@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -43,6 +44,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 const initialBranches = [
   { id: '01', district: 'Deoghar', branchName: 'Deoghar Main', address: '123 Test St, Deoghar', gstNo: '20AAAAA0000A1Z5', branchCode: 'Yunex202601', pin: '123456' },
+  { id: '25', district: 'Deoghar', branchName: 'Baidyanathdham', address: '456 Temple Rd, Deoghar', gstNo: '20AAAAA0000A1Z6', branchCode: 'Yunex202625', pin: '123457' },
+  { id: '26', district: 'Deoghar', branchName: 'Satsang Nagar', address: '789 Ashram Ave, Deoghar', gstNo: '20AAAAA0000A1Z7', branchCode: 'Yunex202626', pin: '123458' },
   { id: '02', district: 'Dumka', branchName: 'Dumka Central', address: '456 Sample Ave, Dumka', gstNo: '20BBBBB1111B1Z4', branchCode: 'Yunex202602', pin: '234567' },
   { id: '03', district: 'Bokaro', branchName: 'Bokaro Steel City', address: '789 Demo Rd, Bokaro', gstNo: '20CCCCC2222C1Z3', branchCode: 'Yunex202603', pin: '345678' },
   { id: '04', district: 'Giridih', branchName: 'Giridih Town', address: '101 Example Blvd, Giridih', gstNo: '20DDDDD3333D1Z2', branchCode: 'Yunex202604', pin: '456789' },
@@ -50,11 +53,15 @@ const initialBranches = [
   { id: '06', district: 'Godda', branchName: 'Godda Market', address: '333 Placeholder Ln, Godda', gstNo: '', branchCode: 'Yunex202606', pin: '678901' },
   { id: '07', district: 'Chatra', branchName: 'Chatra Chowk', address: '444 Dev Dr, Chatra', gstNo: '', branchCode: 'Yunex202607', pin: '789012' },
   { id: '08', district: 'Dhanbad', branchName: 'Dhanbad City', address: '555 Code Cres, Dhanbad', gstNo: '20HHHHH8888H1Z8', branchCode: 'Yunex202608', pin: '890123' },
+  { id: '27', district: 'Dhanbad', branchName: 'Bank More', address: '111 Bank St, Dhanbad', gstNo: '20HHHHH8888H1Z9', branchCode: 'Yunex202627', pin: '890124' },
+  { id: '28', district: 'Dhanbad', branchName: 'Jharia', address: '222 Coal Rd, Jharia', gstNo: '20HHHHH8888H1Z0', branchCode: 'Yunex202628', pin: '890125' },
+  { id: '29', district: 'Dhanbad', branchName: 'Govindpur', address: '333 Govindpur St, Dhanbad', gstNo: '20HHHHH8888H1Z1', branchCode: 'Yunex202629', pin: '890126' },
   { id: '09', district: 'Garhwa', branchName: 'Garhwa Road', address: '666 Script St, Garhwa', gstNo: '', branchCode: 'Yunex202609', pin: '901234' },
   { id: '10', district: 'East-Singhbhum', branchName: 'Jamshedpur', address: '777 HTML Hwy, East-Singhbhum', gstNo: '20JJJJJ0000J1Z6', branchCode: 'Yunex202610', pin: '012345' },
   { id: '11', district: 'Jamtara', branchName: 'Jamtara Cyber', address: '888 CSS Ct, Jamtara', gstNo: '', branchCode: 'Yunex202611', pin: '112233' },
   { id: '12', district: 'Saraikela-Kharsawan', branchName: 'Saraikela Town', address: '999 JS St, Saraikela', gstNo: '', branchCode: 'Yunex202612', pin: '223344' },
   { id: '13', district: 'Ranchi', branchName: 'Ranchi Capital', address: '121 React Rd, Ranchi', gstNo: '20MMMMM3333M1Z3', branchCode: 'Yunex202613', pin: '334455' },
+  { id: '30', district: 'Ranchi', branchName: 'Kanke Road', address: '454 Kanke Road, Ranchi', gstNo: '20MMMMM3333M1Z4', branchCode: 'Yunex202630', pin: '334456' },
   { id: '14', district: 'Pakur', branchName: 'Pakur Border', address: '232 Next Ave, Pakur', gstNo: '', branchCode: 'Yunex202614', pin: '445566' },
   { id: '15', district: 'Latehar', branchName: 'Latehar Hills', address: '343 TS St, Latehar', gstNo: '', branchCode: 'Yunex202615', pin: '556677' },
   { id: '16', district: 'Hazaribagh', branchName: 'Hazaribagh National Park', address: '454 Node St, Hazaribagh', gstNo: '20QQQQQ7777Q1Z9', branchCode: 'Yunex202616', pin: '667788' },
