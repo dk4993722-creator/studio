@@ -48,14 +48,11 @@ const initialStockData = [
   { sNo: 4, eVehicle: 'Yunex-X3', price: 79000, openingStock: 75, sales: 5, closingStock: 70, date: '2024-07-31' },
 ];
 
-const reportSchema = z.object({
+const addStockSchema = z.object({
   eVehicle: z.string().min(1, "E. Vehicle name is required."),
   price: z.coerce.number().min(0, "Price cannot be negative."),
   openingStock: z.coerce.number().min(0, "Opening stock cannot be negative."),
-  sales: z.coerce.number().min(0, "Sales cannot be negative."),
-}).refine(data => data.sales <= data.openingStock, {
-  message: "Sales cannot be greater than opening stock.",
-  path: ["sales"],
+  addQty: z.coerce.number().min(1, "Quantity to add must be at least 1."),
 });
 
 export default function EVehicleStockPage() {
@@ -82,30 +79,30 @@ export default function EVehicleStockPage() {
     }
   }, [toast]);
 
-  const form = useForm<z.infer<typeof reportSchema>>({
-    resolver: zodResolver(reportSchema),
+  const form = useForm<z.infer<typeof addStockSchema>>({
+    resolver: zodResolver(addStockSchema),
     defaultValues: {
       eVehicle: "",
       price: 0,
       openingStock: 0,
-      sales: 0,
+      addQty: 0,
     },
   });
 
   const { watch } = form;
   const openingStock = watch("openingStock");
-  const sales = watch("sales");
-  const closingStock = openingStock - sales;
+  const addQty = watch("addQty");
+  const closingStock = openingStock + addQty;
   const currentDate = new Date().toISOString().split('T')[0];
 
-  function onSubmit(values: z.infer<typeof reportSchema>) {
+  function onSubmit(values: z.infer<typeof addStockSchema>) {
     const newEntry = {
       sNo: stockData.length > 0 ? Math.max(...stockData.map(item => item.sNo)) + 1 : 1,
       eVehicle: values.eVehicle,
       price: values.price,
       openingStock: values.openingStock,
-      sales: values.sales,
-      closingStock: values.openingStock - values.sales,
+      sales: 0,
+      closingStock: values.openingStock + values.addQty,
       date: new Date().toISOString().split('T')[0],
     };
     
@@ -124,10 +121,10 @@ export default function EVehicleStockPage() {
     }
 
     toast({
-      title: "Report Submitted",
-      description: "The daily vehicle stock transaction has been updated.",
+      title: "Stock Added",
+      description: "The vehicle stock transaction has been updated.",
     });
-    form.reset({ eVehicle: "", price: 0, openingStock: 0, sales: 0 });
+    form.reset({ eVehicle: "", price: 0, openingStock: 0, addQty: 0 });
   }
 
   const handleDelete = (sNo: number) => {
@@ -331,10 +328,10 @@ export default function EVehicleStockPage() {
                     />
                      <FormField
                       control={form.control}
-                      name="sales"
+                      name="addQty"
                       render={({ field }) => (
                         <FormItem className="lg:col-span-1">
-                          <FormLabel>Sales</FormLabel>
+                          <FormLabel>Add E. Vehicle</FormLabel>
                           <FormControl><Input type="number" {...field} /></FormControl>
                           <FormMessage />
                         </FormItem>
