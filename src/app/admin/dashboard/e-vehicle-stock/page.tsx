@@ -89,11 +89,26 @@ export default function EVehicleStockPage() {
     },
   });
 
-  const { watch } = form;
+  const { watch, setValue } = form;
   const openingStock = watch("openingStock");
   const addQty = watch("addQty");
+  const watchedEVehicle = watch("eVehicle");
   const closingStock = openingStock + addQty;
   const currentDate = new Date().toISOString().split('T')[0];
+
+  useEffect(() => {
+    if (watchedEVehicle) {
+        const latestEntry = stockData
+            .filter(item => item.eVehicle.toLowerCase() === watchedEVehicle.toLowerCase())
+            .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+        
+        if (latestEntry) {
+            setValue("openingStock", latestEntry.closingStock);
+        } else {
+            setValue("openingStock", 0);
+        }
+    }
+  }, [watchedEVehicle, stockData, setValue]);
 
   function onSubmit(values: z.infer<typeof addStockSchema>) {
     const newEntry = {
@@ -321,7 +336,7 @@ export default function EVehicleStockPage() {
                       render={({ field }) => (
                         <FormItem className="lg:col-span-1">
                           <FormLabel>Opening Stock</FormLabel>
-                          <FormControl><Input type="number" {...field} /></FormControl>
+                          <FormControl><Input type="number" {...field} disabled /></FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
