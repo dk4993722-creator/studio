@@ -35,11 +35,11 @@ import placeholderImages from "@/lib/placeholder-images.json";
 import { Badge } from "@/components/ui/badge";
 
 const mockUsers = [
-  { id: 'YUNEX12345', name: 'Sanjay Kumar', email: 'sanjay@example.com', role: 'Associate', status: 'Active' },
-  { id: 'YUNEX54321', name: 'Priya Sharma', email: 'priya@example.com', role: 'Dealer', status: 'Active' },
-  { id: 'YUNEX67890', name: 'Amit Singh', email: 'amit@example.com', role: 'Associate', status: 'Inactive' },
-  { id: 'YUNEX09876', name: 'Deepika Rao', email: 'deepika@example.com', role: 'Associate', status: 'Active' },
-  { id: 'YUNEX11223', name: 'Rohan Gupta', email: 'rohan@example.com', role: 'Dealer', status: 'Pending' },
+  { id: 'YUNEX12345', sponsorId: 'YUNEXSP001', name: 'Sanjay Kumar', email: 'sanjay@example.com', role: 'Associate', status: 'Active' },
+  { id: 'YUNEX54321', sponsorId: 'YUNEXSP002', name: 'Priya Sharma', email: 'priya@example.com', role: 'Dealer', status: 'Active' },
+  { id: 'YUNEX67890', sponsorId: 'YUNEXSP001', name: 'Amit Singh', email: 'amit@example.com', role: 'Associate', status: 'Inactive' },
+  { id: 'YUNEX09876', sponsorId: 'YUNEXSP003', name: 'Deepika Rao', email: 'deepika@example.com', role: 'Associate', status: 'Active' },
+  { id: 'YUNEX11223', sponsorId: 'YUNEXSP002', name: 'Rohan Gupta', email: 'rohan@example.com', role: 'Dealer', status: 'Pending' },
 ];
 
 
@@ -85,17 +85,18 @@ export default function AdminUsersPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>User ID</TableHead>
+                  <TableHead>Sponsor ID</TableHead>
                   <TableHead>Name</TableHead>
                   <TableHead>Email</TableHead>
                   <TableHead>Role</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {mockUsers.map(user => (
                   <TableRow key={user.id}>
                     <TableCell className="font-medium">{user.id}</TableCell>
+                    <TableCell>{user.sponsorId}</TableCell>
                     <TableCell>{user.name}</TableCell>
                     <TableCell>{user.email}</TableCell>
                     <TableCell>{user.role}</TableCell>
@@ -106,28 +107,6 @@ export default function AdminUsersPage() {
                       >
                         {user.status}
                       </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <Button variant="ghost" size="icon">
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                          <DialogHeader>
-                            <DialogTitle>Edit User: {user.name}</DialogTitle>
-                            <DialogDescription>
-                              This functionality is for demonstration purposes and is not yet implemented.
-                            </DialogDescription>
-                          </DialogHeader>
-                          <DialogFooter>
-                            <DialogClose asChild>
-                              <Button variant="secondary">Close</Button>
-                            </DialogClose>
-                          </DialogFooter>
-                        </DialogContent>
-                      </Dialog>
                     </TableCell>
                   </TableRow>
                 ))}
