@@ -174,15 +174,16 @@ export default function BuyPackagePage() {
                             render={({ field }) => (
                             <FormItem>
                                 <FormLabel>PIN</FormLabel>
-                                <FormControl>
                                 <div className="relative">
+                                <FormControl>
                                     <Input
                                     type={showPin ? "text" : "password"}
                                     placeholder="Enter your 6-digit PIN"
                                     {...field}
                                     maxLength={6}
                                     />
-                                    <Button
+                                </FormControl>
+                                <Button
                                     type="button"
                                     variant="ghost"
                                     size="icon"
@@ -190,9 +191,8 @@ export default function BuyPackagePage() {
                                     onClick={() => setShowPin(!showPin)}
                                     >
                                     {showPin ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                                    </Button>
+                                </Button>
                                 </div>
-                                </FormControl>
                                 <FormMessage />
                             </FormItem>
                             )}

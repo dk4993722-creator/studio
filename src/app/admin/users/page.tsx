@@ -251,20 +251,38 @@ export default function AdminUsersPage() {
                     <FormField control={addUserForm.control} name="name" render={({ field }) => ( <FormItem> <FormLabel>Name</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
                     <FormField control={addUserForm.control} name="email" render={({ field }) => ( <FormItem> <FormLabel>Email</FormLabel> <FormControl><Input type="email" {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
                     <FormField control={addUserForm.control} name="mobile" render={({ field }) => ( <FormItem> <FormLabel>Mobile No.</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
-                    <FormField control={addUserForm.control} name="password" render={({ field }) => ( 
-                      <FormItem> 
-                        <FormLabel>Password</FormLabel> 
-                        <div className="relative">
-                          <FormControl>
-                            <Input type={showAddPassword ? 'text' : 'password'} placeholder="••••••••" {...field} />
-                          </FormControl>
-                          <Button type="button" variant="ghost" size="icon" className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground" onClick={() => setShowAddPassword(!showAddPassword)}>
-                            {showAddPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                          </Button>
-                        </div>
-                        <FormMessage /> 
-                      </FormItem> 
-                    )}/>
+                    <FormField
+                      control={addUserForm.control}
+                      name="password"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Password</FormLabel>
+                          <div className="relative">
+                            <FormControl>
+                              <Input
+                                type={showAddPassword ? "text" : "password"}
+                                placeholder="••••••••"
+                                {...field}
+                              />
+                            </FormControl>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground"
+                              onClick={() => setShowAddPassword(!showAddPassword)}
+                            >
+                              {showAddPassword ? (
+                                <EyeOff className="h-4 w-4" />
+                              ) : (
+                                <Eye className="h-4 w-4" />
+                              )}
+                            </Button>
+                          </div>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                     <FormField control={addUserForm.control} name="role" render={({ field }) => ( <FormItem> <FormLabel>Role</FormLabel> <Select onValueChange={field.onChange} defaultValue={field.value}> <FormControl> <SelectTrigger> <SelectValue placeholder="Select a role" /> </SelectTrigger> </FormControl> <SelectContent> <SelectItem value="Associate">Associate</SelectItem> <SelectItem value="Dealer">Dealer</SelectItem> </SelectContent> </Select> <FormMessage /> </FormItem> )}/>
                     <FormField control={addUserForm.control} name="status" render={({ field }) => ( <FormItem> <FormLabel>Status</FormLabel> <Select onValueChange={field.onChange} defaultValue={field.value}> <FormControl> <SelectTrigger> <SelectValue placeholder="Select a status" /> </SelectTrigger> </FormControl> <SelectContent> <SelectItem value="Active">Active</SelectItem> <SelectItem value="Inactive">Inactive</SelectItem> <SelectItem value="Pending">Pending</SelectItem> </SelectContent> </Select> <FormMessage /> </FormItem> )}/>
                     <DialogFooter>
@@ -418,7 +436,7 @@ export default function AdminUsersPage() {
                       <div className="relative">
                         <FormControl>
                           <Input
-                            type={showPassword ? 'text' : 'password'}
+                            type={showPassword ? "text" : "password"}
                             placeholder="Leave blank to keep current"
                             {...field}
                           />
@@ -430,7 +448,11 @@ export default function AdminUsersPage() {
                           className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground"
                           onClick={() => setShowPassword(!showPassword)}
                         >
-                          {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                          {showPassword ? (
+                            <EyeOff className="h-4 w-4" />
+                          ) : (
+                            <Eye className="h-4 w-4" />
+                          )}
                         </Button>
                       </div>
                       <FormMessage />
