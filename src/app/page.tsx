@@ -76,7 +76,7 @@ export default function AuthPage() {
   const onLoginSubmit = (values: z.infer<typeof loginSchema>) => {
     switch (loginRole) {
       case 'dealer':
-        console.log("Dealer login attempt with:", values.email);
+        console.log("User login attempt with:", values.email);
         router.push("/dashboard");
         break;
       case 'admin':
@@ -113,7 +113,7 @@ export default function AuthPage() {
 
   const roleConfig = {
     dealer: {
-      title: "Dealer Login",
+      title: "User Login",
       description: "Access your YUNEX wallet.",
       emailLabel: "Email",
       emailPlaceholder: "you@example.com",
@@ -152,7 +152,7 @@ export default function AuthPage() {
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Select Role</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onSelect={() => handleRoleSelect('dealer')}>Dealer Login</DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => handleRoleSelect('dealer')}>User Login</DropdownMenuItem>
             <DropdownMenuItem onSelect={() => handleRoleSelect('agency')}>Agency Login</DropdownMenuItem>
             <DropdownMenuItem onSelect={() => handleRoleSelect('admin')}>Admin Login</DropdownMenuItem>
           </DropdownMenuContent>
