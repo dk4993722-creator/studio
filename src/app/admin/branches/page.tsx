@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -89,10 +89,25 @@ type Branch = typeof initialBranches[0];
 export default function BranchDetailsPage() {
   const router = useRouter();
   const { toast } = useToast();
-  const [branches, setBranches] = useState(initialBranches);
+  const [branches, setBranches] = useState<Branch[]>([]);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterKey, setFilterKey] = useState<keyof Branch>("branchName");
+
+  useEffect(() => {
+    try {
+      const storedBranches = localStorage.getItem('yunex-branches');
+      if (storedBranches) {
+        setBranches(JSON.parse(storedBranches));
+      } else {
+        localStorage.setItem('yunex-branches', JSON.stringify(initialBranches));
+        setBranches(initialBranches);
+      }
+    } catch (error) {
+      console.error("Failed to load branches from localStorage", error);
+      setBranches(initialBranches);
+    }
+  }, []);
 
   const filterLabels: { [key in keyof Branch]?: string } = {
     district: "District",
@@ -123,7 +138,9 @@ export default function BranchDetailsPage() {
     }
     const newId = (branches.length + 1).toString().padStart(2, '0');
     const newBranch = { id: newId, ...values };
-    setBranches(prev => [...prev, newBranch]);
+    const updatedBranches = [...branches, newBranch];
+    setBranches(updatedBranches);
+    localStorage.setItem('yunex-branches', JSON.stringify(updatedBranches));
     toast({
       title: "Branch Added",
       description: `Branch "${values.branchName}" has been successfully added.`,

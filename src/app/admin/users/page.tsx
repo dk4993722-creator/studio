@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
@@ -93,13 +93,28 @@ const editUserSchema = userSchema.partial().extend({
 export default function AdminUsersPage() {
   const router = useRouter();
   const { toast } = useToast();
-  const [users, setUsers] = useState(mockUsersData);
+  const [users, setUsers] = useState<User[]>([]);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [showAddPassword, setShowAddPassword] = useState(false);
   const [showEditPassword, setShowEditPassword] = useState(false);
   const [visiblePasswords, setVisiblePasswords] = useState(new Set());
+
+  useEffect(() => {
+    try {
+      const storedUsers = localStorage.getItem('yunex-users');
+      if (storedUsers) {
+        setUsers(JSON.parse(storedUsers));
+      } else {
+        localStorage.setItem('yunex-users', JSON.stringify(mockUsersData));
+        setUsers(mockUsersData);
+      }
+    } catch (error) {
+      console.error("Failed to load users from localStorage", error);
+      setUsers(mockUsersData);
+    }
+  }, []);
 
   const addUserForm = useForm<z.infer<typeof userSchema>>({
     resolver: zodResolver(userSchema),
@@ -153,7 +168,9 @@ export default function AdminUsersPage() {
         return;
     }
     const newUser: User = { ...values, isAdminCreated: true };
-    setUsers(prev => [...prev, newUser]);
+    const updatedUsers = [newUser, ...users];
+    setUsers(updatedUsers);
+    localStorage.setItem('yunex-users', JSON.stringify(updatedUsers));
     toast({
       title: "User Added",
       description: `User "${values.name}" has been successfully created.`,
@@ -164,7 +181,7 @@ export default function AdminUsersPage() {
 
   const onEditSubmit = (values: z.infer<typeof editUserSchema>) => {
     if (!editingUser) return;
-    setUsers(users.map(u => 
+    const updatedUsers = users.map(u => 
       u.id === editingUser.id 
         ? { 
             ...u, 
@@ -172,7 +189,9 @@ export default function AdminUsersPage() {
             password: values.password ? values.password : u.password
           } 
         : u
-    ));
+    );
+    setUsers(updatedUsers);
+    localStorage.setItem('yunex-users', JSON.stringify(updatedUsers));
     toast({
       title: "User Updated",
       description: `User "${values.name || editingUser.name}" has been updated.`,
@@ -186,12 +205,14 @@ export default function AdminUsersPage() {
     if (userToDelete?.isAdminCreated) {
         toast({
             title: "Deletion Prevented",
-            description: "Users created by an admin cannot be deleted.",
+            description: "Users created by an admin cannot be deleted from this interface.",
             variant: "destructive",
         });
         return;
     }
-    setUsers(users.filter(user => user.id !== userId));
+    const updatedUsers = users.filter(user => user.id !== userId);
+    setUsers(updatedUsers);
+    localStorage.setItem('yunex-users', JSON.stringify(updatedUsers));
     toast({
       title: "User Deleted",
       description: "The user has been successfully deleted.",

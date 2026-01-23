@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -74,8 +74,23 @@ const initialVehicleModels: VehicleModel[] = [
 export default function EVehicleModelsPage() {
   const router = useRouter();
   const { toast } = useToast();
-  const [models, setModels] = useState(initialVehicleModels);
+  const [models, setModels] = useState<VehicleModel[]>([]);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+
+  useEffect(() => {
+    try {
+      const storedModels = localStorage.getItem('yunex-vehicle-models');
+      if (storedModels) {
+        setModels(JSON.parse(storedModels));
+      } else {
+        localStorage.setItem('yunex-vehicle-models', JSON.stringify(initialVehicleModels));
+        setModels(initialVehicleModels);
+      }
+    } catch (error) {
+      console.error("Failed to load models from localStorage", error);
+      setModels(initialVehicleModels);
+    }
+  }, []);
 
   const form = useForm<z.infer<typeof vehicleModelSchema>>({
     resolver: zodResolver(vehicleModelSchema),
@@ -104,7 +119,9 @@ export default function EVehicleModelsPage() {
       ...values,
       date: new Date().toISOString().split('T')[0],
     };
-    setModels(prev => [...prev, newModel]);
+    const updatedModels = [...models, newModel];
+    setModels(updatedModels);
+    localStorage.setItem('yunex-vehicle-models', JSON.stringify(updatedModels));
     toast({
       title: "Model Added",
       description: `Model "${values.eVehicleModel}" has been successfully added.`,
@@ -114,7 +131,9 @@ export default function EVehicleModelsPage() {
   }
 
   const handleDelete = (sNo: number) => {
-    setModels(models.filter(model => model.sNo !== sNo));
+    const updatedModels = models.filter(model => model.sNo !== sNo);
+    setModels(updatedModels);
+    localStorage.setItem('yunex-vehicle-models', JSON.stringify(updatedModels));
     toast({
       title: "Model Deleted",
       description: "The vehicle model has been removed.",
