@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -36,8 +36,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
-import { db } from "@/lib/firebase";
-import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
+import { db, firebaseError } from "@/lib/firebase";
+import { collection, addDoc, query, where, getDocs, setDoc } from "firebase/firestore";
 
 const loginSchema = z.object({
   identifier: z.string().min(1, { message: "User ID or Email is required." }),
@@ -66,6 +66,17 @@ export default function AuthPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showSignupPassword, setShowSignupPassword] = useState(false);
 
+  useEffect(() => {
+    if (firebaseError) {
+      toast({
+        variant: "destructive",
+        title: "Firebase Connection Error",
+        description: "Could not connect to the database. Please check your Firebase project configuration in .env.local.",
+        duration: 10000,
+      });
+    }
+  }, [toast]);
+
   const loginForm = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: { identifier: "", password: "" },
@@ -77,6 +88,8 @@ export default function AuthPage() {
   });
 
   const onLoginSubmit = (values: z.infer<typeof loginSchema>) => {
+    if (firebaseError) return;
+
     switch (loginRole) {
       case 'dealer':
         console.log("User login attempt with:", values.identifier);
@@ -104,6 +117,11 @@ export default function AuthPage() {
   };
 
   const onSignup = async (values: z.infer<typeof signupSchema>) => {
+    if (!db) {
+        toast({ variant: "destructive", title: "Database Error", description: "Not connected to Firestore." });
+        return;
+    }
+
     try {
       const usersRef = collection(db, "users");
       const qId = query(usersRef, where("id", "==", values.userId));
@@ -139,7 +157,8 @@ export default function AuthPage() {
           isAdminCreated: false,
       };
 
-      await addDoc(collection(db, "users"), newUser);
+      await setDoc(doc(db, "users", values.userId), newUser);
+      
       toast({
           title: "Signup Successful!",
           description: "Your account has been created.",

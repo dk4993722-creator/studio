@@ -54,8 +54,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { db } from "@/lib/firebase";
-import { collection, getDocs, addDoc, doc, updateDoc, deleteDoc } from "firebase/firestore";
+import { db, firebaseError } from "@/lib/firebase";
+import { collection, getDocs, addDoc, doc, updateDoc, deleteDoc, setDoc } from "firebase/firestore";
 
 type User = {
     docId: string;
@@ -98,8 +98,18 @@ export default function AdminUsersPage() {
   const [visiblePasswords, setVisiblePasswords] = useState(new Set());
 
   useEffect(() => {
+    if (firebaseError) {
+      toast({
+        variant: "destructive",
+        title: "Firebase Connection Error",
+        description: "Could not connect to the database. Please check your Firebase project configuration in .env.local.",
+        duration: 10000,
+      });
+      return;
+    }
     const fetchUsers = async () => {
       try {
+        if (!db) return;
         const querySnapshot = await getDocs(collection(db, "users"));
         const usersData: User[] = querySnapshot.docs.map(doc => ({
           docId: doc.id,
@@ -111,7 +121,7 @@ export default function AdminUsersPage() {
         toast({
           variant: "destructive",
           title: "Error",
-          description: "Could not load users from the database. Please check your Firebase setup.",
+          description: "Could not load users from the database.",
         });
       }
     };
@@ -162,6 +172,10 @@ export default function AdminUsersPage() {
   };
   
   const onAddUserSubmit = async (values: z.infer<typeof userSchema>) => {
+    if (!db) {
+        toast({ variant: "destructive", title: "Database Error", description: "Not connected to Firestore." });
+        return;
+    }
     if (users.some(u => u.id.toLowerCase() === values.id.toLowerCase())) {
         addUserForm.setError("id", {
             type: "manual",
@@ -171,8 +185,10 @@ export default function AdminUsersPage() {
     }
     const newUser = { ...values, isAdminCreated: true };
     try {
-        const docRef = await addDoc(collection(db, "users"), newUser);
-        setUsers(prev => [{ docId: docRef.id, ...newUser }, ...prev]);
+        const userDocRef = doc(db, "users", values.id);
+        await setDoc(userDocRef, newUser);
+
+        setUsers(prev => [{ docId: values.id, ...newUser }, ...prev]);
         toast({
           title: "User Added",
           description: `User "${values.name}" has been successfully created.`,
@@ -190,7 +206,7 @@ export default function AdminUsersPage() {
   };
 
   const onEditSubmit = async (values: z.infer<typeof editUserSchema>) => {
-    if (!editingUser) return;
+    if (!editingUser || !db) return;
     
     const dataToUpdate: Partial<Omit<User, 'docId'>> = { ...values };
     if (!values.password || values.password === "") {
@@ -205,7 +221,7 @@ export default function AdminUsersPage() {
           u.docId === editingUser.docId 
             ? { 
                 ...u, 
-                ...values,
+                ...dataToUpdate,
                 password: values.password ? values.password : u.password
               } 
             : u
@@ -228,6 +244,10 @@ export default function AdminUsersPage() {
   };
 
   const handleDeleteUser = async (userToDelete: User) => {
+    if (!db) {
+        toast({ variant: "destructive", title: "Database Error", description: "Not connected to Firestore." });
+        return;
+    }
     if (userToDelete.isAdminCreated) {
         toast({
             title: "Deletion Prevented",
@@ -296,7 +316,7 @@ export default function AdminUsersPage() {
                         Add User
                     </Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-lg">
+                <DialogContent className="sm:max-w-2xl">
                     <DialogHeader>
                         <DialogTitle>Add New User</DialogTitle>
                         <DialogDescription>
@@ -305,11 +325,11 @@ export default function AdminUsersPage() {
                     </DialogHeader>
                     <Form {...addUserForm}>
                         <form onSubmit={addUserForm.handleSubmit(onAddUserSubmit)} className="grid grid-cols-2 gap-4">
-                             <FormField control={addUserForm.control} name="id" render={({ field }) => (<FormItem className="col-span-1"><FormLabel>User ID</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                             <FormField control={addUserForm.control} name="sponsorId" render={({ field }) => (<FormItem className="col-span-1"><FormLabel>Sponsor ID</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                             <FormField control={addUserForm.control} name="id" render={({ field }) => (<FormItem><FormLabel>User ID</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                             <FormField control={addUserForm.control} name="sponsorId" render={({ field }) => (<FormItem><FormLabel>Sponsor ID</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                              <FormField control={addUserForm.control} name="name" render={({ field }) => (<FormItem className="col-span-2"><FormLabel>Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                             <FormField control={addUserForm.control} name="email" render={({ field }) => (<FormItem className="col-span-1"><FormLabel>Email</FormLabel><FormControl><Input type="email" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                             <FormField control={addUserForm.control} name="mobile" render={({ field }) => (<FormItem className="col-span-1"><FormLabel>Mobile No.</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                             <FormField control={addUserForm.control} name="email" render={({ field }) => (<FormItem><FormLabel>Email</FormLabel><FormControl><Input type="email" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                             <FormField control={addUserForm.control} name="mobile" render={({ field }) => (<FormItem><FormLabel>Mobile No.</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                              <FormField
                                 control={addUserForm.control}
                                 name="password"
@@ -341,9 +361,9 @@ export default function AdminUsersPage() {
                                   </FormItem>
                                 )}
                               />
-                             <FormField control={addUserForm.control} name="role" render={({ field }) => (<FormItem className="col-span-1"><FormLabel>Role</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a role" /></SelectTrigger></FormControl><SelectContent><SelectItem value="Associate">Associate</SelectItem><SelectItem value="Dealer">Dealer</SelectItem></SelectContent></Select><FormMessage /></FormItem>)}/>
-                             <FormField control={addUserForm.control} name="status" render={({ field }) => (<FormItem className="col-span-1"><FormLabel>Status</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a status" /></SelectTrigger></FormControl><SelectContent><SelectItem value="Active">Active</SelectItem><SelectItem value="Inactive">Inactive</SelectItem><SelectItem value="Pending">Pending</SelectItem></SelectContent></Select><FormMessage /></FormItem>)}/>
-                            <DialogFooter className="col-span-2">
+                             <FormField control={addUserForm.control} name="role" render={({ field }) => (<FormItem><FormLabel>Role</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a role" /></SelectTrigger></FormControl><SelectContent><SelectItem value="Associate">Associate</SelectItem><SelectItem value="Dealer">Dealer</SelectItem></SelectContent></Select><FormMessage /></FormItem>)}/>
+                             <FormField control={addUserForm.control} name="status" render={({ field }) => (<FormItem><FormLabel>Status</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a status" /></SelectTrigger></FormControl><SelectContent><SelectItem value="Active">Active</SelectItem><SelectItem value="Inactive">Inactive</SelectItem><SelectItem value="Pending">Pending</SelectItem></SelectContent></Select><FormMessage /></FormItem>)}/>
+                            <DialogFooter className="col-span-2 pt-4">
                                 <Button type="button" variant="secondary" onClick={() => setIsAddDialogOpen(false)}>Cancel</Button>
                                 <Button type="submit">Create User</Button>
                             </DialogFooter>
@@ -445,7 +465,7 @@ export default function AdminUsersPage() {
         </Card>
         
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <DialogContent className="sm:max-w-lg">
+          <DialogContent className="sm:max-w-2xl">
             <DialogHeader>
               <DialogTitle>Edit User: {editingUser?.name}</DialogTitle>
               <DialogDescription>
@@ -455,8 +475,8 @@ export default function AdminUsersPage() {
             <Form {...editForm}>
               <form onSubmit={editForm.handleSubmit(onEditSubmit)} className="grid grid-cols-2 gap-4">
                 <FormField control={editForm.control} name="name" render={({ field }) => (<FormItem className="col-span-2"><FormLabel>Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)}/>
-                <FormField control={editForm.control} name="email" render={({ field }) => (<FormItem className="col-span-1"><FormLabel>Email</FormLabel><FormControl><Input type="email" {...field} /></FormControl><FormMessage /></FormItem>)}/>
-                 <FormField control={editForm.control} name="mobile" render={({ field }) => (<FormItem className="col-span-1"><FormLabel>Mobile No.</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)}/>
+                <FormField control={editForm.control} name="email" render={({ field }) => (<FormItem><FormLabel>Email</FormLabel><FormControl><Input type="email" {...field} /></FormControl><FormMessage /></FormItem>)}/>
+                 <FormField control={editForm.control} name="mobile" render={({ field }) => (<FormItem><FormLabel>Mobile No.</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)}/>
                 <FormField
                   control={editForm.control}
                   name="password"
@@ -489,9 +509,9 @@ export default function AdminUsersPage() {
                     </FormItem>
                   )}
                 />
-                <FormField control={editForm.control} name="role" render={({ field }) => (<FormItem className="col-span-1"><FormLabel>Role</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a role" /></SelectTrigger></FormControl><SelectContent><SelectItem value="Associate">Associate</SelectItem><SelectItem value="Dealer">Dealer</SelectItem></SelectContent></Select><FormMessage /></FormItem>)}/>
-                <FormField control={editForm.control} name="status" render={({ field }) => (<FormItem className="col-span-1"><FormLabel>Status</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a status" /></SelectTrigger></FormControl><SelectContent><SelectItem value="Active">Active</SelectItem><SelectItem value="Inactive">Inactive</SelectItem><SelectItem value="Pending">Pending</SelectItem></SelectContent></Select><FormMessage /></FormItem>)}/>
-                <DialogFooter className="col-span-2">
+                <FormField control={editForm.control} name="role" render={({ field }) => (<FormItem><FormLabel>Role</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a role" /></SelectTrigger></FormControl><SelectContent><SelectItem value="Associate">Associate</SelectItem><SelectItem value="Dealer">Dealer</SelectItem></SelectContent></Select><FormMessage /></FormItem>)}/>
+                <FormField control={editForm.control} name="status" render={({ field }) => (<FormItem><FormLabel>Status</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a status" /></SelectTrigger></FormControl><SelectContent><SelectItem value="Active">Active</SelectItem><SelectItem value="Inactive">Inactive</SelectItem><SelectItem value="Pending">Pending</SelectItem></SelectContent></Select><FormMessage /></FormItem>)}/>
+                <DialogFooter className="col-span-2 pt-4">
                   <Button type="button" variant="secondary" onClick={() => setIsEditDialogOpen(false)}>
                     Cancel
                   </Button>
