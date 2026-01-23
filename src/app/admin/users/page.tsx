@@ -67,7 +67,12 @@ type User = {
     isAdminCreated?: boolean;
 };
 
-const mockUsersData: User[] = [];
+const mockUsersData: User[] = [
+  { id: 'YNX26A0001', sponsorId: 'YUNEX_SP', name: 'Yunex', email: 'yunex@example.com', mobile: '9876543210', role: 'Dealer', status: 'Active', password: 'password123' },
+  { id: 'YNX26A0002', sponsorId: 'YNX26A0001', name: 'Ram', email: 'ram@example.com', mobile: '9876543211', role: 'Associate', status: 'Active', password: 'password123' },
+  { id: 'YNX26A0003', sponsorId: 'YNX26A0001', name: 'Shiu', email: 'shiu@example.com', mobile: '9876543212', role: 'Associate', status: 'Active', password: 'password123' },
+  { id: 'YNX26A0004', sponsorId: 'YNX26A0001', name: 'Krishna', email: 'krishna@example.com', mobile: '9876543213', role: 'Associate', status: 'Active', password: 'password123' },
+];
 
 const userSchema = z.object({
   id: z.string().min(1, "User ID is required."),
