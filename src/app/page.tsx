@@ -36,6 +36,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { db } from "@/lib/firebase";
+import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
 
 const loginSchema = z.object({
   identifier: z.string().min(1, { message: "User ID or Email is required." }),
@@ -43,6 +45,7 @@ const loginSchema = z.object({
 });
 
 const signupSchema = z.object({
+  userId: z.string().min(1, { message: "User ID is required." }),
   sponsorId: z.string().min(1, { message: "Sponsor ID is required." }),
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
   email: z.string().email({ message: "Invalid email address." }),
@@ -70,7 +73,7 @@ export default function AuthPage() {
 
   const signupForm = useForm<z.infer<typeof signupSchema>>({
     resolver: zodResolver(signupSchema),
-    defaultValues: { sponsorId: "", name: "", email: "", mobile: "", password: "", terms: false },
+    defaultValues: { userId: "", sponsorId: "", name: "", email: "", mobile: "", password: "", terms: false },
   });
 
   const onLoginSubmit = (values: z.infer<typeof loginSchema>) => {
@@ -100,9 +103,56 @@ export default function AuthPage() {
     }
   };
 
-  const onSignup = (values: z.infer<typeof signupSchema>) => {
-    console.log("Signup attempt with:", values.email);
-    router.push(`/dashboard?name=${encodeURIComponent(values.name)}`);
+  const onSignup = async (values: z.infer<typeof signupSchema>) => {
+    try {
+      const usersRef = collection(db, "users");
+      const qId = query(usersRef, where("id", "==", values.userId));
+      const qEmail = query(usersRef, where("email", "==", values.email));
+
+      const idSnapshot = await getDocs(qId);
+      if (!idSnapshot.empty) {
+          signupForm.setError("userId", {
+              type: "manual",
+              message: "This User ID is already taken.",
+          });
+          return;
+      }
+
+      const emailSnapshot = await getDocs(qEmail);
+      if (!emailSnapshot.empty) {
+          signupForm.setError("email", {
+              type: "manual",
+              message: "This email is already registered.",
+          });
+          return;
+      }
+
+      const newUser = {
+          id: values.userId,
+          sponsorId: values.sponsorId,
+          name: values.name,
+          email: values.email,
+          mobile: values.mobile,
+          password: values.password,
+          role: 'Associate' as 'Associate' | 'Dealer',
+          status: 'Active' as 'Active' | 'Inactive' | 'Pending',
+          isAdminCreated: false,
+      };
+
+      await addDoc(collection(db, "users"), newUser);
+      toast({
+          title: "Signup Successful!",
+          description: "Your account has been created.",
+      });
+      router.push(`/dashboard?name=${encodeURIComponent(values.name)}`);
+    } catch (error) {
+        console.error("Error signing up:", error);
+        toast({
+            variant: "destructive",
+            title: "Signup Failed",
+            description: "Could not create your account. Please try again.",
+        });
+    }
   };
   
   const handleRoleSelect = (role: 'dealer' | 'admin' | 'agency') => {
@@ -256,6 +306,19 @@ export default function AuthPage() {
                         <FormLabel>Sponsor ID</FormLabel>
                         <FormControl>
                           <Input placeholder="Enter sponsor ID" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                   <FormField
+                    control={signupForm.control}
+                    name="userId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>User ID</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Create your unique user ID" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
