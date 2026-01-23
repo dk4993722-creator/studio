@@ -54,8 +54,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { db } from "@/lib/firebase";
+import { collection, getDocs, addDoc, doc, updateDoc, deleteDoc } from "firebase/firestore";
 
 type User = {
+    docId: string;
     id: string;
     sponsorId: string;
     name: string;
@@ -66,13 +69,6 @@ type User = {
     password: string;
     isAdminCreated?: boolean;
 };
-
-const mockUsersData: User[] = [
-  { id: 'YNX26A0001', sponsorId: 'YUNEX_SP', name: 'Yunex', email: 'yunex@example.com', mobile: '9876543210', role: 'Dealer', status: 'Active', password: 'password123' },
-  { id: 'YNX26A0002', sponsorId: 'YNX26A0001', name: 'Ram', email: 'ram@example.com', mobile: '9876543211', role: 'Associate', status: 'Active', password: 'password123' },
-  { id: 'YNX26A0003', sponsorId: 'YNX26A0001', name: 'Shiu', email: 'shiu@example.com', mobile: '9876543212', role: 'Associate', status: 'Active', password: 'password123' },
-  { id: 'YNX26A0004', sponsorId: 'YNX26A0001', name: 'Krishna', email: 'krishna@example.com', mobile: '9876543213', role: 'Associate', status: 'Active', password: 'password123' },
-];
 
 const userSchema = z.object({
   id: z.string().min(1, "User ID is required."),
@@ -102,19 +98,25 @@ export default function AdminUsersPage() {
   const [visiblePasswords, setVisiblePasswords] = useState(new Set());
 
   useEffect(() => {
-    try {
-      const storedUsers = localStorage.getItem('yunex-users');
-      if (storedUsers) {
-        setUsers(JSON.parse(storedUsers));
-      } else {
-        localStorage.setItem('yunex-users', JSON.stringify(mockUsersData));
-        setUsers(mockUsersData);
+    const fetchUsers = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "users"));
+        const usersData: User[] = querySnapshot.docs.map(doc => ({
+          docId: doc.id,
+          ...(doc.data() as Omit<User, 'docId'>)
+        }));
+        setUsers(usersData);
+      } catch (error) {
+        console.error("Error fetching users from Firestore", error);
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Could not load users from the database. Please check your Firebase setup.",
+        });
       }
-    } catch (error) {
-      console.error("Failed to load users from localStorage", error);
-      setUsers(mockUsersData);
-    }
-  }, []);
+    };
+    fetchUsers();
+  }, [toast]);
 
   const addUserForm = useForm<z.infer<typeof userSchema>>({
     resolver: zodResolver(userSchema),
@@ -159,7 +161,7 @@ export default function AdminUsersPage() {
     setIsEditDialogOpen(true);
   };
   
-  const onAddUserSubmit = (values: z.infer<typeof userSchema>) => {
+  const onAddUserSubmit = async (values: z.infer<typeof userSchema>) => {
     if (users.some(u => u.id.toLowerCase() === values.id.toLowerCase())) {
         addUserForm.setError("id", {
             type: "manual",
@@ -167,42 +169,66 @@ export default function AdminUsersPage() {
         });
         return;
     }
-    const newUser: User = { ...values, isAdminCreated: true };
-    const updatedUsers = [newUser, ...users];
-    setUsers(updatedUsers);
-    localStorage.setItem('yunex-users', JSON.stringify(updatedUsers));
-    toast({
-      title: "User Added",
-      description: `User "${values.name}" has been successfully created.`,
-    });
-    setIsAddDialogOpen(false);
-    addUserForm.reset();
+    const newUser = { ...values, isAdminCreated: true };
+    try {
+        const docRef = await addDoc(collection(db, "users"), newUser);
+        setUsers(prev => [{ docId: docRef.id, ...newUser }, ...prev]);
+        toast({
+          title: "User Added",
+          description: `User "${values.name}" has been successfully created.`,
+        });
+        setIsAddDialogOpen(false);
+        addUserForm.reset();
+    } catch (error) {
+        console.error("Error adding user:", error);
+        toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Failed to create user.",
+        });
+    }
   };
 
-  const onEditSubmit = (values: z.infer<typeof editUserSchema>) => {
+  const onEditSubmit = async (values: z.infer<typeof editUserSchema>) => {
     if (!editingUser) return;
-    const updatedUsers = users.map(u => 
-      u.id === editingUser.id 
-        ? { 
-            ...u, 
-            ...values,
-            password: values.password ? values.password : u.password
-          } 
-        : u
-    );
-    setUsers(updatedUsers);
-    localStorage.setItem('yunex-users', JSON.stringify(updatedUsers));
-    toast({
-      title: "User Updated",
-      description: `User "${values.name || editingUser.name}" has been updated.`,
-    });
-    setIsEditDialogOpen(false);
-    setEditingUser(null);
+    
+    const dataToUpdate: Partial<Omit<User, 'docId'>> = { ...values };
+    if (!values.password || values.password === "") {
+      delete (dataToUpdate as any).password;
+    }
+
+    try {
+        const userDocRef = doc(db, "users", editingUser.docId);
+        await updateDoc(userDocRef, dataToUpdate);
+
+        const updatedUsers = users.map(u => 
+          u.docId === editingUser.docId 
+            ? { 
+                ...u, 
+                ...values,
+                password: values.password ? values.password : u.password
+              } 
+            : u
+        );
+        setUsers(updatedUsers);
+        toast({
+          title: "User Updated",
+          description: `User "${values.name || editingUser.name}" has been updated.`,
+        });
+        setIsEditDialogOpen(false);
+        setEditingUser(null);
+    } catch(error) {
+        console.error("Error updating user:", error);
+        toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Failed to update user.",
+        });
+    }
   };
 
-  const handleDeleteUser = (userId: string) => {
-    const userToDelete = users.find(user => user.id === userId);
-    if (userToDelete?.isAdminCreated) {
+  const handleDeleteUser = async (userToDelete: User) => {
+    if (userToDelete.isAdminCreated) {
         toast({
             title: "Deletion Prevented",
             description: "Users created by an admin cannot be deleted from this interface.",
@@ -210,14 +236,22 @@ export default function AdminUsersPage() {
         });
         return;
     }
-    const updatedUsers = users.filter(user => user.id !== userId);
-    setUsers(updatedUsers);
-    localStorage.setItem('yunex-users', JSON.stringify(updatedUsers));
-    toast({
-      title: "User Deleted",
-      description: "The user has been successfully deleted.",
-      variant: "destructive",
-    });
+    try {
+        await deleteDoc(doc(db, "users", userToDelete.docId));
+        setUsers(prev => prev.filter(user => user.docId !== userToDelete.docId));
+        toast({
+          title: "User Deleted",
+          description: "The user has been successfully deleted.",
+          variant: "destructive",
+        });
+    } catch (error) {
+        console.error("Error deleting user:", error);
+        toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Failed to delete user.",
+        });
+    }
   };
 
   return (
@@ -337,7 +371,7 @@ export default function AdminUsersPage() {
               <TableBody>
                 {users.length > 0 ? (
                     users.map((user, index) => (
-                    <TableRow key={user.id}>
+                    <TableRow key={user.docId}>
                         <TableCell>{index + 1}</TableCell>
                         <TableCell className="font-medium">{user.id}</TableCell>
                         <TableCell>{user.sponsorId}</TableCell>
@@ -390,7 +424,7 @@ export default function AdminUsersPage() {
                                 <Button variant="secondary">Cancel</Button>
                                 </DialogClose>
                                 <DialogClose asChild>
-                                <Button variant="destructive" onClick={() => handleDeleteUser(user.id)}>Delete</Button>
+                                <Button variant="destructive" onClick={() => handleDeleteUser(user)}>Delete</Button>
                                 </DialogClose>
                             </DialogFooter>
                             </DialogContent>
