@@ -1,3 +1,8 @@
+<<<<<<< HEAD
 {
   "rewrites": [{ "source": "/(.*)", "destination": "/" }]
+=======
+{
+  "rewrites": [{ "source": "/(.*)", "destination": "/" }]
+>>>>>>> d271ffb (vercel.json)
 }
