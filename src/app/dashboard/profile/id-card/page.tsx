@@ -9,16 +9,15 @@ import { ArrowLeft, Phone, LogOut } from "lucide-react";
 import { YunexLogo } from "@/components/yunex-logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import placeholderImages from "@/lib/placeholder-images.json";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 
-export default function IdCardPage() {
+function IdCardPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [name, setName] = useState('User');
   const [userId, setUserId] = useState('YUNEX12345');
   const [joinDate, setJoinDate] = useState('01/01/24');
   const [phone, setPhone] = useState('+91 9876543210');
-
 
   useEffect(() => {
     const userName = searchParams.get('name');
@@ -108,3 +107,12 @@ export default function IdCardPage() {
     </div>
   );
 }
+
+export default function IdCardPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <IdCardPageContent />
+    </Suspense>
+  );
+}
+
