@@ -31,9 +31,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 
-export default function ProfilePage() {
+function ProfilePageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -162,3 +162,12 @@ export default function ProfilePage() {
     </div>
   );
 }
+
+export default function ProfilePage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
+      <ProfilePageContent />
+    </Suspense>
+  );
+}
+
