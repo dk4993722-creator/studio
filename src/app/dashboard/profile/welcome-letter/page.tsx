@@ -9,10 +9,10 @@ import { ArrowLeft, Phone, LogOut, Download } from "lucide-react";
 import { YunexLogo } from "@/components/yunex-logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import placeholderImages from "@/lib/placeholder-images.json";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useToast } from "@/hooks/use-toast";
 
-export default function WelcomeLetterPage() {
+function WelcomeLetterPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { toast } = useToast();
@@ -138,5 +138,22 @@ export default function WelcomeLetterPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function WelcomeLetterPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
+      <WelcomeLetterPageContent />
+    </Suspense>
+  );
+}
+
+
+export default function Wrapper() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <pageContent />
+    </Suspense>
   );
 }

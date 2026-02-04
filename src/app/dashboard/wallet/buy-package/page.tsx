@@ -35,7 +35,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import placeholderImages from "@/lib/placeholder-images.json";
 import { useToast } from "@/hooks/use-toast";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 
 const buyPackageSchema = z.object({
   packageId: z.string().min(1, { message: "Please select a package." }),
@@ -48,7 +48,7 @@ const packages = [
     { id: 'business', name: 'Business Package', amount: 5000 },
 ];
 
-export default function BuyPackagePage() {
+function BuyPackagePageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { toast } = useToast();
@@ -205,5 +205,13 @@ export default function BuyPackagePage() {
       </main>
     </div>
     </>
+  );
+}
+
+export default function BuyPackagePage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
+      <BuyPackagePageContent />
+    </Suspense>
   );
 }

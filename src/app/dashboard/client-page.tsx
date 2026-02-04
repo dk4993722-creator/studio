@@ -356,3 +356,10 @@ const electronicsCategories = [
 }
 
     
+export default function Wrapper() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <clientpageContent />
+    </Suspense>
+  );
+}
