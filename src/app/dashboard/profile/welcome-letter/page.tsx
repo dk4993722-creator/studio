@@ -150,10 +150,3 @@ export default function WelcomeLetterPage() {
 }
 
 
-export default function Wrapper() {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <pageContent />
-    </Suspense>
-  );
-}
